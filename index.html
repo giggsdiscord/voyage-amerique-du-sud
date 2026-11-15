@@ -47,7 +47,17 @@
     </section>
 
     <section class="vue" id="vue-etapes" aria-labelledby="t-etapes" hidden>
-      <h2 class="titre-vue" id="t-etapes">Étapes</h2>
+      <div class="tete-vue">
+        <h2 class="titre-vue" id="t-etapes">Étapes</h2>
+        <button type="button" class="bouton-loupe" id="bouton-recherche" aria-expanded="false" aria-controls="zone-recherche" aria-label="Rechercher une étape">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+        </button>
+      </div>
+      <div class="zone-recherche" id="zone-recherche" hidden>
+        <label class="sr-only" for="recherche-etapes">Rechercher une étape, une activité, un lieu</label>
+        <input type="search" id="recherche-etapes" placeholder="Ville, activité, trek, glacier…" autocomplete="off" enterkeyhint="search">
+        <p class="petit doux" id="resultat-recherche" role="status" aria-live="polite"></p>
+      </div>
       <div id="liste-etapes"></div>
     </section>
 

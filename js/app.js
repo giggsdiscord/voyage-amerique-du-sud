@@ -292,10 +292,14 @@
       var et = cal.etapes.filter(function (x) { return x.etape.pays === p.id; });
       if (!et.length) return;
       var b = bilanPays(cal).filter(function (y) { return y.pays.id === p.id; })[0];
-      html += '<div class="pays-titre" id="section-' + esc(p.id) + '"><h3>' + drapeau(p) + ' ' + esc(p.nom) + '</h3><span class="doux petit">' +
+      html += '<div class="pays-titre" id="section-' + esc(p.id) + '" data-section-titre="' + esc(p.id) + '"><h3>' + drapeau(p) + ' ' + esc(p.nom) + '</h3><span class="doux petit">' +
         esc(dCourt(b.debut)) + ' → ' + esc(dCourt(b.fin)) + ' · ' + jours(b.total) + '</span></div>';
       et.forEach(function (x) {
         var h = x.etape.hebergement, t = x.etape.trajet;
+        // Texte cherchable : nom, section, notes, hébergement, trajet, toutes les activités (même non cochées)
+        var cherchable = [x.etape.nom, p.nom, x.etape.notes, h && h.nom, t && t.resume, t && nomsModes(t)]
+          .concat((x.etape.activites || []).map(function (a) { return a.nom + ' ' + (a.description || ''); })).join(' ');
+        html += '<div class="groupe-etape" data-pays="' + esc(p.id) + '" data-recherche="' + esc(normaliser(cherchable)) + '">';
         if (t) {
           html += '<button class="trajet" data-fiche="' + esc(x.etape.id) + '" aria-label="Trajet vers ' + esc(x.etape.nom) + '">' +
             '<span class="trajet-ico" aria-hidden="true">' + icones(t) + '</span>' +
@@ -313,9 +317,47 @@
           html += '<div class="marge-ligne">⏳ <b>' + jours(x.marge) + ' de marge</b> · ' + esc(dJour(x.depart)) + ' → ' + esc(dJour(x.finMarge)) +
             '<br><span class="doux">Météo, repos, imprévus</span></div>';
         }
+        html += '</div>';
       });
     });
+    html += '<div class="bloc vide" id="aucun-resultat" hidden><p style="font-size:2rem;margin:0">🔍</p><h3>Aucune étape trouvée</h3><p class="doux">Essayez un autre mot : une ville, une activité, un trek…</p></div>';
     $('#liste-etapes').innerHTML = html;
+    filtrerEtapes();
+  }
+
+  /* ---------- Recherche dans les étapes ---------- */
+  function normaliser(s) {
+    return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+  function filtrerEtapes() {
+    var champ = $('#recherche-etapes');
+    var q = normaliser(champ ? champ.value : '').trim();
+    var mots = q ? q.split(/\s+/) : [];
+    var groupes = document.querySelectorAll('#liste-etapes .groupe-etape');
+    var visibles = {}, n = 0;
+    groupes.forEach(function (g) {
+      var texte = g.getAttribute('data-recherche');
+      var ok = mots.every(function (m) { return texte.indexOf(m) >= 0; });
+      g.hidden = !ok;
+      if (ok) { n++; visibles[g.getAttribute('data-pays')] = true; }
+    });
+    document.querySelectorAll('#liste-etapes [data-section-titre]').forEach(function (t) {
+      t.hidden = !visibles[t.getAttribute('data-section-titre')];
+    });
+    var barre = document.querySelector('#liste-etapes .barre-sections');
+    if (barre) barre.hidden = !!q;
+    var vide = $('#aucun-resultat');
+    if (vide) vide.hidden = !q || n > 0;
+    $('#resultat-recherche').textContent = q ? (n ? pluriel(n, 'étape') + ' ' + (n > 1 ? 'trouvées' : 'trouvée') : '') : '';
+  }
+  function basculerRecherche(ouvrir) {
+    var zone = $('#zone-recherche'), bouton = $('#bouton-recherche'), champ = $('#recherche-etapes');
+    if (ouvrir === undefined) ouvrir = zone.hidden;
+    zone.hidden = !ouvrir;
+    bouton.setAttribute('aria-expanded', String(ouvrir));
+    bouton.setAttribute('aria-label', ouvrir ? 'Fermer la recherche' : 'Rechercher une étape');
+    if (ouvrir) champ.focus();
+    else { champ.value = ''; filtrerEtapes(); bouton.focus(); }
   }
 
   /* ---------- Fiche d'une étape ---------- */
@@ -972,6 +1014,14 @@
         if (cf) cf.focus();
         if (t.checked) toast('C\'est fait ✓');
       }
+    });
+
+    // Recherche dans les étapes
+    $('#bouton-recherche').addEventListener('click', function () { basculerRecherche(); });
+    $('#recherche-etapes').addEventListener('input', filtrerEtapes);
+    $('#recherche-etapes').addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape') basculerRecherche(false);
+      if (ev.key === 'Enter') ev.target.blur();
     });
 
     // Mémoriser les sections dépliées pour les garder ouvertes après un recalcul

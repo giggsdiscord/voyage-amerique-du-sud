@@ -63,6 +63,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
 body {
   margin: 0;
@@ -111,6 +112,22 @@ main { outline: none; }
   color: var(--encre); text-decoration: none; font-size: 1.3rem; font-weight: 700;
 }
 .intro { margin: -6px 0 14px; color: var(--doux); font-size: .92rem; }
+.bouton-loupe {
+  margin-left: auto; flex: none; display: inline-grid; place-items: center; width: 44px; height: 44px;
+  border-radius: 50%; border: 0; background: var(--surface); box-shadow: var(--ombre); color: var(--encre); cursor: pointer;
+}
+.bouton-loupe svg { width: 22px; height: 22px; }
+.bouton-loupe[aria-expanded="true"] { background: var(--primaire); color: var(--primaire-encre); }
+.zone-recherche { margin: 0 0 10px; }
+.zone-recherche input {
+  width: 100%; min-height: 48px; padding: 10px 14px 10px 42px; border-radius: 14px;
+  border: 2px solid var(--primaire); background: var(--surface); font-size: 1rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a96a6' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4.5 4.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: 12px center; background-size: 20px;
+}
+.zone-recherche input:focus { outline: none; box-shadow: 0 0 0 4px var(--primaire-doux); }
+.zone-recherche p { margin: 6px 4px 0; }
+.zone-recherche p:empty { display: none; }
 
 /* ---------- Navigation du bas ---------- */
 .onglets {
