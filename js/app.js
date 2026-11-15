@@ -386,7 +386,7 @@
     var toutes = reservationsTriees();
     if (!toutes.length) {
       $('#reservations').innerHTML = '<div class="bloc vide"><p style="font-size:2rem;margin:0">🗂️</p><h3>Aucune réservation pour l\'instant</h3>' +
-        '<p class="doux">Dictez-moi vos réservations (vols, bus, trains, voiture, visites) : date, heure, lieu, numéro et lien Drive du PDF. Elles apparaîtront ici et sur l\'accueil.</p></div>';
+        '<p class="doux">Dictez-moi vos réservations (vols, bus, trains, voiture, visites) : date, heure, lieu et lien Drive du PDF. Le numéro de réservation reste dans le PDF : le site est public. Elles apparaîtront ici et sur l\'accueil.</p></div>';
       return;
     }
     var types = Object.keys(TYPES).filter(function (k) { return toutes.some(function (r) { return (r.type || 'autre') === k; }); });

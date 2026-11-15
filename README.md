@@ -1,7 +1,11 @@
 # Voyage Amérique du Sud (oct. 2027 – mars 2028)
 
 Appli web hors ligne (PWA) pour le voyage : carte, étapes, calculateur de dates et réservations.
-Site statique sans build, déployé par Netlify depuis la branche `main`.
+Site statique sans build, publié par GitHub Pages depuis la branche `main` :
+https://giggsdiscord.github.io/voyage-amerique-du-sud/
+
+**Dépôt public** : ne jamais y mettre de numéro de réservation, de passeport, de carte bancaire ni de QR code.
+Pour les réservations, seulement les liens Drive (qui demandent la connexion Google).
 
 ## Fichiers
 
@@ -11,7 +15,8 @@ Site statique sans build, déployé par Netlify depuis la branche `main`.
 | `index.html`, `css/style.css`, `js/app.js` | L'appli |
 | `sw.js` | Service worker (hors ligne). Changer `VERSION` après une modification du code |
 | `manifest.webmanifest`, `icons/` | Installation sur l'écran d'accueil |
-| `netlify.toml`, `robots.txt` | Publication et `noindex` |
+| `robots.txt`, balise `robots` dans `index.html` | `noindex` (pas de référencement) |
+| `.nojekyll` | Publication telle quelle par GitHub Pages |
 
 ## Ajouter une étape
 
@@ -61,7 +66,6 @@ Dans `reservations` :
   "lieu": "Terminal Cruz del Sur, Lima",
   "arrivee": "Huaraz",
   "compagnie": "Cruz del Sur",
-  "numero": "ABC123",
   "lienDrive": "https://drive.google.com/file/d/…/view",
   "etape": "huaraz",
   "notes": ""
@@ -70,6 +74,7 @@ Dans `reservations` :
 
 - `type` : `vol`, `bus`, `train`, `voiture`, `activite`, `hebergement` ou `autre`.
 - `lienDrive` : seulement un lien `drive.google.com` ou `docs.google.com`, jamais le PDF lui-même.
+- Pas de champ `numero` : le dépôt est public, le numéro reste dans le PDF du Drive.
 - `etape` (facultatif) : affiche la réservation dans la fiche de cette étape.
 
 **Ne jamais mettre** de numéro de passeport, de carte bancaire ni de QR code dans ce dépôt.
