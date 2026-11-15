@@ -1,0 +1,221 @@
+:root {
+  --fond: #f4f1ec;
+  --surface: #ffffff;
+  --surface-2: #ece7df;
+  --encre: #1b2a30;
+  --doux: #59666c;
+  --trait: #d9d2c6;
+  --primaire: #1f5f66;
+  --primaire-encre: #ffffff;
+  --accent: #b9532f;
+  --ok: #2f7a45;
+  --alerte: #b0431c;
+  --alerte-fond: #fbe9e1;
+  --ok-fond: #e3f1e6;
+  --suggestion: #6d4ea0;
+  --suggestion-fond: #eee8f7;
+  --option: #8a6a14;
+  --option-fond: #f7efd6;
+  --ombre: 0 1px 2px rgba(0,0,0,.06), 0 4px 14px rgba(0,0,0,.06);
+  --rayon: 14px;
+  --nav-h: 64px;
+  --haut-h: 56px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #0f1a1c;
+    --surface: #182528;
+    --surface-2: #213236;
+    --encre: #e9eeee;
+    --doux: #a3b1b3;
+    --trait: #2d3f43;
+    --primaire: #4fb0b8;
+    --primaire-encre: #062023;
+    --accent: #e98a62;
+    --ok: #6fcf8a;
+    --alerte: #f29a72;
+    --alerte-fond: #3a2219;
+    --ok-fond: #183323;
+    --suggestion: #c3a8ef;
+    --suggestion-fond: #2a2238;
+    --option: #e2c066;
+    --option-fond: #33290f;
+    --ombre: 0 1px 2px rgba(0,0,0,.4);
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--encre);
+  font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  overflow-x: hidden;
+}
+button, input, select { font: inherit; color: inherit; }
+a { color: var(--primaire); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: -999px; top: 0; background: var(--surface); padding: 8px 12px; z-index: 100; }
+.skip:focus { left: 8px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* En-tête */
+.entete {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: var(--haut-h);
+  padding: calc(8px + env(safe-area-inset-top)) 16px 8px;
+  background: var(--primaire); color: var(--primaire-encre);
+}
+.entete h1 { margin: 0; font-size: 1.1rem; line-height: 1.2; }
+.entete-sous { margin: 0; font-size: .8rem; opacity: .85; }
+.pastille-hors-ligne { font-size: .75rem; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: rgba(0,0,0,.25); }
+
+main { outline: none; }
+.vue { padding: 16px; max-width: 720px; margin: 0 auto; }
+.titre-vue { margin: 4px 0 14px; font-size: 1.35rem; }
+
+/* Navigation du bas */
+.onglets {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--surface); border-top: 1px solid var(--trait);
+}
+.onglets a {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  text-decoration: none; color: var(--doux); font-size: .75rem; font-weight: 600;
+  min-height: 48px;
+}
+.onglets .ico { font-size: 1.3rem; line-height: 1; }
+.onglets a[aria-current="page"] { color: var(--primaire); }
+.onglets a[aria-current="page"] .ico { transform: scale(1.1); }
+
+/* Cartes génériques */
+.bloc {
+  background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre);
+  padding: 16px; margin-bottom: 14px;
+}
+.bloc h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.surtitre { margin: 0 0 4px; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.doux { color: var(--doux); }
+.petit { font-size: .875rem; }
+.ligne { display: flex; align-items: center; gap: 10px; }
+.entre { justify-content: space-between; }
+.grand-chiffre { font-size: 2.4rem; font-weight: 800; line-height: 1; color: var(--primaire); }
+
+.bouton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 44px; padding: 10px 16px; border-radius: 12px;
+  border: 1px solid var(--trait); background: var(--surface); color: var(--encre);
+  font-weight: 600; text-decoration: none; cursor: pointer;
+}
+.bouton.plein { background: var(--primaire); color: var(--primaire-encre); border-color: transparent; }
+.bouton.plein-large { width: 100%; }
+.boutons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+.puce {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 6px 12px;
+  border-radius: 99px; border: 1px solid var(--trait); background: var(--surface);
+  font-size: .85rem; font-weight: 600; cursor: pointer;
+}
+.puce[aria-pressed="true"] { background: var(--primaire); color: var(--primaire-encre); border-color: transparent; }
+
+.badge { display: inline-block; font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; vertical-align: middle; white-space: nowrap; }
+.badge.prevu { background: var(--ok-fond); color: var(--ok); }
+.badge.option { background: var(--option-fond); color: var(--option); }
+.badge.suggestion { background: var(--suggestion-fond); color: var(--suggestion); }
+.badge.alerte { background: var(--alerte-fond); color: var(--alerte); }
+.badge.ok { background: var(--ok-fond); color: var(--ok); }
+
+/* Numéro d'étape */
+.num {
+  flex: none; display: inline-grid; place-items: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--primaire); color: var(--primaire-encre); font-weight: 800; font-size: .9rem;
+}
+
+/* Liste des étapes */
+.pays-titre { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 18px 0 10px; }
+.pays-titre h3 { margin: 0; font-size: 1.1rem; }
+.etape-carte {
+  display: flex; gap: 12px; width: 100%; text-align: left;
+  background: var(--surface); border: 0; border-radius: var(--rayon); box-shadow: var(--ombre);
+  padding: 14px; margin-bottom: 10px; cursor: pointer;
+}
+.etape-carte h4 { margin: 0; font-size: 1.05rem; }
+.etape-carte p { margin: 2px 0 0; }
+.etape-corps { flex: 1; min-width: 0; }
+.chevron { align-self: center; color: var(--doux); font-size: 1.3rem; }
+
+/* Fiche (dialog) */
+.fiche {
+  width: 100%; max-width: 720px; max-height: 88vh; margin: auto auto 0;
+  padding: 0; border: 0; border-radius: 20px 20px 0 0;
+  background: var(--surface); color: var(--encre);
+}
+.fiche::backdrop { background: rgba(0,0,0,.45); }
+.fiche-contenu { padding: 8px 16px calc(20px + env(safe-area-inset-bottom)); }
+.fiche-poignee { width: 40px; height: 4px; border-radius: 4px; background: var(--trait); margin: 4px auto 10px; }
+.fiche-tete { display: flex; align-items: flex-start; gap: 12px; }
+.fiche-tete h2 { margin: 0; font-size: 1.3rem; }
+.fermer { margin-left: auto; flex: none; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--surface-2); font-size: 1.3rem; cursor: pointer; }
+.infos { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin: 14px 0; }
+.info { background: var(--surface-2); border-radius: 10px; padding: 8px 10px; }
+.info b { display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--doux); }
+.activites { list-style: none; margin: 0; padding: 0; }
+.activites li { padding: 10px 0; border-top: 1px solid var(--trait); }
+.activites li:first-child { border-top: 0; }
+.activites .nom { font-weight: 600; }
+.activites .desc { margin: 2px 0 0; font-size: .875rem; color: var(--doux); }
+.act-non { opacity: .75; }
+
+/* Carte */
+.vue-carte { padding: 0; max-width: none; position: relative; }
+#carte { height: calc(100vh - var(--haut-h) - var(--nav-h) - env(safe-area-inset-bottom) - env(safe-area-inset-top)); height: calc(100dvh - var(--haut-h) - var(--nav-h) - env(safe-area-inset-bottom) - env(safe-area-inset-top)); width: 100%; background: var(--surface-2); }
+.carte-outils { position: absolute; top: 10px; left: 56px; right: 10px; z-index: 500; display: flex; flex-wrap: wrap; gap: 6px; }
+.carte-outils .puce { box-shadow: var(--ombre); }
+.carte-etat { position: absolute; bottom: 10px; left: 10px; right: 10px; z-index: 500; margin: 0; }
+.carte-etat:not(:empty) { background: var(--surface); padding: 8px 12px; border-radius: 10px; box-shadow: var(--ombre); font-size: .875rem; }
+.marqueur { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 800 13px/1 system-ui, sans-serif; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+.point-activite { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+.leaflet-popup-content { font: 14px/1.4 system-ui, sans-serif; }
+.leaflet-popup-content .bouton { min-height: 36px; padding: 6px 12px; margin-top: 6px; }
+
+/* Planificateur */
+.resume-plan { position: sticky; top: calc(var(--haut-h) + env(safe-area-inset-top)); z-index: 10; }
+.champ { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: .9rem; }
+.champ input { min-height: 44px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--trait); background: var(--surface); }
+.compteur { display: inline-flex; align-items: center; gap: 4px; }
+.compteur button { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--trait); background: var(--surface-2); font-size: 1.3rem; font-weight: 700; cursor: pointer; }
+.compteur output { min-width: 2.2em; text-align: center; font-weight: 800; font-size: 1.1rem; }
+.case { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-top: 1px solid var(--trait); cursor: pointer; }
+.case input { width: 22px; height: 22px; margin: 2px 0 0; flex: none; accent-color: var(--primaire); }
+.case .duree { margin-left: auto; white-space: nowrap; font-weight: 700; font-size: .875rem; }
+.plan-etape-tete { display: flex; align-items: center; gap: 10px; }
+.plan-etape-tete h4 { margin: 0; font-size: 1.05rem; }
+.base { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 10px 0 4px; }
+.jauge { height: 8px; border-radius: 8px; background: var(--surface-2); overflow: hidden; margin-top: 6px; }
+.jauge span { display: block; height: 100%; background: var(--ok); }
+.jauge.depasse span { background: var(--alerte); }
+
+/* Réservations */
+.filtres { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px; scrollbar-width: none; }
+.resa-type { font-size: 1.4rem; flex: none; width: 40px; text-align: center; }
+.code { font-family: ui-monospace, Consolas, monospace; font-weight: 700; letter-spacing: .04em; }
+.vide { text-align: center; padding: 28px 16px; }
+
+.toast {
+  position: fixed; left: 16px; right: 16px; bottom: calc(var(--nav-h) + 12px + env(safe-area-inset-bottom)); z-index: 2000;
+  max-width: 480px; margin: 0 auto; padding: 12px 16px; border-radius: 12px;
+  background: var(--encre); color: var(--fond); font-weight: 600; text-align: center;
+}
+
+@media (min-width: 720px) {
+  .vue { padding: 24px; }
+}

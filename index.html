@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="theme-color" content="#1f5f66" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#10292c" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Voyage">
+  <title>Voyage Amérique du Sud</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#contenu">Aller au contenu</a>
+
+  <header class="entete">
+    <div class="entete-titre">
+      <h1 id="titre-voyage">Voyage</h1>
+      <p class="entete-sous" id="sous-titre"></p>
+    </div>
+    <span class="pastille-hors-ligne" id="hors-ligne" hidden>Hors ligne</span>
+  </header>
+
+  <main id="contenu" tabindex="-1">
+    <section class="vue" id="vue-accueil" aria-labelledby="t-accueil">
+      <h2 class="sr-only" id="t-accueil">Accueil</h2>
+      <div id="accueil"></div>
+    </section>
+
+    <section class="vue vue-carte" id="vue-carte" aria-labelledby="t-carte" hidden>
+      <h2 class="sr-only" id="t-carte">Carte</h2>
+      <div id="carte" role="application" aria-label="Carte de l'itinéraire"></div>
+      <div class="carte-outils">
+        <button type="button" class="puce" id="bouton-activites" aria-pressed="true">Activités</button>
+        <button type="button" class="puce" id="bouton-ensemble">Vue d'ensemble</button>
+        <button type="button" class="puce" id="bouton-hors-ligne">Carte hors ligne</button>
+      </div>
+      <p class="carte-etat" id="carte-etat" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="vue" id="vue-etapes" aria-labelledby="t-etapes" hidden>
+      <h2 class="titre-vue" id="t-etapes">Étapes</h2>
+      <div id="liste-etapes"></div>
+    </section>
+
+    <section class="vue" id="vue-planifier" aria-labelledby="t-planifier" hidden>
+      <h2 class="titre-vue" id="t-planifier">Calculateur de dates</h2>
+      <div id="planificateur"></div>
+    </section>
+
+    <section class="vue" id="vue-resas" aria-labelledby="t-resas" hidden>
+      <h2 class="titre-vue" id="t-resas">Réservations</h2>
+      <div id="reservations"></div>
+    </section>
+  </main>
+
+  <nav class="onglets" aria-label="Navigation principale">
+    <a href="#accueil" data-vue="accueil"><span aria-hidden="true" class="ico">⌂</span>Accueil</a>
+    <a href="#carte" data-vue="carte"><span aria-hidden="true" class="ico">◎</span>Carte</a>
+    <a href="#etapes" data-vue="etapes"><span aria-hidden="true" class="ico">☰</span>Étapes</a>
+    <a href="#planifier" data-vue="planifier"><span aria-hidden="true" class="ico">±</span>Dates</a>
+    <a href="#resas" data-vue="resas"><span aria-hidden="true" class="ico">✓</span>Résas</a>
+  </nav>
+
+  <dialog class="fiche" id="fiche" aria-labelledby="fiche-titre">
+    <div class="fiche-contenu" id="fiche-contenu"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

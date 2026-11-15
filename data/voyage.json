@@ -1,0 +1,166 @@
+{
+  "voyage": {
+    "titre": "Amérique du Sud 2027-2028",
+    "debut": "2027-10-25",
+    "fin": "2028-03-31",
+    "datesProvisoires": true
+  },
+
+  "pays": [
+    { "id": "perou", "nom": "Pérou", "drapeau": "🇵🇪", "couleur": "#c8102e", "fenetre": { "debut": "2027-10-25", "fin": "2027-11-14" } }
+  ],
+
+  "etapes": [
+    {
+      "id": "lima",
+      "pays": "perou",
+      "nom": "Lima",
+      "lat": -12.0464, "lng": -77.0428,
+      "altitude": 150,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "Arrivée au Pérou. Repasser par Lima entre Cerro de Pasco et Paracas.",
+      "activites": [
+        { "id": "lima-centre", "nom": "Centre historique", "jours": 0, "statut": "suggestion", "lat": -12.0453, "lng": -77.0311, "description": "Plaza Mayor, cathédrale, couvent San Francisco." },
+        { "id": "lima-barranco", "nom": "Barranco et Miraflores", "jours": 0, "statut": "suggestion", "lat": -12.1490, "lng": -77.0210, "description": "Quartier bohème et front de mer (malecón)." }
+      ]
+    },
+    {
+      "id": "huaraz",
+      "pays": "perou",
+      "nom": "Huaraz",
+      "lat": -9.5278, "lng": -77.5278,
+      "altitude": 3050,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "Cordillère Blanche. Prévoir 1 à 2 jours d'acclimatation avant les lagunes.",
+      "activites": [
+        { "id": "laguna-69", "nom": "Laguna 69", "jours": 1, "statut": "prevu", "lat": -9.0108, "lng": -77.6110, "description": "Randonnée d'une journée, lagune turquoise à 4 600 m." },
+        { "id": "pastoruri", "nom": "Glacier Pastoruri", "jours": 1, "statut": "prevu", "lat": -9.9244, "lng": -77.1797, "description": "Glacier à 5 000 m, excursion d'une journée." },
+        { "id": "laguna-paron", "nom": "Laguna Parón", "jours": 1, "statut": "prevu", "lat": -8.9989, "lng": -77.6847, "description": "Plus grande lagune de la Cordillère Blanche." },
+        { "id": "laguna-churup", "nom": "Laguna Churup", "jours": 1, "statut": "suggestion", "lat": -9.4836, "lng": -77.4250, "description": "Bonne randonnée d'acclimatation près de Huaraz." },
+        { "id": "chavin", "nom": "Chavín de Huántar", "jours": 1, "statut": "suggestion", "lat": -9.5928, "lng": -77.1772, "description": "Site archéologique classé à l'UNESCO." }
+      ]
+    },
+    {
+      "id": "cerro-de-pasco",
+      "pays": "perou",
+      "nom": "Cerro de Pasco",
+      "lat": -10.6826, "lng": -76.2563,
+      "altitude": 4330,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "Hauts plateaux de la cordillère des Andes. Très haute altitude : y aller après Huaraz.",
+      "activites": [
+        { "id": "huayllay", "nom": "Forêt de pierres de Huayllay", "jours": 1, "statut": "suggestion", "lat": -10.9500, "lng": -76.3600, "description": "Sanctuaire national, immenses formations rocheuses." }
+      ]
+    },
+    {
+      "id": "paracas",
+      "pays": "perou",
+      "nom": "Paracas",
+      "lat": -13.8340, "lng": -76.2513,
+      "altitude": 0,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "Trajet depuis Cerro de Pasco en repassant par Lima.",
+      "activites": [
+        { "id": "ballestas", "nom": "Îles Ballestas", "jours": 1, "statut": "prevu", "lat": -13.7333, "lng": -76.4000, "description": "Excursion en bateau le matin : otaries, pingouins de Humboldt. Réserve nationale de Paracas l'après-midi." }
+      ]
+    },
+    {
+      "id": "huacachina",
+      "pays": "perou",
+      "nom": "Huacachina",
+      "lat": -14.0875, "lng": -75.7626,
+      "altitude": 400,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "Oasis au milieu des dunes, près d'Ica.",
+      "activites": [
+        { "id": "dunes", "nom": "Buggy et sandboard dans les dunes", "jours": 0, "statut": "prevu", "lat": -14.0875, "lng": -75.7626, "description": "Sortie de fin d'après-midi, coucher de soleil sur les dunes." }
+      ]
+    },
+    {
+      "id": "nazca",
+      "pays": "perou",
+      "nom": "Nazca",
+      "lat": -14.8350, "lng": -74.9330,
+      "altitude": 520,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "",
+      "activites": [
+        { "id": "lignes-nazca", "nom": "Lignes de Nazca", "jours": 0, "statut": "prevu", "lat": -14.7390, "lng": -75.1300, "description": "Survol en avionnette, ou mirador au bord de la route (moins cher)." },
+        { "id": "chauchilla", "nom": "Cimetière de Chauchilla", "jours": 0, "statut": "suggestion", "lat": -14.9480, "lng": -74.8740, "description": "Nécropole préhispanique avec momies." }
+      ]
+    },
+    {
+      "id": "arequipa",
+      "pays": "perou",
+      "nom": "Arequipa",
+      "lat": -16.4090, "lng": -71.5375,
+      "altitude": 2335,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "La ville blanche, au pied du volcan Misti.",
+      "activites": [
+        { "id": "santa-catalina", "nom": "Couvent de Santa Catalina", "jours": 0, "statut": "prevu", "lat": -16.3955, "lng": -71.5368, "description": "Une ville dans la ville, ruelles colorées." },
+        { "id": "yanahuara", "nom": "Mirador de Yanahuara", "jours": 0, "statut": "suggestion", "lat": -16.3881, "lng": -71.5420, "description": "Vue sur le Misti." }
+      ]
+    },
+    {
+      "id": "colca",
+      "pays": "perou",
+      "nom": "Canyon de Colca",
+      "lat": -15.6380, "lng": -71.6010,
+      "altitude": 3630,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "Base à Chivay. Option : trek de 2 à 3 jours dans le canyon.",
+      "activites": [
+        { "id": "cruz-condor", "nom": "Cruz del Cóndor", "jours": 0, "statut": "prevu", "lat": -15.6125, "lng": -71.9050, "description": "Mirador pour voir voler les condors, tôt le matin." },
+        { "id": "chivay-thermes", "nom": "Thermes de Chivay (La Calera)", "jours": 0, "statut": "suggestion", "lat": -15.6290, "lng": -71.5900, "description": "Sources chaudes." }
+      ]
+    },
+    {
+      "id": "cusco",
+      "pays": "perou",
+      "nom": "Cusco",
+      "lat": -13.5320, "lng": -71.9675,
+      "altitude": 3400,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "Base pour la Vallée sacrée, le Machu Picchu et les treks.",
+      "activites": [
+        { "id": "vallee-sacree", "nom": "Vallée sacrée avec Pisac", "jours": 1, "statut": "prevu", "lat": -13.4230, "lng": -71.8460, "description": "Ruines et marché de Pisac." },
+        { "id": "moray-maras", "nom": "Moray et salines de Maras", "jours": 1, "statut": "prevu", "lat": -13.3290, "lng": -72.1970, "description": "Terrasses circulaires incas et salines en terrasses." },
+        { "id": "machu-picchu", "nom": "Machu Picchu", "jours": 2, "statut": "prevu", "lat": -13.1631, "lng": -72.5450, "description": "Train jusqu'à Aguas Calientes, nuit sur place, visite tôt le matin. Billets à réserver longtemps à l'avance." },
+        { "id": "montagne-couleurs", "nom": "Palcoyo ou Vinicunca", "jours": 1, "statut": "prevu", "lat": -13.8700, "lng": -71.3030, "description": "Montagne arc-en-ciel. Vinicunca : plus célèbre et plus fréquentée. Palcoyo : plus calme et marche plus courte. À choisir." },
+        { "id": "humantay", "nom": "Laguna Humantay", "jours": 1, "statut": "prevu", "lat": -13.3830, "lng": -72.5850, "description": "Lagune turquoise au pied du Salkantay." },
+        { "id": "ausangate-7-lagunes", "nom": "7 lagunes de l'Ausangate", "jours": 1, "statut": "prevu", "lat": -13.7350, "lng": -71.2180, "description": "Randonnée d'une journée depuis Cusco, départ de Pacchanta." },
+        { "id": "ausangate-trek", "nom": "Trek complet de l'Ausangate", "jours": 5, "statut": "option", "lat": -13.7900, "lng": -71.2300, "description": "Circuit de 5 à 6 jours, cols à plus de 5 000 m. En camping avec agence (tentes et muletiers fournis), ou version en lodges, plus chère." },
+        { "id": "sacsayhuaman", "nom": "Sacsayhuamán", "jours": 0, "statut": "suggestion", "lat": -13.5090, "lng": -71.9820, "description": "Forteresse inca au-dessus de Cusco." },
+        { "id": "ollantaytambo", "nom": "Ollantaytambo et Chinchero", "jours": 0, "statut": "suggestion", "lat": -13.2580, "lng": -72.2630, "description": "À combiner avec la Vallée sacrée ou le train pour le Machu Picchu." }
+      ]
+    },
+    {
+      "id": "puno",
+      "pays": "perou",
+      "nom": "Puno et lac Titicaca",
+      "lat": -15.8402, "lng": -70.0219,
+      "altitude": 3830,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "Ensuite : passage en Bolivie par Copacabana.",
+      "activites": [
+        { "id": "amantani", "nom": "Nuit chez l'habitant sur l'île d'Amantaní", "jours": 2, "statut": "prevu", "lat": -15.6620, "lng": -69.7130, "description": "Excursion de 2 jours, souvent combinée avec les Uros et Taquile." },
+        { "id": "uros", "nom": "Îles flottantes des Uros", "jours": 0, "statut": "suggestion", "lat": -15.8190, "lng": -69.9690, "description": "Îles de roseaux, sur le trajet vers Amantaní." },
+        { "id": "taquile", "nom": "Île de Taquile", "jours": 0, "statut": "suggestion", "lat": -15.7720, "lng": -69.6870, "description": "Textiles classés à l'UNESCO, le 2e jour de l'excursion." },
+        { "id": "sillustani", "nom": "Tours de Sillustani", "jours": 0, "statut": "suggestion", "lat": -15.7220, "lng": -70.1550, "description": "Tours funéraires pré-incas au bord d'un lac." }
+      ]
+    }
+  ],
+
+  "reservations": []
+}
