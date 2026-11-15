@@ -875,10 +875,14 @@
       }
     });
 
+    // Les étapes numérotées passent toujours au-dessus des centres d'intérêt (mais sous les étiquettes et les bulles)
+    carte.createPane('etapes').style.zIndex = 620;
+
     coucheActivites = L.layerGroup();
     cal.etapes.forEach(function (x) {
       var e = x.etape, p = paysDe(e.pays);
       var m = L.marker([e.lat, e.lng], {
+        pane: 'etapes',
         title: x.num + '. ' + e.nom,
         icon: L.divIcon({ className: '', html: '<span class="marqueur" style="background:' + esc(p.couleur) + '">' + x.num + '</span>', iconSize: [30, 30], iconAnchor: [15, 15] })
       }).addTo(carte);
@@ -901,6 +905,8 @@
     function etiquettes() {
       carte.getContainer().classList.toggle('sans-etiquettes', carte.getZoom() < 8);
       carte.getContainer().classList.toggle('icones-petites', carte.getZoom() <= 4);
+      // Vue de loin : centres d'intérêt réduits à de petits points pour laisser lire les numéros d'étape
+      carte.getContainer().classList.toggle('points-petits', carte.getZoom() <= 6);
     }
     carte.on('zoomend', etiquettes);
 

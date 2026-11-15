@@ -390,6 +390,8 @@ body.sur-carte { overflow: hidden; }
 }
 .leaflet-tooltip.etiquette::before { display: none; }
 .sans-etiquettes .leaflet-tooltip.etiquette { display: none; }
+/* Vue de loin : centres d'intérêt réduits à de petits points, sous les numéros d'étape */
+.points-petits .point-activite { transform: scale(.5); border-width: 4px; font-size: 0; opacity: .9; }
 .nom-pays {
   position: absolute; transform: translate(-50%, -50%); white-space: nowrap;
   font: 900 30px/1 system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase;
