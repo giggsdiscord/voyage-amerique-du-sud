@@ -1,417 +1,115 @@
 {
   "voyage": {
-    "titre": "Amérique du Sud 2027-2028",
-    "debut": "2027-10-25",
-    "fin": "2028-03-31",
+    "titre": "Amérique du Sud 2028",
+    "debut": "2028-02-15",
+    "fin": "2028-07-09",
     "datesProvisoires": true
   },
 
   "pays": [
-    {"id":"perou","nom":"Pérou","drapeau":"🇵🇪","couleur":"#c8102e","marge":4,"fenetre":{"debut":"2027-10-25","fin":"2027-11-25"}},
-    {"id":"bolivie","nom":"Bolivie","drapeau":"🇧🇴","couleur":"#2e7d32","marge":3,"fenetre":{"debut":"2027-11-26","fin":"2027-12-05"}},
-    {"id":"nord","nom":"Atacama et nord de l'Argentine","drapeau":"🌵","couleur":"#c2410c","marge":4,"fenetre":{"debut":"2027-12-06","fin":"2027-12-20"}},
-    {"id":"chili","nom":"Chili (centre)","drapeau":"🇨🇱","couleur":"#1565c0","marge":4,"fenetre":{"debut":"2027-12-21","fin":"2028-01-05"}},
-    {"id":"patagonie","nom":"Patagonie","drapeau":"🏔️","couleur":"#0e7490","marge":14,"fenetre":{"debut":"2028-01-06","fin":"2028-03-31"}}
+    {"id":"patagonie","nom":"Patagonie","drapeau":"🏔️","couleur":"#0e7490","marge":17,"fenetre":{"debut":"2028-02-15","fin":"2028-04-30"}},
+    {"id":"chili","nom":"Chili (centre)","drapeau":"🇨🇱","couleur":"#1565c0","marge":2,"fenetre":{"debut":"2028-05-01","fin":"2028-05-13"}},
+    {"id":"nord","nom":"Atacama et nord de l'Argentine","drapeau":"🌵","couleur":"#c2410c","marge":3,"fenetre":{"debut":"2028-05-14","fin":"2028-05-27"}},
+    {"id":"bolivie","nom":"Bolivie","drapeau":"🇧🇴","couleur":"#2e7d32","marge":3,"fenetre":{"debut":"2028-05-28","fin":"2028-06-06"}},
+    {"id":"perou","nom":"Pérou","drapeau":"🇵🇪","couleur":"#c8102e","marge":4,"fenetre":{"debut":"2028-06-07","fin":"2028-07-09"}}
   ],
 
   "etapes": [
     {
-      "id": "lima",
-      "pays": "perou",
-      "trajet": {"modes":["vol"],"resume":"Vol international jusqu'à Lima","details":"Ville de départ et date à définir.","statut":"propose"},
-      "nom": "Lima",
-      "lat": -12.0464,
-      "lng": -77.0428,
-      "altitude": 150,
-      "jours": 2,
-      "hebergement": null,
-      "notes": "Arrivée au Pérou. Repasser par Lima entre Cerro de Pasco et Paracas.",
-      "activites": [
-        {"id":"lima-centre","nom":"Centre historique","jours":0,"statut":"suggestion","lat":-12.0453,"lng":-77.0311,"description":"Plaza Mayor, cathédrale, couvent San Francisco."},
-        {"id":"lima-barranco","nom":"Barranco et Miraflores","jours":0,"statut":"suggestion","lat":-12.149,"lng":-77.021,"description":"Quartier bohème et front de mer (malecón)."}
-      ]
-    },
-    {
-      "id": "huaraz",
-      "pays": "perou",
-      "trajet": {"modes":["bus"],"resume":"Bus, environ 8 h","details":"De jour pour la vue sur la cordillère, ou de nuit pour gagner une journée. Compagnies confortables : Cruz del Sur, Movil Tours, Oltursa.","statut":"propose","cout":[15,30]},
-      "nom": "Huaraz",
-      "lat": -9.5278,
-      "lng": -77.5278,
-      "altitude": 3050,
-      "jours": 2,
-      "hebergement": null,
-      "notes": "Cordillère Blanche. Prévoir 1 à 2 jours d'acclimatation avant les lagunes.",
-      "activites": [
-        {"id":"laguna-69","nom":"Laguna 69","jours":1,"statut":"prevu","lat":-9.0108,"lng":-77.611,"description":"Randonnée d'une journée, lagune turquoise à 4 600 m.","cout":[20,40]},
-        {"id":"pastoruri","nom":"Glacier Pastoruri","jours":1,"statut":"prevu","lat":-9.9244,"lng":-77.1797,"description":"Glacier à 5 000 m, excursion d'une journée.","cout":[20,35]},
-        {"id":"laguna-paron","nom":"Laguna Parón","jours":1,"statut":"prevu","lat":-8.9989,"lng":-77.6847,"description":"Plus grande lagune de la Cordillère Blanche.","cout":[25,40]},
-        {"id":"laguna-churup","nom":"Laguna Churup","jours":1,"statut":"suggestion","lat":-9.4836,"lng":-77.425,"description":"Bonne randonnée d'acclimatation près de Huaraz.","cout":[10,20]},
-        {"id":"chavin","nom":"Chavín de Huántar","jours":1,"statut":"suggestion","lat":-9.5928,"lng":-77.1772,"description":"Site archéologique classé à l'UNESCO.","cout":[25,40]}
-      ]
-    },
-    {
-      "id": "cerro-de-pasco",
-      "pays": "perou",
-      "trajet": {"modes":["bus","colectivo"],"resume":"Bus ou colectivo, environ 8 à 10 h","details":"Peu de liaisons directes : passer par Huánuco, ou redescendre à Lima puis remonter. Horaires à vérifier sur place à Huaraz.","statut":"propose","cout":[15,30]},
-      "nom": "Cerro de Pasco",
-      "lat": -10.6826,
-      "lng": -76.2563,
-      "altitude": 4330,
-      "jours": 1,
-      "hebergement": null,
-      "notes": "Hauts plateaux de la cordillère des Andes. Très haute altitude : y aller après Huaraz.",
-      "activites": [
-        {"id":"huayllay","nom":"Forêt de pierres de Huayllay","jours":1,"statut":"suggestion","lat":-10.95,"lng":-76.36,"description":"Sanctuaire national, immenses formations rocheuses.","cout":[20,40]}
-      ]
-    },
-    {
-      "id": "paracas",
-      "pays": "perou",
-      "trajet": {"modes":["bus"],"resume":"Bus jusqu'à Lima (environ 8 h), puis Lima → Paracas (environ 4 h)","details":"Long trajet : prévoir une nuit à Lima entre les deux, ou un bus de nuit jusqu'à Lima.","statut":"propose","cout":[25,45]},
-      "nom": "Paracas",
-      "lat": -13.834,
-      "lng": -76.2513,
-      "altitude": 0,
-      "jours": 1,
-      "hebergement": null,
-      "notes": "Trajet depuis Cerro de Pasco en repassant par Lima.",
-      "activites": [
-        {"id":"ballestas","nom":"Îles Ballestas","jours":1,"statut":"prevu","lat":-13.7333,"lng":-76.4,"description":"Excursion en bateau le matin : otaries, pingouins de Humboldt. Réserve nationale de Paracas l'après-midi.","cout":[20,35]}
-      ]
-    },
-    {
-      "id": "huacachina",
-      "pays": "perou",
-      "trajet": {"modes":["bus","taxi"],"resume":"Bus jusqu'à Ica (environ 1 h 30), puis taxi 10 min","details":"","statut":"propose","cout":[8,15]},
-      "nom": "Huacachina",
-      "lat": -14.0875,
-      "lng": -75.7626,
-      "altitude": 400,
-      "jours": 1,
-      "hebergement": null,
-      "notes": "Oasis au milieu des dunes, près d'Ica.",
-      "activites": [
-        {"id":"dunes","nom":"Buggy et sandboard dans les dunes","jours":0,"statut":"prevu","lat":-14.0875,"lng":-75.7626,"description":"Sortie de fin d'après-midi, coucher de soleil sur les dunes.","cout":[20,35]}
-      ]
-    },
-    {
-      "id": "nazca",
-      "pays": "perou",
-      "trajet": {"modes":["bus"],"resume":"Bus depuis Ica, environ 2 h 30 à 3 h","details":"","statut":"propose","cout":[8,15]},
-      "nom": "Nazca",
-      "lat": -14.835,
-      "lng": -74.933,
-      "altitude": 520,
-      "jours": 1,
-      "hebergement": null,
-      "notes": "",
-      "activites": [
-        {"id":"lignes-nazca","nom":"Lignes de Nazca","jours":0,"statut":"prevu","lat":-14.739,"lng":-75.13,"description":"Survol en avionnette, ou mirador au bord de la route (moins cher).","cout":[80,130]},
-        {"id":"chauchilla","nom":"Cimetière de Chauchilla","jours":0,"statut":"suggestion","lat":-14.948,"lng":-74.874,"description":"Nécropole préhispanique avec momies.","cout":[15,25]}
-      ]
-    },
-    {
-      "id": "arequipa",
-      "pays": "perou",
-      "trajet": {"modes":["bus"],"resume":"Bus de nuit, environ 9 à 10 h","details":"Le bus de nuit évite de perdre une journée. Préférer une compagnie sûre (Cruz del Sur, Oltursa).","statut":"propose","cout":[25,45]},
-      "nom": "Arequipa",
-      "lat": -16.409,
-      "lng": -71.5375,
-      "altitude": 2335,
-      "jours": 2,
-      "hebergement": null,
-      "notes": "La ville blanche, au pied du volcan Misti.",
-      "activites": [
-        {"id":"santa-catalina","nom":"Couvent de Santa Catalina","jours":0,"statut":"prevu","lat":-16.3955,"lng":-71.5368,"description":"Une ville dans la ville, ruelles colorées.","cout":[10,12]},
-        {"id":"yanahuara","nom":"Mirador de Yanahuara","jours":0,"statut":"suggestion","lat":-16.3881,"lng":-71.542,"description":"Vue sur le Misti."}
-      ]
-    },
-    {
-      "id": "colca",
-      "pays": "perou",
-      "trajet": {"modes":["bus","tour"],"resume":"Bus jusqu'à Chivay (environ 3 h 30), ou excursion organisée de 2 jours","details":"L'excursion organisée depuis Arequipa inclut la Cruz del Cóndor et les thermes. Certaines se terminent directement à Puno.","statut":"propose","cout":[15,60]},
-      "nom": "Canyon de Colca",
-      "lat": -15.638,
-      "lng": -71.601,
-      "altitude": 3630,
-      "jours": 2,
-      "hebergement": null,
-      "notes": "Base à Chivay. Option : trek de 2 à 3 jours dans le canyon.",
-      "activites": [
-        {"id":"cruz-condor","nom":"Cruz del Cóndor","jours":0,"statut":"prevu","lat":-15.6125,"lng":-71.905,"description":"Mirador pour voir voler les condors, tôt le matin.","cout":[15,20]},
-        {"id":"chivay-thermes","nom":"Thermes de Chivay (La Calera)","jours":0,"statut":"suggestion","lat":-15.629,"lng":-71.59,"description":"Sources chaudes.","cout":[5,10]}
-      ]
-    },
-    {
-      "id": "cusco",
-      "pays": "perou",
-      "trajet": {"modes":["bus"],"resume":"Retour à Arequipa puis bus de nuit (environ 10 h)","details":"Pas de liaison directe pratique depuis Chivay. Pour le Machu Picchu : train PeruRail ou Inca Rail depuis Ollantaytambo jusqu'à Aguas Calientes.","statut":"propose","cout":[30,50]},
-      "nom": "Cusco",
-      "lat": -13.532,
-      "lng": -71.9675,
-      "altitude": 3400,
-      "jours": 2,
-      "hebergement": null,
-      "notes": "Base pour la Vallée sacrée, le Machu Picchu et les treks.",
-      "activites": [
-        {"id":"vallee-sacree","nom":"Vallée sacrée avec Pisac","jours":1,"statut":"prevu","lat":-13.423,"lng":-71.846,"description":"Ruines et marché de Pisac.","cout":[30,50]},
-        {"id":"moray-maras","nom":"Moray et salines de Maras","jours":1,"statut":"prevu","lat":-13.329,"lng":-72.197,"description":"Terrasses circulaires incas et salines en terrasses.","cout":[25,40]},
-        {"id":"machu-picchu","nom":"Machu Picchu","jours":2,"statut":"prevu","lat":-13.1631,"lng":-72.545,"description":"Train jusqu'à Aguas Calientes, nuit sur place, visite tôt le matin. Billets à réserver longtemps à l'avance.","cout":[150,250]},
-        {"id":"montagne-couleurs","nom":"Palcoyo ou Vinicunca","jours":1,"statut":"prevu","lat":-13.87,"lng":-71.303,"description":"Montagne arc-en-ciel. Vinicunca : plus célèbre et plus fréquentée. Palcoyo : plus calme et marche plus courte. À choisir.","cout":[30,50]},
-        {"id":"humantay","nom":"Laguna Humantay","jours":1,"statut":"prevu","lat":-13.383,"lng":-72.585,"description":"Lagune turquoise au pied du Salkantay.","cout":[35,60]},
-        {"id":"ausangate-7-lagunes","nom":"7 lagunes de l'Ausangate","jours":1,"statut":"prevu","lat":-13.735,"lng":-71.218,"description":"Randonnée d'une journée depuis Cusco, départ de Pacchanta.","cout":[35,60]},
-        {"id":"ausangate-trek","nom":"Trek complet de l'Ausangate","jours":5,"statut":"option","lat":-13.79,"lng":-71.23,"description":"Circuit de 5 à 6 jours, cols à plus de 5 000 m. En camping avec agence (tentes et muletiers fournis), ou version en lodges, plus chère.","cout":[300,600]},
-        {"id":"sacsayhuaman","nom":"Sacsayhuamán","jours":0,"statut":"suggestion","lat":-13.509,"lng":-71.982,"description":"Forteresse inca au-dessus de Cusco.","cout":[30,35]},
-        {"id":"ollantaytambo","nom":"Ollantaytambo et Chinchero","jours":0,"statut":"suggestion","lat":-13.258,"lng":-72.263,"description":"À combiner avec la Vallée sacrée ou le train pour le Machu Picchu.","cout":[0,10]}
-      ]
-    },
-    {
-      "id": "puno",
-      "pays": "perou",
-      "trajet": {"modes":["bus","train"],"resume":"Bus, environ 7 h, ou bus touristique « Ruta del Sol » avec visites (environ 10 h)","details":"Option confort : train PeruRail Titicaca, beaucoup plus cher.","statut":"propose","cout":[15,60]},
-      "nom": "Puno et lac Titicaca",
-      "lat": -15.8402,
-      "lng": -70.0219,
-      "altitude": 3830,
-      "jours": 1,
-      "hebergement": null,
-      "notes": "Ensuite : passage en Bolivie par Copacabana.",
-      "activites": [
-        {"id":"amantani","nom":"Nuit chez l'habitant sur l'île d'Amantaní","jours":2,"statut":"prevu","lat":-15.662,"lng":-69.713,"description":"Excursion de 2 jours, souvent combinée avec les Uros et Taquile.","cout":[40,70]},
-        {"id":"uros","nom":"Îles flottantes des Uros","jours":0,"statut":"suggestion","lat":-15.819,"lng":-69.969,"description":"Îles de roseaux, sur le trajet vers Amantaní."},
-        {"id":"taquile","nom":"Île de Taquile","jours":0,"statut":"suggestion","lat":-15.772,"lng":-69.687,"description":"Textiles classés à l'UNESCO, le 2e jour de l'excursion."},
-        {"id":"sillustani","nom":"Tours de Sillustani","jours":0,"statut":"suggestion","lat":-15.722,"lng":-70.155,"description":"Tours funéraires pré-incas au bord d'un lac.","cout":[15,30]}
-      ]
-    },
-    {
-      "id": "la-paz",
-      "pays": "bolivie",
-      "trajet": {"modes":["bus","bateau"],"resume":"Bus Puno → Copacabana (environ 3 h), puis Copacabana → La Paz (environ 4 h)","details":"Frontière à Kasani. Traversée du détroit de Tiquina en bateau (le bus passe sur un bac).","statut":"propose","cout":[15,30]},
-      "nom": "La Paz",
-      "lat": -16.4897,
-      "lng": -68.1193,
-      "altitude": 3640,
-      "jours": 2,
-      "hebergement": null,
-      "notes": "Capitale la plus haute du monde.",
-      "activites": [
-        {"id":"valle-animas","nom":"Valle de las Ánimas","jours":0,"statut":"prevu","lat":-16.56,"lng":-68.05,"description":"Canyon d'aiguilles rocheuses, randonnée d'une demi-journée au sud de La Paz.","cout":[20,40]},
-        {"id":"isla-del-sol","nom":"Copacabana et Isla del Sol","jours":1,"statut":"suggestion","lat":-16.02,"lng":-69.18,"description":"Sur la route depuis Puno : île sacrée inca, une nuit sur place conseillée.","cout":[30,60]},
-        {"id":"teleferico","nom":"Téléphérique Mi Teleférico","jours":0,"statut":"suggestion","lat":-16.495,"lng":-68.133,"description":"Les lignes de téléphérique urbain, vue sur toute la ville et l'Illimani.","cout":[2,5]},
-        {"id":"valle-luna","nom":"Valle de la Luna","jours":0,"statut":"suggestion","lat":-16.568,"lng":-68.094,"description":"Formations d'argile, à combiner avec la Valle de las Ánimas.","cout":[5,15]},
-        {"id":"camino-muerte","nom":"Route de la Mort à VTT","jours":1,"statut":"suggestion","lat":-16.3,"lng":-67.85,"description":"Descente à VTT encadrée de 4 700 m à 1 200 m vers les Yungas.","cout":[70,120]}
-      ]
-    },
-    {
-      "id": "uyuni",
-      "pays": "bolivie",
-      "trajet": {"modes":["bus","vol"],"resume":"Bus de nuit, environ 10 h, ou vol, environ 1 h","details":"Bus confort : Todo Turismo. Vols : BoA ou Amaszonas.","statut":"propose","cout":[25,120]},
-      "nom": "Uyuni",
-      "lat": -20.463,
-      "lng": -66.825,
-      "altitude": 3700,
-      "jours": 1,
-      "hebergement": null,
-      "notes": "Départ du circuit 4x4 de 3 jours : salar le 1er jour, puis Sud Lípez. À réserver auprès d'une agence d'Uyuni.",
-      "activites": [
-        {"id":"salar-incahuasi","nom":"Salar d'Uyuni et île Incahuasi","jours":1,"statut":"prevu","lat":-20.242,"lng":-67.625,"description":"Jour 1 du circuit : le plus grand désert de sel du monde, île aux cactus géants.","cout":[150,250]},
-        {"id":"cimetiere-trains","nom":"Cimetière de trains","jours":0,"statut":"suggestion","lat":-20.481,"lng":-66.834,"description":"Premier arrêt du circuit, à la sortie d'Uyuni."}
-      ]
-    },
-    {
-      "id": "sud-lipez",
-      "pays": "bolivie",
-      "trajet": {"modes":["tour"],"resume":"Suite du circuit 4x4 organisé","details":"Nuits en refuges simples, très froides (jusqu'à −10 °C), altitude jusqu'à 4 900 m.","statut":"propose"},
-      "nom": "Sud Lípez (lagunes et geysers)",
-      "lat": -22.2,
-      "lng": -67.78,
-      "altitude": 4278,
-      "jours": 2,
-      "hebergement": null,
-      "notes": "Jours 2 et 3 du circuit. Prévoir duvet chaud, bonnet, crème solaire.",
-      "activites": [
-        {"id":"ollague","nom":"Volcan Ollagüe (mirador)","jours":0,"statut":"prevu","lat":-21.3,"lng":-68.18,"description":"Volcan actif à la frontière chilienne, vu depuis un mirador."},
-        {"id":"laguna-hedionda","nom":"Laguna Hedionda","jours":0,"statut":"prevu","lat":-21.568,"lng":-68.048,"description":"Lagune aux flamants roses."},
-        {"id":"siloli","nom":"Désert de Siloli et Árbol de Piedra","jours":0,"statut":"prevu","lat":-22.045,"lng":-67.88,"description":"Désert d'altitude, rocher sculpté par le vent en forme d'arbre."},
-        {"id":"laguna-colorada","nom":"Laguna Colorada","jours":0,"statut":"prevu","lat":-22.2,"lng":-67.78,"description":"Lagune rouge aux milliers de flamants, nuit au refuge à côté.","cout":[20,25]},
-        {"id":"sol-de-manana","nom":"Geysers Sol de Mañana","jours":0,"statut":"prevu","lat":-22.433,"lng":-67.757,"description":"Champ de geysers et de fumerolles à 4 850 m, au lever du soleil."},
-        {"id":"polques","nom":"Thermes de Polques","jours":0,"statut":"prevu","lat":-22.538,"lng":-67.651,"description":"Bain chaud en plein air au petit matin.","cout":[5,10]},
-        {"id":"laguna-verde","nom":"Laguna Verde","jours":0,"statut":"prevu","lat":-22.794,"lng":-67.833,"description":"Lagune verte au pied du volcan Licancabur, près de la frontière chilienne."}
-      ]
-    },
-    {
-      "id": "uyuni-retour",
-      "pays": "bolivie",
-      "trajet": {"modes":["tour"],"resume":"Retour du circuit 4x4 à Uyuni, le soir du 3e jour (environ 7 h de piste)","details":"","statut":"propose"},
-      "nom": "Uyuni (fin de la Bolivie)",
-      "lat": -20.463,
-      "lng": -66.825,
-      "altitude": 3700,
-      "jours": 1,
-      "hebergement": null,
-      "notes": "Dernière nuit en Bolivie. Ensuite : Chili.",
-      "activites": []
-    },
-    {
-      "id": "san-pedro",
-      "pays": "nord",
-      "trajet": {"modes":["bus"],"resume":"Bus Uyuni → Calama (environ 9 h), puis Calama → San Pedro (1 h 30)","details":"Certaines agences d'Uyuni proposent aussi un transfert direct en 4x4 jusqu'à San Pedro. Contrôle sanitaire strict à la frontière chilienne : pas de fruits, légumes ni produits frais.","statut":"propose","cout":[30,60]},
-      "nom": "San Pedro de Atacama",
-      "lat": -22.9087,
-      "lng": -68.1997,
-      "altitude": 2407,
-      "jours": 3,
-      "hebergement": null,
-      "notes": "🇨🇱 Désert d'Atacama, le plus aride du monde. Nuits fraîches.",
-      "activites": [
-        {"id":"valle-luna-atacama","nom":"Valle de la Luna","jours":0,"statut":"prevu","lat":-22.92,"lng":-68.28,"description":"Dunes et formations de sel, au coucher du soleil.","cout":[15,30]},
-        {"id":"tatio","nom":"Geysers del Tatio","jours":0,"statut":"prevu","lat":-22.333,"lng":-68.01,"description":"Départ vers 4 h du matin pour voir les geysers au lever du soleil (4 300 m).","cout":[40,60]},
-        {"id":"lagunas-altiplanicas","nom":"Lagunes de l'altiplano (Miscanti et Miñiques)","jours":1,"statut":"prevu","lat":-23.74,"lng":-67.78,"description":"Lagunes bleu intense à 4 100 m, avec la Laguna Chaxa et ses flamants.","cout":[50,80]},
-        {"id":"laguna-cejar","nom":"Laguna Cejar","jours":0,"statut":"prevu","lat":-23.06,"lng":-68.21,"description":"Baignade où l'on flotte comme dans la mer Morte.","cout":[35,50]},
-        {"id":"astro-atacama","nom":"Observation des étoiles","jours":0,"statut":"suggestion","lat":-22.95,"lng":-68.18,"description":"Un des meilleurs ciels du monde : sortie astronomique de nuit.","cout":[40,60]}
-      ]
-    },
-    {
-      "id": "salta",
-      "pays": "nord",
-      "trajet": {"modes":["bus"],"resume":"Bus San Pedro → Purmamarca / Jujuy / Salta par le col de Jama (environ 10 h)","details":"Traversée des Andes à 4 200 m, paysages superbes. Passage en Argentine.","statut":"propose","cout":[45,70]},
-      "nom": "Salta et Jujuy",
-      "lat": -24.7821,
-      "lng": -65.4232,
-      "altitude": 1150,
-      "jours": 2,
-      "hebergement": null,
-      "notes": "🇦🇷 Louer une voiture pour la boucle (voir Conseils). Décembre : avant le cœur de la saison des pluies.",
-      "activites": [
-        {"id":"humahuaca","nom":"Quebrada de Humahuaca et Purmamarca","jours":2,"statut":"prevu","lat":-23.744,"lng":-65.5,"description":"Montagne aux sept couleurs, villages andins, Tilcara.","cout":[10,30]},
-        {"id":"cafayate","nom":"Cafayate et Quebrada de las Conchas","jours":1,"statut":"prevu","lat":-26.073,"lng":-65.976,"description":"Canyons rouges et vignobles d'altitude.","cout":[5,20]},
-        {"id":"salinas-grandes","nom":"Salinas Grandes","jours":0,"statut":"suggestion","lat":-23.625,"lng":-65.865,"description":"Désert de sel à 3 400 m, depuis Purmamarca.","cout":[0,5]},
-        {"id":"hornocal","nom":"Serranía de Hornocal","jours":0,"statut":"suggestion","lat":-23.21,"lng":-65.3,"description":"La montagne aux 14 couleurs, à 4 350 m au-dessus d'Humahuaca.","cout":[3,5]}
-      ]
-    },
-    {
-      "id": "iguazu",
-      "pays": "nord",
-      "trajet": {"modes":["vol"],"resume":"Vol Salta → Iguazú (direct certains jours, sinon par Buenos Aires)","details":"","statut":"propose","cout":[80,180]},
-      "nom": "Chutes d'Iguazú",
-      "lat": -25.5972,
-      "lng": -54.5786,
-      "altitude": 200,
-      "jours": 1,
-      "hebergement": null,
-      "notes": "🇦🇷 Chaud et humide. Base à Puerto Iguazú.",
-      "activites": [
-        {"id":"iguazu-argentin","nom":"Côté argentin et Garganta del Diablo","jours":1,"statut":"prevu","lat":-25.6953,"lng":-54.4367,"description":"Passerelles au-dessus des chutes, une journée complète.","cout":[40,60]},
-        {"id":"iguazu-bresil","nom":"Côté brésilien","jours":1,"statut":"suggestion","lat":-25.687,"lng":-54.444,"description":"Vue panoramique sur l'ensemble des chutes, une demi-journée à une journée.","cout":[20,40]}
-      ]
-    },
-    {
-      "id": "santiago",
-      "pays": "chili",
-      "trajet": {"modes":["vol"],"resume":"Vol Iguazú → Santiago, avec escale (Buenos Aires ou São Paulo)","details":"","statut":"propose","cout":[150,300]},
-      "nom": "Santiago et Valparaíso",
-      "lat": -33.4489,
-      "lng": -70.6693,
-      "altitude": 570,
-      "jours": 3,
-      "hebergement": null,
-      "notes": "",
-      "activites": [
-        {"id":"valparaiso","nom":"Valparaíso","jours":1,"statut":"prevu","lat":-33.0472,"lng":-71.6127,"description":"Ville portuaire colorée, funiculaires et street art, à 1 h 30 de Santiago.","cout":[15,30]},
-        {"id":"cajon-maipo","nom":"Cajón del Maipo","jours":1,"statut":"suggestion","lat":-33.82,"lng":-70.05,"description":"Vallée andine à 1 h de Santiago : randonnée, Embalse El Yeso, glacier El Morado.","cout":[40,80]},
-        {"id":"san-cristobal","nom":"Cerro San Cristóbal","jours":0,"statut":"suggestion","lat":-33.425,"lng":-70.633,"description":"Funiculaire et vue sur Santiago et les Andes.","cout":[5,10]}
-      ]
-    },
-    {
-      "id": "pucon",
-      "pays": "chili",
-      "trajet": {"modes":["vol","bus"],"resume":"Vol Santiago → Temuco (1 h 15) puis bus (1 h 30), ou bus de nuit (environ 10 h)","details":"","statut":"propose","cout":[25,80]},
-      "nom": "Pucón",
-      "lat": -39.2725,
-      "lng": -71.9776,
-      "altitude": 230,
-      "jours": 2,
-      "hebergement": null,
-      "notes": "Région des lacs et volcans.",
-      "activites": [
-        {"id":"villarrica","nom":"Ascension du volcan Villarrica","jours":1,"statut":"prevu","lat":-39.42,"lng":-71.93,"description":"Volcan actif de 2 847 m, ascension guidée obligatoire (crampons). Dépend de la météo et de l'activité du volcan.","cout":[100,150]},
-        {"id":"huerquehue","nom":"Parc national Huerquehue","jours":1,"statut":"prevu","lat":-39.16,"lng":-71.71,"description":"Randonnée des lacs (Sendero Los Lagos) dans les forêts d'araucarias.","cout":[10,20]},
-        {"id":"termas-geometricas","nom":"Termas Geométricas","jours":0,"statut":"prevu","lat":-39.5,"lng":-71.87,"description":"Bains chauds dans un canyon, passerelles rouges.","cout":[30,40]}
-      ]
-    },
-    {
-      "id": "puerto-varas",
-      "pays": "chili",
-      "trajet": {"modes":["bus"],"resume":"Bus, environ 5 h","details":"","statut":"propose","cout":[15,25]},
-      "nom": "Puerto Varas",
-      "lat": -41.3195,
-      "lng": -72.9854,
-      "altitude": 70,
-      "jours": 3,
-      "hebergement": null,
-      "notes": "Noël au bord du lac Llanquihue, face au volcan Osorno.",
-      "activites": [
-        {"id":"osorno-petrohue","nom":"Volcan Osorno et saltos del Petrohué","jours":1,"statut":"prevu","lat":-41.14,"lng":-72.41,"description":"Cascades turquoise et montée sur les pentes du volcan.","cout":[20,40]},
-        {"id":"chiloe","nom":"Île de Chiloé","jours":2,"statut":"option","lat":-42.48,"lng":-73.76,"description":"Églises en bois classées UNESCO, maisons sur pilotis de Castro, manchots de Puñihuil.","cout":[80,150]}
-      ]
-    },
-    {
-      "id": "bariloche",
+      "id": "ushuaia",
       "pays": "patagonie",
-      "trajet": {"modes":["bus"],"resume":"Bus Puerto Varas → Bariloche par le col Cardenal Samoré (environ 7 h)","details":"Option plus chère et magnifique : la traversée des lacs andins (Cruce Andino) en bateau et en bus, sur une journée. Côté argentin.","statut":"propose","cout":[40,70]},
-      "nom": "Bariloche",
-      "lat": -41.1335,
-      "lng": -71.3103,
-      "altitude": 890,
+      "trajet": {"modes":["vol"],"resume":"Vol international jusqu'à Buenos Aires, puis vol Buenos Aires → Ushuaïa (environ 3 h 30)","details":"Arrivée en Amérique du Sud.","statut":"propose","cout":[120,250]},
+      "nom": "Ushuaïa",
+      "lat": -54.8019,
+      "lng": -68.303,
+      "altitude": 10,
       "jours": 4,
       "hebergement": null,
-      "notes": "🇦🇷 Porte de la Patagonie argentine.",
+      "notes": "🇦🇷 Arrivée en Amérique du Sud. Terre de Feu, la ville la plus au sud du monde. Manchots jusqu'à fin mars environ.",
       "activites": [
-        {"id":"sept-lacs","nom":"Route des 7 Lacs","jours":1,"statut":"prevu","lat":-40.6,"lng":-71.5,"description":"Route panoramique entre Bariloche et San Martín de los Andes.","cout":[40,70]},
-        {"id":"circuito-chico","nom":"Circuito Chico et Cerro Campanario","jours":0,"statut":"prevu","lat":-41.07,"lng":-71.5,"description":"Boucle autour des lacs, télésiège du Campanario pour la vue.","cout":[20,35]},
-        {"id":"refugio-frey","nom":"Refugio Frey","jours":1,"statut":"suggestion","lat":-41.2,"lng":-71.45,"description":"Randonnée en montagne jusqu'à un refuge au pied d'aiguilles de granit, possible en aller-retour ou avec une nuit.","cout":[10,40]}
+        {"id":"beagle","nom":"Canal Beagle en bateau","jours":0,"statut":"prevu","lat":-54.87,"lng":-68.15,"description":"Phare des Éclaireurs, îles aux otaries et cormorans.","cout":[50,80]},
+        {"id":"isla-martillo","nom":"Île Martillo (manchots)","jours":1,"statut":"prevu","lat":-54.908,"lng":-67.383,"description":"Colonie de manchots de Magellan et papous sur le canal Beagle, près de l'estancia Harberton. Une seule agence est autorisée à débarquer et marcher parmi les manchots : places très limitées, réserver tôt. Saison d'octobre à mars environ.","cout":[150,250]},
+        {"id":"pn-terre-de-feu","nom":"Parc national Terre de Feu","jours":1,"statut":"prevu","lat":-54.84,"lng":-68.55,"description":"Sentier côtier, Bahía Lapataia : fin de la route 3.","cout":[35,50]},
+        {"id":"laguna-esmeralda","nom":"Laguna Esmeralda","jours":1,"statut":"suggestion","lat":-54.67,"lng":-68.15,"description":"Randonnée en tourbière jusqu'à une lagune émeraude sous un glacier.","cout":[0,20]},
+        {"id":"glaciar-martial","nom":"Glacier Martial","jours":0,"statut":"suggestion","lat":-54.78,"lng":-68.4,"description":"Montée à pied au-dessus de la ville, vue sur le canal Beagle.","cout":[0,10]}
       ]
     },
     {
-      "id": "futaleufu",
+      "id": "punta-arenas",
       "pays": "patagonie",
-      "trajet": {"modes":["bus"],"resume":"Bus Bariloche → Esquel (environ 4 h), puis Esquel → Futaleufú (environ 2 h)","details":"Passage au Chili. Les bus Esquel → Futaleufú sont peu fréquents : vérifier les jours.","statut":"propose","cout":[30,50]},
-      "nom": "Futaleufú",
-      "lat": -43.1858,
-      "lng": -71.8669,
-      "altitude": 350,
-      "jours": 2,
+      "trajet": {"modes":["bus","bateau"],"resume":"Bus Ushuaïa → Punta Arenas (environ 12 h, avec le bac du détroit de Magellan)","details":"Passage au Chili.","statut":"propose","cout":[50,80]},
+      "nom": "Punta Arenas",
+      "lat": -53.1638,
+      "lng": -70.9171,
+      "altitude": 30,
+      "jours": 1,
       "hebergement": null,
-      "notes": "🇨🇱 Entrée sur la Carretera Austral.",
+      "notes": "🇨🇱 Au bord du détroit de Magellan.",
       "activites": [
-        {"id":"rafting-futa","nom":"Rafting sur le Futaleufú","jours":1,"statut":"suggestion","lat":-43.19,"lng":-71.83,"description":"Une des rivières de rafting les plus réputées au monde, eau turquoise.","cout":[80,120]}
+        {"id":"isla-magdalena","nom":"Île Magdalena (manchots de Magellan)","jours":1,"statut":"prevu","lat":-52.92,"lng":-70.578,"description":"Bateau depuis Punta Arenas vers une colonie de dizaines de milliers de manchots de Magellan (saison d'octobre à mars). Sorties annulées si le détroit est trop agité : garder une marge.","cout":[80,120]}
       ]
     },
     {
-      "id": "queulat",
+      "id": "torres-del-paine",
       "pays": "patagonie",
-      "trajet": {"modes":["bus"],"resume":"Bus Futaleufú → Villa Santa Lucía → Puyuhuapi (environ 5 h)","details":"Bus peu fréquents sur la Carretera Austral : l'auto-stop y est courant.","statut":"propose","cout":[15,30]},
-      "nom": "Puyuhuapi et Queulat",
-      "lat": -44.326,
-      "lng": -72.56,
-      "altitude": 10,
-      "jours": 2,
+      "trajet": {"modes":["bus"],"resume":"Bus Punta Arenas → Puerto Natales (environ 3 h)","details":"Puerto Natales sert de base pour le parc.","statut":"propose","cout":[30,60]},
+      "nom": "Puerto Natales et Torres del Paine",
+      "lat": -50.9423,
+      "lng": -73.4068,
+      "altitude": 50,
+      "jours": 4,
       "hebergement": null,
-      "notes": "🇨🇱 Carretera Austral.",
+      "notes": "🇨🇱 Refuges et campings du trek à réserver plusieurs mois à l'avance (voir Conseils).",
       "activites": [
-        {"id":"ventisquero-colgante","nom":"Glacier suspendu de Queulat","jours":1,"statut":"prevu","lat":-44.465,"lng":-72.545,"description":"Glacier suspendu au-dessus d'une falaise, randonnée dans la forêt humide.","cout":[10,15]}
+        {"id":"trek-w","nom":"Trek du W","jours":4,"statut":"prevu","lat":-51,"lng":-73.05,"description":"4 à 5 jours en refuges ou en camping : Base de las Torres, Valle del Francés, glacier Grey.","cout":[400,900]},
+        {"id":"base-torres","nom":"Base de las Torres","jours":0,"statut":"prevu","lat":-50.942,"lng":-72.968,"description":"Les trois tours de granit au-dessus de la lagune, au lever du soleil."},
+        {"id":"mirador-cuernos","nom":"Mirador Cuernos","jours":0,"statut":"prevu","lat":-51.04,"lng":-73.03,"description":"Vue sur les Cuernos del Paine au-dessus du lac Nordenskjöld."},
+        {"id":"lago-pehoe","nom":"Lago Pehoé","jours":0,"statut":"prevu","lat":-51.07,"lng":-73.08,"description":"Lac turquoise, la vue la plus célèbre du parc."},
+        {"id":"laguna-azul","nom":"Laguna Azul","jours":0,"statut":"prevu","lat":-50.857,"lng":-72.738,"description":"Vue sur les tours depuis le nord-est du parc, au calme."}
+      ]
+    },
+    {
+      "id": "el-calafate",
+      "pays": "patagonie",
+      "trajet": {"modes":["bus"],"resume":"Bus Puerto Natales → El Calafate (environ 6 h, frontière)","details":"Retour en Argentine.","statut":"propose","cout":[30,50]},
+      "nom": "El Calafate",
+      "lat": -50.3379,
+      "lng": -72.2648,
+      "altitude": 200,
+      "jours": 3,
+      "hebergement": null,
+      "notes": "🇦🇷 Parc national Los Glaciares.",
+      "activites": [
+        {"id":"perito-moreno","nom":"Glacier Perito Moreno","jours":1,"statut":"prevu","lat":-50.496,"lng":-73.137,"description":"Passerelles face au front du glacier. Option : mini-trekking sur la glace.","cout":[50,80]},
+        {"id":"upsala-spegazzini","nom":"Glaciers Upsala et Spegazzini","jours":1,"statut":"prevu","lat":-50.05,"lng":-73.25,"description":"Croisière d'une journée sur le lac Argentino entre les icebergs.","cout":[150,250]}
+      ]
+    },
+    {
+      "id": "el-chalten",
+      "pays": "patagonie",
+      "trajet": {"modes":["bus"],"resume":"Bus El Calafate → El Chaltén (environ 3 h)","details":"","statut":"propose","cout":[20,35]},
+      "nom": "El Chaltén",
+      "lat": -49.3315,
+      "lng": -72.8863,
+      "altitude": 400,
+      "jours": 9,
+      "hebergement": null,
+      "notes": "🇦🇷 Capitale du trekking, mi-mars : début possible des couleurs d'automne. Garder des jours de marge : le Fitz Roy est souvent dans les nuages.",
+      "activites": [
+        {"id":"laguna-de-los-tres","nom":"Fitz Roy et Laguna de los Tres","jours":1,"statut":"prevu","lat":-49.271,"lng":-73.005,"description":"Randonnée de 20 km aller-retour, dernière heure très raide. Lever de soleil sur le Fitz Roy."},
+        {"id":"glaciar-huemul","nom":"Glacier Huemul","jours":1,"statut":"prevu","lat":-49.03,"lng":-72.87,"description":"Au bord du Lago del Desierto, à 37 km au nord d'El Chaltén.","cout":[30,60]},
+        {"id":"laguna-torre","nom":"Laguna Torre","jours":1,"statut":"suggestion","lat":-49.308,"lng":-73.07,"description":"Lagune glaciaire face au Cerro Torre, randonnée plus facile."}
       ]
     },
     {
       "id": "coyhaique",
       "pays": "patagonie",
-      "trajet": {"modes":["bus"],"resume":"Bus, environ 4 h","details":"","statut":"propose","cout":[15,25]},
+      "trajet": {"modes":["bus","bateau"],"resume":"Bus El Chaltén → Los Antiguos par la Ruta 40, frontière, Chile Chico, bac jusqu'à Puerto Ibáñez, puis Coyhaique (2 jours)","details":"Passage au Chili. Les bus de la Ruta 40 circulent surtout en saison : vérifier les horaires de mars. Réserver le bac du lac General Carrera.","statut":"propose","cout":[70,110]},
       "nom": "Coyhaique",
       "lat": -45.5712,
       "lng": -72.0685,
       "altitude": 310,
-      "jours": 2,
+      "jours": 3,
       "hebergement": null,
       "notes": "🇨🇱 Plus grande ville de la Carretera Austral : louer une voiture ici pour la partie sud (voir Conseils).",
       "activites": []
@@ -440,7 +138,7 @@
       "lat": -46.624,
       "lng": -72.674,
       "altitude": 200,
-      "jours": 2,
+      "jours": 3,
       "hebergement": null,
       "notes": "🇨🇱 Au bord du lac General Carrera.",
       "activites": [
@@ -456,7 +154,7 @@
       "lat": -47.795,
       "lng": -73.535,
       "altitude": 0,
-      "jours": 3,
+      "jours": 4,
       "hebergement": null,
       "notes": "🇨🇱 Village sans routes, tout en passerelles de bois.",
       "activites": [
@@ -464,102 +162,378 @@
       ]
     },
     {
-      "id": "calafate-passage",
+      "id": "queulat",
       "pays": "patagonie",
-      "trajet": {"modes":["bus","bateau"],"resume":"Coyhaique → Puerto Ibáñez, bac jusqu'à Chile Chico, frontière, Los Antiguos, puis bus par la Ruta 40 (2 jours)","details":"Retour en Argentine. Nuit à Los Antiguos ou Perito Moreno. Réserver le bac du lac General Carrera.","statut":"propose","cout":[60,100]},
-      "nom": "El Calafate (passage)",
-      "lat": -50.3379,
-      "lng": -72.2648,
-      "altitude": 200,
-      "jours": 1,
+      "trajet": {"modes":["voiture","bus"],"resume":"Retour à Coyhaique pour rendre la voiture, puis bus Coyhaique → Puyuhuapi (environ 4 h)","details":"Bus peu fréquents sur la Carretera Austral : l'auto-stop y est courant.","statut":"propose","cout":[15,30]},
+      "nom": "Puyuhuapi et Queulat",
+      "lat": -44.326,
+      "lng": -72.56,
+      "altitude": 10,
+      "jours": 2,
       "hebergement": null,
-      "notes": "🇦🇷 Nuit avant le vol pour Ushuaïa. On revient ici après Torres del Paine pour les glaciers.",
-      "activites": []
+      "notes": "🇨🇱 Carretera Austral.",
+      "activites": [
+        {"id":"ventisquero-colgante","nom":"Glacier suspendu de Queulat","jours":1,"statut":"prevu","lat":-44.465,"lng":-72.545,"description":"Glacier suspendu au-dessus d'une falaise, randonnée dans la forêt humide.","cout":[10,15]}
+      ]
     },
     {
-      "id": "ushuaia",
+      "id": "futaleufu",
       "pays": "patagonie",
-      "trajet": {"modes":["vol"],"resume":"Vol El Calafate → Ushuaïa (environ 1 h 15)","details":"","statut":"propose","cout":[100,200]},
-      "nom": "Ushuaïa",
-      "lat": -54.8019,
-      "lng": -68.303,
-      "altitude": 10,
+      "trajet": {"modes":["bus"],"resume":"Bus Puyuhuapi → Villa Santa Lucía → Futaleufú (environ 5 h)","details":"Bus peu fréquents : vérifier les jours.","statut":"propose","cout":[25,45]},
+      "nom": "Futaleufú",
+      "lat": -43.1858,
+      "lng": -71.8669,
+      "altitude": 350,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "🇨🇱 Sortie de la Carretera Austral vers l'Argentine.",
+      "activites": [
+        {"id":"rafting-futa","nom":"Rafting sur le Futaleufú","jours":1,"statut":"suggestion","lat":-43.19,"lng":-71.83,"description":"Une des rivières de rafting les plus réputées au monde, eau turquoise.","cout":[80,120]}
+      ]
+    },
+    {
+      "id": "bariloche",
+      "pays": "patagonie",
+      "trajet": {"modes":["bus"],"resume":"Bus Futaleufú → Esquel (environ 2 h), puis Esquel → Bariloche (environ 4 h)","details":"Retour en Argentine.","statut":"propose","cout":[30,50]},
+      "nom": "Bariloche",
+      "lat": -41.1335,
+      "lng": -71.3103,
+      "altitude": 890,
+      "jours": 8,
+      "hebergement": null,
+      "notes": "🇦🇷 Fin avril : forêts en couleurs d'automne. Fin de la Patagonie.",
+      "activites": [
+        {"id":"sept-lacs","nom":"Route des 7 Lacs","jours":1,"statut":"prevu","lat":-40.6,"lng":-71.5,"description":"Route panoramique entre Bariloche et San Martín de los Andes.","cout":[40,70]},
+        {"id":"circuito-chico","nom":"Circuito Chico et Cerro Campanario","jours":0,"statut":"prevu","lat":-41.07,"lng":-71.5,"description":"Boucle autour des lacs, télésiège du Campanario pour la vue.","cout":[20,35]},
+        {"id":"refugio-frey","nom":"Refugio Frey","jours":1,"statut":"suggestion","lat":-41.2,"lng":-71.45,"description":"Randonnée en montagne jusqu'à un refuge au pied d'aiguilles de granit, possible en aller-retour ou avec une nuit.","cout":[10,40]}
+      ]
+    },
+    {
+      "id": "puerto-varas",
+      "pays": "chili",
+      "trajet": {"modes":["bus"],"resume":"Bus Bariloche → Puerto Varas par le col Cardenal Samoré (environ 7 h)","details":"Option plus chère et magnifique : la traversée des lacs andins (Cruce Andino) en bateau et en bus. Passage au Chili.","statut":"propose","cout":[40,70]},
+      "nom": "Puerto Varas",
+      "lat": -41.3195,
+      "lng": -72.9854,
+      "altitude": 70,
       "jours": 3,
       "hebergement": null,
-      "notes": "🇦🇷 Terre de Feu, la ville la plus au sud du monde. Faite au début de la Patagonie : pas besoin des couleurs d'automne ici.",
+      "notes": "🇨🇱 Automne au bord du lac Llanquihue, face au volcan Osorno.",
       "activites": [
-        {"id":"beagle","nom":"Canal Beagle en bateau","jours":0,"statut":"prevu","lat":-54.87,"lng":-68.15,"description":"Phare des Éclaireurs, îles aux otaries et cormorans.","cout":[50,80]},
-        {"id":"isla-martillo","nom":"Île Martillo (manchots)","jours":1,"statut":"prevu","lat":-54.908,"lng":-67.383,"description":"Colonie de manchots de Magellan et papous sur le canal Beagle, près de l'estancia Harberton. Une seule agence est autorisée à débarquer et marcher parmi les manchots : places très limitées, réserver tôt. Saison d'octobre à mars environ.","cout":[150,250]},
-        {"id":"pn-terre-de-feu","nom":"Parc national Terre de Feu","jours":1,"statut":"prevu","lat":-54.84,"lng":-68.55,"description":"Sentier côtier, Bahía Lapataia : fin de la route 3.","cout":[35,50]},
-        {"id":"laguna-esmeralda","nom":"Laguna Esmeralda","jours":1,"statut":"suggestion","lat":-54.67,"lng":-68.15,"description":"Randonnée en tourbière jusqu'à une lagune émeraude sous un glacier.","cout":[0,20]},
-        {"id":"glaciar-martial","nom":"Glacier Martial","jours":0,"statut":"suggestion","lat":-54.78,"lng":-68.4,"description":"Montée à pied au-dessus de la ville, vue sur le canal Beagle.","cout":[0,10]}
+        {"id":"osorno-petrohue","nom":"Volcan Osorno et saltos del Petrohué","jours":1,"statut":"prevu","lat":-41.14,"lng":-72.41,"description":"Cascades turquoise et montée sur les pentes du volcan.","cout":[20,40]},
+        {"id":"chiloe","nom":"Île de Chiloé","jours":2,"statut":"option","lat":-42.48,"lng":-73.76,"description":"Églises en bois classées UNESCO, maisons sur pilotis de Castro, manchots de Puñihuil.","cout":[80,150]}
       ]
     },
     {
-      "id": "punta-arenas",
-      "pays": "patagonie",
-      "trajet": {"modes":["bus","bateau"],"resume":"Bus Ushuaïa → Punta Arenas (environ 12 h, avec le bac du détroit de Magellan)","details":"Passage au Chili.","statut":"propose","cout":[50,80]},
-      "nom": "Punta Arenas",
-      "lat": -53.1638,
-      "lng": -70.9171,
-      "altitude": 30,
+      "id": "pucon",
+      "pays": "chili",
+      "trajet": {"modes":["bus"],"resume":"Bus, environ 5 h","details":"","statut":"propose","cout":[15,25]},
+      "nom": "Pucón",
+      "lat": -39.2725,
+      "lng": -71.9776,
+      "altitude": 230,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "🇨🇱 Région des lacs et volcans. Début mai : l'ascension du Villarrica dépend de la météo et de la neige.",
+      "activites": [
+        {"id":"villarrica","nom":"Ascension du volcan Villarrica","jours":1,"statut":"prevu","lat":-39.42,"lng":-71.93,"description":"Volcan actif de 2 847 m, ascension guidée obligatoire (crampons). Dépend de la météo et de l'activité du volcan.","cout":[100,150]},
+        {"id":"huerquehue","nom":"Parc national Huerquehue","jours":1,"statut":"prevu","lat":-39.16,"lng":-71.71,"description":"Randonnée des lacs (Sendero Los Lagos) dans les forêts d'araucarias.","cout":[10,20]},
+        {"id":"termas-geometricas","nom":"Termas Geométricas","jours":0,"statut":"prevu","lat":-39.5,"lng":-71.87,"description":"Bains chauds dans un canyon, passerelles rouges.","cout":[30,40]}
+      ]
+    },
+    {
+      "id": "santiago",
+      "pays": "chili",
+      "trajet": {"modes":["bus","vol"],"resume":"Bus de nuit (environ 10 h), ou bus jusqu'à Temuco puis vol (1 h 15)","details":"","statut":"propose","cout":[25,80]},
+      "nom": "Santiago et Valparaíso",
+      "lat": -33.4489,
+      "lng": -70.6693,
+      "altitude": 570,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "🇨🇱 Ensuite : vol pour Iguazú.",
+      "activites": [
+        {"id":"valparaiso","nom":"Valparaíso","jours":1,"statut":"prevu","lat":-33.0472,"lng":-71.6127,"description":"Ville portuaire colorée, funiculaires et street art, à 1 h 30 de Santiago.","cout":[15,30]},
+        {"id":"cajon-maipo","nom":"Cajón del Maipo","jours":1,"statut":"suggestion","lat":-33.82,"lng":-70.05,"description":"Vallée andine à 1 h de Santiago : randonnée, Embalse El Yeso, glacier El Morado.","cout":[40,80]},
+        {"id":"san-cristobal","nom":"Cerro San Cristóbal","jours":0,"statut":"suggestion","lat":-33.425,"lng":-70.633,"description":"Funiculaire et vue sur Santiago et les Andes.","cout":[5,10]}
+      ]
+    },
+    {
+      "id": "iguazu",
+      "pays": "nord",
+      "trajet": {"modes":["vol"],"resume":"Vol Santiago → Iguazú, avec escale (Buenos Aires ou São Paulo)","details":"","statut":"propose","cout":[150,300]},
+      "nom": "Chutes d'Iguazú",
+      "lat": -25.5972,
+      "lng": -54.5786,
+      "altitude": 200,
       "jours": 1,
       "hebergement": null,
-      "notes": "🇨🇱 Au bord du détroit de Magellan.",
+      "notes": "🇦🇷 Mai : moins chaud qu'en été. Base à Puerto Iguazú.",
       "activites": [
-        {"id":"isla-magdalena","nom":"Île Magdalena (manchots de Magellan)","jours":1,"statut":"prevu","lat":-52.92,"lng":-70.578,"description":"Bateau depuis Punta Arenas vers une colonie de dizaines de milliers de manchots de Magellan (saison d'octobre à mars). Sorties annulées si le détroit est trop agité : garder une marge.","cout":[80,120]}
+        {"id":"iguazu-argentin","nom":"Côté argentin et Garganta del Diablo","jours":1,"statut":"prevu","lat":-25.6953,"lng":-54.4367,"description":"Passerelles au-dessus des chutes, une journée complète.","cout":[40,60]},
+        {"id":"iguazu-bresil","nom":"Côté brésilien","jours":1,"statut":"suggestion","lat":-25.687,"lng":-54.444,"description":"Vue panoramique sur l'ensemble des chutes, une demi-journée à une journée.","cout":[20,40]}
       ]
     },
     {
-      "id": "torres-del-paine",
-      "pays": "patagonie",
-      "trajet": {"modes":["bus"],"resume":"Bus Punta Arenas → Puerto Natales (environ 3 h)","details":"","statut":"propose","cout":[30,60]},
-      "nom": "Puerto Natales et Torres del Paine",
-      "lat": -50.9423,
-      "lng": -73.4068,
-      "altitude": 50,
+      "id": "salta",
+      "pays": "nord",
+      "trajet": {"modes":["vol"],"resume":"Vol Iguazú → Salta (direct certains jours, sinon par Buenos Aires)","details":"","statut":"propose","cout":[80,180]},
+      "nom": "Salta et Jujuy",
+      "lat": -24.7821,
+      "lng": -65.4232,
+      "altitude": 1150,
       "jours": 2,
       "hebergement": null,
-      "notes": "🇨🇱 Refuges et campings du trek à réserver plusieurs mois à l'avance (voir Conseils).",
+      "notes": "🇦🇷 Louer une voiture pour la boucle (voir Conseils). Mai : saison sèche.",
       "activites": [
-        {"id":"trek-w","nom":"Trek du W","jours":4,"statut":"prevu","lat":-51,"lng":-73.05,"description":"4 à 5 jours en refuges ou en camping : Base de las Torres, Valle del Francés, glacier Grey.","cout":[400,900]},
-        {"id":"base-torres","nom":"Base de las Torres","jours":0,"statut":"prevu","lat":-50.942,"lng":-72.968,"description":"Les trois tours de granit au-dessus de la lagune, au lever du soleil."},
-        {"id":"mirador-cuernos","nom":"Mirador Cuernos","jours":0,"statut":"prevu","lat":-51.04,"lng":-73.03,"description":"Vue sur les Cuernos del Paine au-dessus du lac Nordenskjöld."},
-        {"id":"lago-pehoe","nom":"Lago Pehoé","jours":0,"statut":"prevu","lat":-51.07,"lng":-73.08,"description":"Lac turquoise, la vue la plus célèbre du parc."},
-        {"id":"laguna-azul","nom":"Laguna Azul","jours":0,"statut":"prevu","lat":-50.857,"lng":-72.738,"description":"Vue sur les tours depuis le nord-est du parc, au calme."}
+        {"id":"humahuaca","nom":"Quebrada de Humahuaca et Purmamarca","jours":2,"statut":"prevu","lat":-23.744,"lng":-65.5,"description":"Montagne aux sept couleurs, villages andins, Tilcara.","cout":[10,30]},
+        {"id":"cafayate","nom":"Cafayate et Quebrada de las Conchas","jours":1,"statut":"prevu","lat":-26.073,"lng":-65.976,"description":"Canyons rouges et vignobles d'altitude.","cout":[5,20]},
+        {"id":"salinas-grandes","nom":"Salinas Grandes","jours":0,"statut":"suggestion","lat":-23.625,"lng":-65.865,"description":"Désert de sel à 3 400 m, depuis Purmamarca.","cout":[0,5]},
+        {"id":"hornocal","nom":"Serranía de Hornocal","jours":0,"statut":"suggestion","lat":-23.21,"lng":-65.3,"description":"La montagne aux 14 couleurs, à 4 350 m au-dessus d'Humahuaca.","cout":[3,5]}
       ]
     },
     {
-      "id": "el-calafate",
-      "pays": "patagonie",
-      "trajet": {"modes":["bus"],"resume":"Bus Puerto Natales → El Calafate (environ 6 h, frontière)","details":"Retour en Argentine.","statut":"propose","cout":[30,50]},
-      "nom": "El Calafate",
-      "lat": -50.3379,
-      "lng": -72.2648,
-      "altitude": 200,
+      "id": "san-pedro",
+      "pays": "nord",
+      "trajet": {"modes":["bus"],"resume":"Bus Salta ou Jujuy → San Pedro par le col de Jama (environ 10 h)","details":"Traversée des Andes à 4 200 m. Passage au Chili. Le col peut fermer quelques jours en cas de neige.","statut":"propose","cout":[45,70]},
+      "nom": "San Pedro de Atacama",
+      "lat": -22.9087,
+      "lng": -68.1997,
+      "altitude": 2407,
+      "jours": 3,
+      "hebergement": null,
+      "notes": "🇨🇱 Désert d'Atacama. Bonne étape pour s'acclimater (2 400 m) avant la Bolivie.",
+      "activites": [
+        {"id":"valle-luna-atacama","nom":"Valle de la Luna","jours":0,"statut":"prevu","lat":-22.92,"lng":-68.28,"description":"Dunes et formations de sel, au coucher du soleil.","cout":[15,30]},
+        {"id":"tatio","nom":"Geysers del Tatio","jours":0,"statut":"prevu","lat":-22.333,"lng":-68.01,"description":"Départ vers 4 h du matin pour voir les geysers au lever du soleil (4 300 m).","cout":[40,60]},
+        {"id":"lagunas-altiplanicas","nom":"Lagunes de l'altiplano (Miscanti et Miñiques)","jours":1,"statut":"prevu","lat":-23.74,"lng":-67.78,"description":"Lagunes bleu intense à 4 100 m, avec la Laguna Chaxa et ses flamants.","cout":[50,80]},
+        {"id":"laguna-cejar","nom":"Laguna Cejar","jours":0,"statut":"prevu","lat":-23.06,"lng":-68.21,"description":"Baignade où l'on flotte comme dans la mer Morte.","cout":[35,50]},
+        {"id":"astro-atacama","nom":"Observation des étoiles","jours":0,"statut":"suggestion","lat":-22.95,"lng":-68.18,"description":"Un des meilleurs ciels du monde : sortie astronomique de nuit.","cout":[40,60]}
+      ]
+    },
+    {
+      "id": "sud-lipez",
+      "pays": "bolivie",
+      "trajet": {"modes":["tour"],"resume":"Circuit 4x4 organisé de 3 jours depuis San Pedro, frontière à Hito Cajón","details":"Passage en Bolivie. Nuits en refuges simples (pas de tente), non chauffés : en juin, autour de 0 °C à l'intérieur et −15 à −20 °C dehors.","statut":"propose"},
+      "nom": "Sud Lípez (lagunes et geysers)",
+      "lat": -22.2,
+      "lng": -67.78,
+      "altitude": 4278,
       "jours": 2,
       "hebergement": null,
-      "notes": "🇦🇷 Parc national Los Glaciares.",
+      "notes": "Jours 1 et 2 du circuit depuis San Pedro : Laguna Verde, geysers, Laguna Colorada. Nuits en refuges non chauffés, pas de tente : duvet chaud (location possible), bonnet, gants.",
       "activites": [
-        {"id":"perito-moreno","nom":"Glacier Perito Moreno","jours":1,"statut":"prevu","lat":-50.496,"lng":-73.137,"description":"Passerelles face au front du glacier. Option : mini-trekking sur la glace.","cout":[50,80]},
-        {"id":"upsala-spegazzini","nom":"Glaciers Upsala et Spegazzini","jours":1,"statut":"prevu","lat":-50.05,"lng":-73.25,"description":"Croisière d'une journée sur le lac Argentino entre les icebergs.","cout":[150,250]}
+        {"id":"laguna-verde","nom":"Laguna Verde","jours":0,"statut":"prevu","lat":-22.794,"lng":-67.833,"description":"Lagune verte au pied du volcan Licancabur, près de la frontière chilienne."},
+        {"id":"polques","nom":"Thermes de Polques","jours":0,"statut":"prevu","lat":-22.538,"lng":-67.651,"description":"Bain chaud en plein air au petit matin.","cout":[5,10]},
+        {"id":"sol-de-manana","nom":"Geysers Sol de Mañana","jours":0,"statut":"prevu","lat":-22.433,"lng":-67.757,"description":"Champ de geysers et de fumerolles à 4 850 m, au lever du soleil."},
+        {"id":"laguna-colorada","nom":"Laguna Colorada","jours":0,"statut":"prevu","lat":-22.2,"lng":-67.78,"description":"Lagune rouge aux milliers de flamants, nuit au refuge à côté.","cout":[20,25]},
+        {"id":"siloli","nom":"Désert de Siloli et Árbol de Piedra","jours":0,"statut":"prevu","lat":-22.045,"lng":-67.88,"description":"Désert d'altitude, rocher sculpté par le vent en forme d'arbre."},
+        {"id":"laguna-hedionda","nom":"Laguna Hedionda","jours":0,"statut":"prevu","lat":-21.568,"lng":-68.048,"description":"Lagune aux flamants roses."},
+        {"id":"ollague","nom":"Volcan Ollagüe (mirador)","jours":0,"statut":"prevu","lat":-21.3,"lng":-68.18,"description":"Volcan actif à la frontière chilienne, vu depuis un mirador."}
       ]
     },
     {
-      "id": "el-chalten",
-      "pays": "patagonie",
-      "trajet": {"modes":["bus"],"resume":"Bus El Calafate → El Chaltén (environ 3 h)","details":"","statut":"propose","cout":[20,35]},
-      "nom": "El Chaltén",
-      "lat": -49.3315,
-      "lng": -72.8863,
+      "id": "uyuni",
+      "pays": "bolivie",
+      "trajet": {"modes":["tour"],"resume":"Fin du circuit 4x4 : traversée du salar le 3e jour","details":"","statut":"propose"},
+      "nom": "Uyuni",
+      "lat": -20.463,
+      "lng": -66.825,
+      "altitude": 3700,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "Jour 3 du circuit : le salar au lever du soleil, puis nuit à Uyuni.",
+      "activites": [
+        {"id":"salar-incahuasi","nom":"Salar d'Uyuni et île Incahuasi","jours":1,"statut":"prevu","lat":-20.242,"lng":-67.625,"description":"Jour 3 du circuit, au lever du soleil : le plus grand désert de sel du monde, île aux cactus géants. Fin mai-juin : saison sèche, croûte de sel en hexagones, pas d'effet miroir (janvier à mars).","cout":[150,250]},
+        {"id":"cimetiere-trains","nom":"Cimetière de trains","jours":0,"statut":"suggestion","lat":-20.481,"lng":-66.834,"description":"Dernier arrêt du circuit, à l'arrivée à Uyuni."}
+      ]
+    },
+    {
+      "id": "la-paz",
+      "pays": "bolivie",
+      "trajet": {"modes":["bus","vol"],"resume":"Bus de nuit Uyuni → La Paz (environ 10 h), ou vol (environ 1 h)","details":"Bus confort : Todo Turismo. Vols : BoA ou Amaszonas.","statut":"propose","cout":[25,120]},
+      "nom": "La Paz",
+      "lat": -16.4897,
+      "lng": -68.1193,
+      "altitude": 3640,
+      "jours": 3,
+      "hebergement": null,
+      "notes": "Capitale la plus haute du monde.",
+      "activites": [
+        {"id":"valle-animas","nom":"Valle de las Ánimas","jours":0,"statut":"prevu","lat":-16.56,"lng":-68.05,"description":"Canyon d'aiguilles rocheuses, randonnée d'une demi-journée au sud de La Paz.","cout":[20,40]},
+        {"id":"isla-del-sol","nom":"Copacabana et Isla del Sol","jours":1,"statut":"suggestion","lat":-16.02,"lng":-69.18,"description":"Sur la route vers Puno : île sacrée inca, une nuit sur place conseillée.","cout":[30,60]},
+        {"id":"teleferico","nom":"Téléphérique Mi Teleférico","jours":0,"statut":"suggestion","lat":-16.495,"lng":-68.133,"description":"Les lignes de téléphérique urbain, vue sur toute la ville et l'Illimani.","cout":[2,5]},
+        {"id":"valle-luna","nom":"Valle de la Luna","jours":0,"statut":"suggestion","lat":-16.568,"lng":-68.094,"description":"Formations d'argile, à combiner avec la Valle de las Ánimas.","cout":[5,15]},
+        {"id":"camino-muerte","nom":"Route de la Mort à VTT","jours":1,"statut":"suggestion","lat":-16.3,"lng":-67.85,"description":"Descente à VTT encadrée de 4 700 m à 1 200 m vers les Yungas.","cout":[70,120]}
+      ]
+    },
+    {
+      "id": "puno",
+      "pays": "perou",
+      "trajet": {"modes":["bus","bateau"],"resume":"Bus La Paz → Copacabana (environ 4 h, bac du détroit de Tiquina), puis Copacabana → Puno (environ 3 h)","details":"Passage au Pérou à Kasani.","statut":"propose","cout":[15,30]},
+      "nom": "Puno et lac Titicaca",
+      "lat": -15.8402,
+      "lng": -70.0219,
+      "altitude": 3830,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "🇵🇪 Arrivée de Bolivie par Copacabana. Lac Titicaca.",
+      "activites": [
+        {"id":"amantani","nom":"Nuit chez l'habitant sur l'île d'Amantaní","jours":2,"statut":"prevu","lat":-15.662,"lng":-69.713,"description":"Excursion de 2 jours, souvent combinée avec les Uros et Taquile.","cout":[40,70]},
+        {"id":"uros","nom":"Îles flottantes des Uros","jours":0,"statut":"suggestion","lat":-15.819,"lng":-69.969,"description":"Îles de roseaux, sur le trajet vers Amantaní."},
+        {"id":"taquile","nom":"Île de Taquile","jours":0,"statut":"suggestion","lat":-15.772,"lng":-69.687,"description":"Textiles classés à l'UNESCO, le 2e jour de l'excursion."},
+        {"id":"sillustani","nom":"Tours de Sillustani","jours":0,"statut":"suggestion","lat":-15.722,"lng":-70.155,"description":"Tours funéraires pré-incas au bord d'un lac.","cout":[15,30]}
+      ]
+    },
+    {
+      "id": "colca",
+      "pays": "perou",
+      "trajet": {"modes":["bus"],"resume":"Bus touristique Puno → Chivay (environ 6 h, arrêts panoramiques)","details":"","statut":"propose","cout":[30,60]},
+      "nom": "Canyon de Colca",
+      "lat": -15.638,
+      "lng": -71.601,
+      "altitude": 3630,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "Base à Chivay. Option : trek de 2 à 3 jours dans le canyon.",
+      "activites": [
+        {"id":"cruz-condor","nom":"Cruz del Cóndor","jours":0,"statut":"prevu","lat":-15.6125,"lng":-71.905,"description":"Mirador pour voir voler les condors, tôt le matin.","cout":[15,20]},
+        {"id":"chivay-thermes","nom":"Thermes de Chivay (La Calera)","jours":0,"statut":"suggestion","lat":-15.629,"lng":-71.59,"description":"Sources chaudes.","cout":[5,10]}
+      ]
+    },
+    {
+      "id": "arequipa",
+      "pays": "perou",
+      "trajet": {"modes":["bus","tour"],"resume":"Bus Chivay → Arequipa (environ 3 h 30), ou fin d'excursion organisée","details":"","statut":"propose","cout":[10,25]},
+      "nom": "Arequipa",
+      "lat": -16.409,
+      "lng": -71.5375,
+      "altitude": 2335,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "La ville blanche, au pied du volcan Misti.",
+      "activites": [
+        {"id":"santa-catalina","nom":"Couvent de Santa Catalina","jours":0,"statut":"prevu","lat":-16.3955,"lng":-71.5368,"description":"Une ville dans la ville, ruelles colorées.","cout":[10,12]},
+        {"id":"yanahuara","nom":"Mirador de Yanahuara","jours":0,"statut":"suggestion","lat":-16.3881,"lng":-71.542,"description":"Vue sur le Misti."}
+      ]
+    },
+    {
+      "id": "cusco",
+      "pays": "perou",
+      "trajet": {"modes":["bus"],"resume":"Bus de nuit Arequipa → Cusco (environ 10 h)","details":"Pour le Machu Picchu : train PeruRail ou Inca Rail depuis Ollantaytambo jusqu'à Aguas Calientes.","statut":"propose","cout":[30,50]},
+      "nom": "Cusco",
+      "lat": -13.532,
+      "lng": -71.9675,
+      "altitude": 3400,
+      "jours": 3,
+      "hebergement": null,
+      "notes": "Base pour la Vallée sacrée, le Machu Picchu et les treks. Juin-juillet : haute saison, beaucoup de monde. Inti Raymi le 24 juin.",
+      "activites": [
+        {"id":"vallee-sacree","nom":"Vallée sacrée avec Pisac","jours":1,"statut":"prevu","lat":-13.423,"lng":-71.846,"description":"Ruines et marché de Pisac.","cout":[30,50]},
+        {"id":"moray-maras","nom":"Moray et salines de Maras","jours":1,"statut":"prevu","lat":-13.329,"lng":-72.197,"description":"Terrasses circulaires incas et salines en terrasses.","cout":[25,40]},
+        {"id":"machu-picchu","nom":"Machu Picchu","jours":2,"statut":"prevu","lat":-13.1631,"lng":-72.545,"description":"Train jusqu'à Aguas Calientes, nuit sur place, visite tôt le matin. Billets à réserver longtemps à l'avance.","cout":[150,250]},
+        {"id":"montagne-couleurs","nom":"Palcoyo ou Vinicunca","jours":1,"statut":"prevu","lat":-13.87,"lng":-71.303,"description":"Montagne arc-en-ciel. Vinicunca : plus célèbre et plus fréquentée. Palcoyo : plus calme et marche plus courte. À choisir.","cout":[30,50]},
+        {"id":"humantay","nom":"Laguna Humantay","jours":1,"statut":"prevu","lat":-13.383,"lng":-72.585,"description":"Lagune turquoise au pied du Salkantay.","cout":[35,60]},
+        {"id":"ausangate-7-lagunes","nom":"7 lagunes de l'Ausangate","jours":1,"statut":"prevu","lat":-13.735,"lng":-71.218,"description":"Randonnée d'une journée depuis Cusco, départ de Pacchanta.","cout":[35,60]},
+        {"id":"ausangate-trek","nom":"Trek complet de l'Ausangate","jours":5,"statut":"option","lat":-13.79,"lng":-71.23,"description":"Circuit de 5 à 6 jours, cols à plus de 5 000 m. En camping avec agence (tentes et muletiers fournis), ou version en lodges, plus chère. Juin-juillet : saison sèche, nuits très froides.","cout":[300,600]},
+        {"id":"sacsayhuaman","nom":"Sacsayhuamán","jours":0,"statut":"suggestion","lat":-13.509,"lng":-71.982,"description":"Forteresse inca au-dessus de Cusco.","cout":[30,35]},
+        {"id":"ollantaytambo","nom":"Ollantaytambo et Chinchero","jours":0,"statut":"suggestion","lat":-13.258,"lng":-72.263,"description":"À combiner avec la Vallée sacrée ou le train pour le Machu Picchu.","cout":[0,10]}
+      ]
+    },
+    {
+      "id": "nazca",
+      "pays": "perou",
+      "trajet": {"modes":["bus"],"resume":"Bus de nuit Cusco → Nazca (environ 14 h, route de montagne)","details":"Alternative : vol Cusco → Lima, puis la côte vers le sud en bus.","statut":"propose","cout":[30,50]},
+      "nom": "Nazca",
+      "lat": -14.835,
+      "lng": -74.933,
+      "altitude": 520,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "",
+      "activites": [
+        {"id":"lignes-nazca","nom":"Lignes de Nazca","jours":0,"statut":"prevu","lat":-14.739,"lng":-75.13,"description":"Survol en avionnette, ou mirador au bord de la route (moins cher).","cout":[80,130]},
+        {"id":"chauchilla","nom":"Cimetière de Chauchilla","jours":0,"statut":"suggestion","lat":-14.948,"lng":-74.874,"description":"Nécropole préhispanique avec momies.","cout":[15,25]}
+      ]
+    },
+    {
+      "id": "huacachina",
+      "pays": "perou",
+      "trajet": {"modes":["bus","taxi"],"resume":"Bus Nazca → Ica (environ 2 h 30), puis taxi 10 min","details":"","statut":"propose","cout":[8,15]},
+      "nom": "Huacachina",
+      "lat": -14.0875,
+      "lng": -75.7626,
       "altitude": 400,
-      "jours": 5,
+      "jours": 1,
       "hebergement": null,
-      "notes": "🇦🇷 Dernière étape, fin mars : début des couleurs d'automne (forêts de lenga). Garder des jours de marge : le Fitz Roy est souvent dans les nuages. Fin du voyage : bus jusqu'à El Calafate (3 h), puis vol → Buenos Aires → France.",
+      "notes": "Oasis au milieu des dunes, près d'Ica.",
       "activites": [
-        {"id":"laguna-de-los-tres","nom":"Fitz Roy et Laguna de los Tres","jours":1,"statut":"prevu","lat":-49.271,"lng":-73.005,"description":"Randonnée de 20 km aller-retour, dernière heure très raide. Lever de soleil sur le Fitz Roy."},
-        {"id":"glaciar-huemul","nom":"Glacier Huemul","jours":1,"statut":"prevu","lat":-49.03,"lng":-72.87,"description":"Au bord du Lago del Desierto, à 37 km au nord d'El Chaltén.","cout":[30,60]},
-        {"id":"laguna-torre","nom":"Laguna Torre","jours":1,"statut":"suggestion","lat":-49.308,"lng":-73.07,"description":"Lagune glaciaire face au Cerro Torre, randonnée plus facile."}
+        {"id":"dunes","nom":"Buggy et sandboard dans les dunes","jours":0,"statut":"prevu","lat":-14.0875,"lng":-75.7626,"description":"Sortie de fin d'après-midi, coucher de soleil sur les dunes.","cout":[20,35]}
+      ]
+    },
+    {
+      "id": "paracas",
+      "pays": "perou",
+      "trajet": {"modes":["bus"],"resume":"Bus Ica → Paracas (environ 1 h 30)","details":"","statut":"propose","cout":[8,15]},
+      "nom": "Paracas",
+      "lat": -13.834,
+      "lng": -76.2513,
+      "altitude": 0,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "",
+      "activites": [
+        {"id":"ballestas","nom":"Îles Ballestas","jours":1,"statut":"prevu","lat":-13.7333,"lng":-76.4,"description":"Excursion en bateau le matin : otaries, pingouins de Humboldt. Réserve nationale de Paracas l'après-midi.","cout":[20,35]}
+      ]
+    },
+    {
+      "id": "huaraz",
+      "pays": "perou",
+      "trajet": {"modes":["bus"],"resume":"Bus Paracas → Lima (environ 4 h), puis bus Lima → Huaraz (environ 8 h)","details":"Nuit à Lima possible entre les deux. Compagnies confortables : Cruz del Sur, Movil Tours, Oltursa.","statut":"propose","cout":[35,65]},
+      "nom": "Huaraz",
+      "lat": -9.5278,
+      "lng": -77.5278,
+      "altitude": 3050,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "Cordillère Blanche, juillet : la meilleure saison. Après une semaine sur la côte, reprendre l'altitude doucement.",
+      "activites": [
+        {"id":"laguna-69","nom":"Laguna 69","jours":1,"statut":"prevu","lat":-9.0108,"lng":-77.611,"description":"Randonnée d'une journée, lagune turquoise à 4 600 m.","cout":[20,40]},
+        {"id":"pastoruri","nom":"Glacier Pastoruri","jours":1,"statut":"prevu","lat":-9.9244,"lng":-77.1797,"description":"Glacier à 5 000 m, excursion d'une journée.","cout":[20,35]},
+        {"id":"laguna-paron","nom":"Laguna Parón","jours":1,"statut":"prevu","lat":-8.9989,"lng":-77.6847,"description":"Plus grande lagune de la Cordillère Blanche.","cout":[25,40]},
+        {"id":"laguna-churup","nom":"Laguna Churup","jours":1,"statut":"suggestion","lat":-9.4836,"lng":-77.425,"description":"Bonne randonnée d'acclimatation près de Huaraz.","cout":[10,20]},
+        {"id":"chavin","nom":"Chavín de Huántar","jours":1,"statut":"suggestion","lat":-9.5928,"lng":-77.1772,"description":"Site archéologique classé à l'UNESCO.","cout":[25,40]}
+      ]
+    },
+    {
+      "id": "cerro-de-pasco",
+      "pays": "perou",
+      "trajet": {"modes":["bus","colectivo"],"resume":"Bus ou colectivo par Huánuco, environ 8 à 10 h","details":"Peu de liaisons directes : horaires à vérifier sur place à Huaraz.","statut":"propose","cout":[15,30]},
+      "nom": "Cerro de Pasco",
+      "lat": -10.6826,
+      "lng": -76.2563,
+      "altitude": 4330,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "Hauts plateaux de la cordillère des Andes. Très haute altitude : y aller après Huaraz.",
+      "activites": [
+        {"id":"huayllay","nom":"Forêt de pierres de Huayllay","jours":1,"statut":"suggestion","lat":-10.95,"lng":-76.36,"description":"Sanctuaire national, immenses formations rocheuses.","cout":[20,40]}
+      ]
+    },
+    {
+      "id": "lima",
+      "pays": "perou",
+      "trajet": {"modes":["bus"],"resume":"Bus Cerro de Pasco → Lima (environ 8 h)","details":"","statut":"propose","cout":[15,30]},
+      "nom": "Lima",
+      "lat": -12.0464,
+      "lng": -77.0428,
+      "altitude": 150,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "Fin du voyage : vol retour depuis Lima.",
+      "activites": [
+        {"id":"lima-centre","nom":"Centre historique","jours":0,"statut":"suggestion","lat":-12.0453,"lng":-77.0311,"description":"Plaza Mayor, cathédrale, couvent San Francisco."},
+        {"id":"lima-barranco","nom":"Barranco et Miraflores","jours":0,"statut":"suggestion","lat":-12.149,"lng":-77.021,"description":"Quartier bohème et front de mer (malecón)."}
       ]
     }
   ],
@@ -570,7 +544,7 @@
     "parJour": {"perou":[30,45],"bolivie":[28,40],"nord":[50,70],"chili":[55,75],"patagonie":[60,90]},
     "parJourDetail": "Hébergement en chambre double partagée, repas simples, transports locaux.",
     "fixes": [
-      {"id":"vols-internationaux","titre":"Vols internationaux (aller Lima, retour El Calafate)","cout":[900,1500]},
+      {"id":"vols-internationaux","titre":"Vols internationaux (aller Buenos Aires, retour Lima)","cout":[900,1500]},
       {"id":"assurance","titre":"Assurance voyage 5 mois","cout":[300,700]},
       {"id":"equipement","titre":"Équipement, vaccins, pharmacie","cout":[200,500]},
       {"id":"voiture-carretera","titre":"Location de voiture Carretera Austral (part par personne, essence comprise)","cout":[500,750]},
@@ -579,17 +553,15 @@
   },
 
   "propositions": [
-    {"id":"repartir-patagonie","titre":"Répartir les jours libres en Patagonie","statut":"a-decider","impact":"Environ +30 jours répartis","resume":"Pour arriver à El Chaltén fin mars, au début des couleurs d'automne.","details":["Aujourd'hui, El Chaltén tombe vers la mi-février : trop tôt pour les couleurs.","Treks en option : Cerro Castillo complet (+3 j), Refugio Frey (+1 j), Laguna Torre (+1 j), glacier Exploradores (+1 j), Laguna Esmeralda (+1 j).","Séjours plus longs : Bariloche (+3 j), Carretera Austral (+5 à 7 j, plus de temps entre les villages), El Chaltén (+3 j pour la météo).","Le reste en jours de marge, utiles en Patagonie où le vent bloque parfois bateaux et sentiers."]},
-    {"id":"prolonger-avril","titre":"Prolonger jusqu'à mi-avril","statut":"a-decider","impact":"Environ +15 jours","resume":"Le pic des couleurs d'automne en Patagonie est généralement à la mi-avril.","details":["Couleurs à leur maximum à El Chaltén et Torres del Paine, moins de monde, prix plus bas.","En contrepartie : journées plus courtes, plus froides, et quelques refuges ou excursions qui ferment à partir de fin avril.","Dépend de la souplesse de votre billet retour."]},
-    {"id":"colca-puno-cusco","titre":"Pérou : Colca → Puno → Cusco","statut":"a-decider","impact":"Même durée","resume":"Ordre plus fluide : pas de liaison directe pratique entre Colca et Cusco.","details":["Bus touristique direct Chivay → Puno, puis la « Ruta del Sol » Puno → Cusco avec des visites en route.","Depuis Cusco, passage en Bolivie en bus par Copacabana, ou vol vers La Paz.","Inconvénient : on ne finit plus le Pérou au bord du lac Titicaca, juste à côté de la frontière."]},
-    {"id":"sucre-potosi","titre":"Bolivie : Sucre et Potosí","statut":"a-decider","impact":"+4 à 5 jours","resume":"Deux villes coloniales sur la route La Paz → Uyuni.","details":["Sucre : la ville blanche, très agréable, marché, empreintes de dinosaures.","Potosí (4 070 m) : ville minière historique, visite des mines possible.","Remplace le bus de nuit La Paz → Uyuni par La Paz → Sucre → Potosí → Uyuni."]},
-    {"id":"isla-del-sol","titre":"Copacabana et Isla del Sol","statut":"a-decider","impact":"+1 à 2 jours","resume":"Sur la route Puno → La Paz, côté bolivien du Titicaca.","details":["Île sacrée inca, randonnée nord-sud, une nuit sur l'île conseillée.","Déjà dans le calculateur comme suggestion à La Paz."]},
-    {"id":"chiloe","titre":"Île de Chiloé","statut":"a-decider","impact":"+2 jours","resume":"Depuis Puerto Varas : églises en bois UNESCO, maisons sur pilotis, manchots de Puñihuil.","details":["Déjà dans le calculateur comme option à Puerto Varas."]},
-    {"id":"grands-treks","titre":"Grands treks : Ausangate et Cerro Castillo","statut":"a-decider","impact":"+5 j et +3 j","resume":"Pour les amoureux de montagne : deux des plus beaux treks de plusieurs jours.","details":["Ausangate : 5 à 6 jours en camping avec agence depuis Cusco, cols à plus de 5 000 m. Début de la saison des pluies en novembre.","Cerro Castillo : 4 jours en camping sur la Carretera Austral, en janvier : bonne saison."]},
-    {"id":"nord-decembre","titre":"Nord de l'Argentine en décembre","statut":"acceptee","impact":"","resume":"Atacama → Salta et Jujuy par le col de Jama → Iguazú, avant le Chili du centre.","details":[]},
+    {"id":"sens-inverse","titre":"Départ mi-février 2028 par la Patagonie, remontée vers le nord","statut":"acceptee","impact":"","resume":"Patagonie en fin d'été et en automne, puis les Andes en saison sèche. Retour depuis Lima mi-juillet.","details":[]},
     {"id":"ushuaia-debut","titre":"Ushuaïa au début de la Patagonie, El Chaltén en dernier","statut":"acceptee","impact":"","resume":"Pas besoin des couleurs à Ushuaïa ; on finit en montagne et on repart d'El Calafate.","details":[]},
     {"id":"sac-a-dos","titre":"Sac à dos et bus, locations courtes","statut":"acceptee","impact":"","resume":"Voiture seulement sur la Carretera Austral et autour de Salta (voir Conseils).","details":[]},
     {"id":"marges","titre":"Jours de marge dans chaque section","statut":"acceptee","impact":"","resume":"Pour la météo, le repos et les imprévus.","details":[]},
+    {"id":"sucre-potosi","titre":"Bolivie : Potosí et Sucre","statut":"a-decider","impact":"+4 à 5 jours","resume":"Deux villes coloniales, parfaitement sur la route Uyuni → La Paz.","details":["Uyuni → Potosí (environ 4 h) → Sucre (environ 3 h) → La Paz (bus de nuit ou vol).","Potosí (4 070 m) : ville minière historique, visite des mines possible.","Sucre : la ville blanche, très agréable, marché, empreintes de dinosaures."]},
+    {"id":"isla-del-sol","titre":"Copacabana et Isla del Sol","statut":"a-decider","impact":"+1 à 2 jours","resume":"Sur la route La Paz → Puno, côté bolivien du Titicaca.","details":["Île sacrée inca, randonnée nord-sud, une nuit sur l'île conseillée.","Déjà dans le calculateur comme suggestion à La Paz."]},
+    {"id":"chiloe","titre":"Île de Chiloé","statut":"a-decider","impact":"+2 jours","resume":"Depuis Puerto Varas : églises en bois UNESCO, maisons sur pilotis. Début mai : plus de pluie.","details":["Déjà dans le calculateur comme option à Puerto Varas."]},
+    {"id":"grands-treks","titre":"Grands treks : Ausangate et Cerro Castillo","statut":"a-decider","impact":"+5 j et +3 j","resume":"Pour les amoureux de montagne : deux des plus beaux treks de plusieurs jours.","details":["Cerro Castillo : 4 jours en camping, fin mars : couleurs d'automne, nuits plus fraîches.","Ausangate : 5 à 6 jours en camping avec agence depuis Cusco, cols à plus de 5 000 m. Juillet : saison sèche, nuits très froides."]},
+    {"id":"chalten-plus-tard","titre":"Plus de temps avant El Chaltén","statut":"a-decider","impact":"Même durée","resume":"Pour arriver à El Chaltén fin mars plutôt que mi-mars, au moment où les couleurs démarrent.","details":["Prendre quelques jours de la marge de fin de Patagonie et les ajouter à Ushuaïa, Torres del Paine ou El Calafate.","Attention : les manchots quittent les îles Martillo et Magdalena vers fin mars, et les bus de la Ruta 40 vers la Carretera Austral circulent surtout en saison."]},
     {"id":"ba-mendoza","titre":"Buenos Aires et Mendoza","statut":"refusee","impact":"","resume":"Pas retenus : priorité à la montagne.","details":[]}
   ],
 
@@ -603,14 +575,14 @@
     {"categorie":"Transports","id":"pieges-van","icone":"🚐","titre":"Les pièges d'un van sur tout le voyage","resume":"Cher, et compliqué entre le Chili et l'Argentine.","points":["La location est chère en haute saison en Patagonie, et rendre le véhicule ailleurs qu'au départ coûte très cher.","Passer la frontière Chili ↔ Argentine demande une autorisation payante de l'agence, à demander à la réservation. L'itinéraire la traverse au moins 4 fois.","Routes en gravier (« ripio ») : vérifier ce que couvre l'assurance (pare-brise, pneus, bas de caisse).","Acheter un van au Chili pour plusieurs mois est possible pour un étranger, mais demande des démarches et une revente risquée juste avant le retour.","Tarifs à comparer au moment de réserver : je n'ai pas de prix à jour."]},
     {"categorie":"Transports","id":"bus-nuit","icone":"🚌","titre":"Bus de nuit","resume":"Confortables et pratiques, avec quelques précautions.","points":["Choisir les compagnies réputées, même un peu plus chères.","Sièges « cama » (presque couchés) ou « semi-cama ».","Grand sac en soute avec ticket ; papiers, argent et appareils toujours sur soi.","Prévoir une couche chaude : la climatisation est souvent forte."]},
     {"categorie":"Transports","id":"frontieres","icone":"🛃","titre":"Passages de frontière","resume":"Le Chili contrôle strictement la nourriture.","points":["Au Chili : pas de fruits, légumes, viande, fromage ni graines ; déclarer tout aliment en cas de doute.","Pas de feuilles de coca en dehors du Pérou et de la Bolivie.","Garder un stylo pour les formulaires, et le ticket d'entrée remis au Chili."]},
-    {"categorie":"Réservations","id":"reserver-tot","icone":"📅","titre":"À réserver longtemps à l'avance","resume":"Les places partent vite en haute saison.","points":["Machu Picchu : billets d'entrée et train, nombre de places limité par jour.","Torres del Paine : refuges et campings du trek du W, plusieurs mois avant (janvier et février = haute saison).","Bac Puerto Ibáñez → Chile Chico sur le lac General Carrera en été.","Île Martillo (Ushuaïa) : une seule agence autorisée à débarquer, très peu de places.","Janvier et février sont les vacances d'été au Chili et en Argentine : réserver les hébergements de Patagonie et les bus longue distance à l'avance."]},
-    {"categorie":"Santé","id":"altitude","icone":"⛰️","titre":"Altitude","resume":"Monter progressivement : Pérou et Bolivie dépassent souvent 3 500 m.","points":["Prévoir 1 à 2 jours calmes en arrivant à Huaraz, Cusco et La Paz.","Boire beaucoup, éviter l'alcool les premiers jours, maté de coca sur place.","Maux de tête forts, essoufflement au repos ou confusion : redescendre et consulter."]},
-    {"categorie":"Santé","id":"prises-de-sang","icone":"🧪","titre":"Prises de sang pendant le voyage","resume":"Deux bilans, à Santiago (fin décembre) et à Punta Arenas (début février).","points":["Espacement régulier : environ 2 mois après le départ, puis environ 6 semaines plus tard, puis le retour fin mars (environ 8 semaines).","Santiago et Punta Arenas ont de bonnes cliniques privées et des laboratoires fiables, résultats souvent en 24 à 48 h, parfois en ligne.","Au Chili, les laboratoires demandent souvent une ordonnance (« orden médica ») : partir avec celle du médecin, idéalement traduite en espagnol, ou consulter sur place.","Faire les analyses dans le même type de laboratoire les deux fois, et comparer avec les mêmes unités que vos résultats habituels.","Envoyer les résultats à votre médecin, et emporter le traitement habituel pour 5 mois plus une marge."]},
+    {"categorie":"Réservations","id":"reserver-tot","icone":"📅","titre":"À réserver longtemps à l'avance","resume":"Les places partent vite en haute saison.","points":["Torres del Paine : refuges et campings du trek du W, plusieurs mois avant (février = haute saison).","Île Martillo (Ushuaïa) : une seule agence autorisée à débarquer, très peu de places.","Février est encore en vacances d'été au Chili et en Argentine : réserver les hébergements de Patagonie et les bus longue distance.","Machu Picchu en juin-juillet : haute saison, billets et train à réserver dès l'ouverture des ventes.","Bac Chile Chico → Puerto Ibáñez sur le lac General Carrera."]},
+    {"categorie":"Santé","id":"altitude","icone":"⛰️","titre":"Altitude","resume":"Montée progressive : on part du niveau de la mer et on remonte vers les Andes.","points":["San Pedro (2 400 m) sert d'étape d'acclimatation avant la Bolivie.","Prendre 1 à 2 jours calmes en arrivant à La Paz, et en revenant à Huaraz après la côte.","Boire beaucoup, éviter l'alcool les premiers jours, maté de coca sur place.","Maux de tête forts, essoufflement au repos ou confusion : redescendre et consulter."]},
+    {"categorie":"Santé","id":"prises-de-sang","icone":"🧪","titre":"Prises de sang pendant le voyage","resume":"Deux bilans, à Bariloche (début avril) et à Salta (mi-mai).","points":["Espacement régulier : environ 7 semaines après le départ, puis environ 6 semaines plus tard, puis le retour mi-juillet (environ 8 semaines).","Bariloche et Salta ont de bonnes cliniques privées et des laboratoires fiables, résultats souvent en 24 à 48 h.","En Argentine comme au Chili, les laboratoires demandent souvent une ordonnance : partir avec celle du médecin, idéalement traduite en espagnol, ou consulter sur place.","Faire les analyses dans le même type de laboratoire les deux fois, et comparer avec les mêmes unités que vos résultats habituels.","Envoyer les résultats à votre médecin, et emporter le traitement habituel pour 5 mois plus une marge."]},
     {"categorie":"Santé","id":"eau","icone":"💧","titre":"Eau et alimentation","resume":"Ne pas boire l'eau du robinet au Pérou et en Bolivie.","points":["Une gourde filtrante évite d'acheter des bouteilles en plastique.","Attention aux crudités et aux glaçons les premières semaines.","Eau du robinet en général buvable au Chili et en Argentine dans les villes."]},
     {"categorie":"Santé","id":"soleil","icone":"🕶️","titre":"Soleil et UV","resume":"Rayonnement très fort en altitude et en Patagonie.","points":["Crème indice 50, chapeau, baume pour les lèvres.","Lunettes de catégorie 4 pour les glaciers et le salar d'Uyuni."]},
     {"categorie":"Santé","id":"pharmacie","icone":"🩹","titre":"Pharmacie de voyage","resume":"Le minimum à emporter.","points":["Antidiarrhéique, sels de réhydratation, antidouleur, désinfectant.","Pansements pour ampoules, bande élastique.","Traitements personnels en quantité suffisante pour 5 mois, avec l'ordonnance."]},
     {"categorie":"Équipement","id":"patagonie-meteo","icone":"🌬️","titre":"Météo de Patagonie","resume":"Quatre saisons dans la même journée, et beaucoup de vent.","points":["Système de couches : sous-couche, polaire ou doudoune légère, veste imperméable coupe-vent.","Bonnet et gants même en été.","Rafales parfois violentes : garder de la marge dans le planning pour les bateaux et les sommets."]},
-    {"categorie":"Équipement","id":"froid-altitude","icone":"🥶","titre":"Nuits froides en altitude","resume":"Jusqu'à −10 °C dans le Sud Lípez.","points":["Duvet confort autour de 0 °C ou drap de sac en polaire (on peut en louer à Uyuni).","Bonnet, gants, chaussettes chaudes pour les geysers au lever du soleil."]},
+    {"categorie":"Équipement","id":"froid-altitude","icone":"🥶","titre":"Nuits froides en altitude","resume":"En juin, jusqu'à −20 °C la nuit dans le Sud Lípez.","points":["On dort en refuges, pas en tente, mais ils ne sont pas chauffés : autour de 0 °C à l'intérieur.","Duvet confort autour de −5 °C (on peut en louer à San Pedro ou à Uyuni), bonnet, gants, chaussettes chaudes.","Même chose pour le Pérou en juillet au-dessus de 3 500 m : journées ensoleillées, nuits glaciales."]},
     {"categorie":"Équipement","id":"sac","icone":"🎒","titre":"Sac et chaussures","resume":"Voyager léger, marcher bien chaussé.","points":["Sac à dos de 40 à 50 L, plus un petit sac de jour.","Chaussures de randonnée déjà rodées avant le départ.","Bâtons de marche, lampe frontale, cadenas, sac étanche."]},
     {"categorie":"Sécurité","id":"securite","icone":"🔒","titre":"Vigilance en ville","resume":"Surtout à Lima, La Paz, Santiago et Valparaíso.","points":["Sac porté devant dans la foule et les transports.","Ne pas laisser le téléphone sur une table en terrasse.","Taxis par appli ou appelés par l'hébergement, surtout la nuit."]},
     {"categorie":"Budget","id":"budget","icone":"💶","titre":"Budget","resume":"Le chiffrage détaillé est dans Plus → Budget, recalculé à chaque modification.","points":["Il suit les durées et les activités cochées dans l'onglet Dates.","Ce sont des estimations sans prix à jour : à affiner au moment de réserver.","Garder une réserve d'environ 10 % pour les imprévus."]}
@@ -624,27 +596,28 @@
     {"id":"cartes","categorie":"avant","titre":"Cartes bancaires sans frais","detail":"Deux cartes de réseaux différents."},
     {"id":"esim","categorie":"avant","titre":"eSIM ou cartes SIM","detail":"Forfait données pour l'Amérique du Sud."},
     {"id":"carte-hors-ligne","categorie":"avant","titre":"Télécharger la carte hors ligne","detail":"Bouton « Carte hors ligne » de cette appli, en wifi."},
-    {"id":"vol-aller","categorie":"vol","titre":"Vol aller → Lima","detail":"International.","etape":"lima","tot":true},
-    {"id":"vol-retour","categorie":"vol","titre":"Vol retour El Calafate → Buenos Aires → France","detail":"International, open-jaw avec l'aller.","etape":"el-chalten","fin":true,"tot":true},
-    {"id":"vol-salta-iguazu","categorie":"vol","titre":"Vol Salta → Iguazú","detail":"Direct certains jours seulement.","etape":"iguazu"},
-    {"id":"vol-iguazu-santiago","categorie":"vol","titre":"Vol Iguazú → Santiago","detail":"Avec escale.","etape":"santiago"},
-    {"id":"vol-calafate-ushuaia","categorie":"vol","titre":"Vol El Calafate → Ushuaïa","detail":"","etape":"ushuaia"},
-    {"id":"bus-lima-huaraz","categorie":"bus","titre":"Bus Lima → Huaraz","detail":"Cruz del Sur, Movil Tours ou Oltursa.","etape":"huaraz"},
-    {"id":"bus-nazca-arequipa","categorie":"bus","titre":"Bus de nuit Nazca → Arequipa","detail":"","etape":"arequipa"},
-    {"id":"bus-cusco-puno","categorie":"bus","titre":"Bus Cusco → Puno","detail":"Ou bus touristique « Ruta del Sol ».","etape":"puno"},
-    {"id":"bus-puno-lapaz","categorie":"bus","titre":"Bus Puno → La Paz par Copacabana","detail":"","etape":"la-paz"},
-    {"id":"bus-lapaz-uyuni","categorie":"bus","titre":"Bus de nuit La Paz → Uyuni","detail":"Ou vol.","etape":"uyuni"},
-    {"id":"bus-uyuni-sanpedro","categorie":"bus","titre":"Bus Uyuni → San Pedro de Atacama","detail":"Par Calama, ou transfert 4x4.","etape":"san-pedro"},
-    {"id":"bus-jama","categorie":"bus","titre":"Bus San Pedro → Salta par le col de Jama","detail":"","etape":"salta"},
-    {"id":"bus-pv-bariloche","categorie":"bus","titre":"Bus Puerto Varas → Bariloche","detail":"Ou traversée des lacs (Cruce Andino).","etape":"bariloche"},
-    {"id":"bac-chile-chico","categorie":"bus","titre":"Bac Puerto Ibáñez → Chile Chico","detail":"À réserver en été.","etape":"calafate-passage","tot":true},
+    {"id":"vol-aller","categorie":"vol","titre":"Vol aller → Buenos Aires → Ushuaïa","detail":"International, puis vol intérieur.","etape":"ushuaia","tot":true},
+    {"id":"vol-retour","categorie":"vol","titre":"Vol retour Lima → France","detail":"International, open-jaw avec l'aller.","etape":"lima","fin":true,"tot":true},
+    {"id":"vol-salta-iguazu","categorie":"vol","titre":"Vol Iguazú → Salta","detail":"Direct certains jours seulement.","etape":"salta"},
+    {"id":"vol-iguazu-santiago","categorie":"vol","titre":"Vol Santiago → Iguazú","detail":"Avec escale.","etape":"iguazu"},
+    {"id":"bus-lima-huaraz","categorie":"bus","titre":"Bus Paracas → Lima → Huaraz","detail":"Cruz del Sur, Movil Tours ou Oltursa.","etape":"huaraz"},
+    {"id":"bus-cusco-nazca","categorie":"bus","titre":"Bus de nuit Cusco → Nazca","detail":"Ou vol Cusco → Lima.","etape":"nazca"},
+    {"id":"bus-arequipa-cusco","categorie":"bus","titre":"Bus de nuit Arequipa → Cusco","detail":"","etape":"cusco"},
+    {"id":"bus-puno-chivay","categorie":"bus","titre":"Bus touristique Puno → Chivay (Colca)","detail":"","etape":"colca"},
+    {"id":"bus-lapaz-puno","categorie":"bus","titre":"Bus La Paz → Puno par Copacabana","detail":"","etape":"puno"},
+    {"id":"bus-uyuni-lapaz","categorie":"bus","titre":"Bus de nuit Uyuni → La Paz","detail":"Ou vol.","etape":"la-paz"},
+    {"id":"bus-jama","categorie":"bus","titre":"Bus Salta → San Pedro par le col de Jama","detail":"","etape":"san-pedro"},
+    {"id":"bus-bariloche-pv","categorie":"bus","titre":"Bus Bariloche → Puerto Varas","detail":"Ou traversée des lacs (Cruce Andino).","etape":"puerto-varas"},
+    {"id":"bac-chile-chico","categorie":"bus","titre":"Bac Chile Chico → Puerto Ibáñez","detail":"Sur le lac General Carrera.","etape":"coyhaique","tot":true},
+    {"id":"bus-chalten-los-antiguos","categorie":"bus","titre":"Bus El Chaltén → Los Antiguos (Ruta 40)","detail":"Circule surtout en saison : vérifier pour mars.","etape":"coyhaique","tot":true},
+    {"id":"bus-futaleufu-bariloche","categorie":"bus","titre":"Bus Futaleufú → Esquel → Bariloche","detail":"","etape":"bariloche"},
     {"id":"bus-ushuaia-punta","categorie":"bus","titre":"Bus Ushuaïa → Punta Arenas","detail":"","etape":"punta-arenas"},
     {"id":"bus-natales-calafate","categorie":"bus","titre":"Bus Puerto Natales → El Calafate","detail":"","etape":"el-calafate"},
     {"id":"bus-calafate-chalten","categorie":"bus","titre":"Bus El Calafate → El Chaltén","detail":"","etape":"el-chalten"},
     {"id":"train-machu-picchu","categorie":"train","titre":"Train Ollantaytambo ↔ Aguas Calientes","detail":"PeruRail ou Inca Rail.","etape":"cusco","tot":true},
     {"id":"billets-machu-picchu","categorie":"activite","titre":"Billets Machu Picchu","detail":"Nombre de places limité par jour et par circuit.","etape":"cusco","tot":true},
     {"id":"excursion-amantani","categorie":"activite","titre":"Excursion Uros, Amantaní et Taquile","detail":"2 jours avec nuit chez l'habitant.","etape":"puno"},
-    {"id":"circuit-uyuni","categorie":"activite","titre":"Circuit 4x4 Uyuni et Sud Lípez (3 jours)","detail":"Choisir une agence sérieuse à Uyuni.","etape":"uyuni"},
+    {"id":"circuit-uyuni","categorie":"activite","titre":"Circuit 4x4 San Pedro → Sud Lípez → Uyuni (3 jours)","detail":"Agence sérieuse à San Pedro ; louer un duvet chaud.","etape":"sud-lipez"},
     {"id":"villarrica","categorie":"activite","titre":"Ascension du volcan Villarrica","detail":"Agence à Pucón, selon la météo.","etape":"pucon"},
     {"id":"martillo","categorie":"activite","titre":"Île Martillo (manchots)","detail":"Une seule agence, très peu de places.","etape":"ushuaia","tot":true},
     {"id":"magdalena","categorie":"activite","titre":"Île Magdalena (manchots)","detail":"Bateau depuis Punta Arenas.","etape":"punta-arenas"},
@@ -655,8 +628,8 @@
     {"id":"voiture-coyhaique","categorie":"voiture","titre":"Voiture à Coyhaique (Carretera Austral)","detail":"Vérifier l'assurance pour les pistes.","etape":"coyhaique","tot":true},
     {"id":"voiture-salta","categorie":"voiture","titre":"Voiture à Salta (4 à 5 jours)","detail":"Boucle Humahuaca, Purmamarca, Cafayate.","etape":"salta"},
     {"id":"ordonnance-analyses","categorie":"avant","titre":"Ordonnance pour les prises de sang","detail":"Demander au médecin une ordonnance pour les 2 bilans, si possible avec une version en espagnol.","tot":true},
-    {"id":"prise-sang-1","categorie":"sante","titre":"Prise de sang n° 1 (bilan prévu) à Santiago","detail":"Laboratoire d'une grande clinique privée. Éviter le 24 et le 25 décembre.","etape":"santiago"},
-    {"id":"prise-sang-2","categorie":"sante","titre":"Prise de sang n° 2 (bilan prévu) à Punta Arenas","detail":"Laboratoire d'une clinique privée ou de l'hôpital régional.","etape":"punta-arenas"}
+    {"id":"prise-sang-1","categorie":"sante","titre":"Prise de sang n° 1 (bilan prévu) à Bariloche","detail":"Laboratoire d'une clinique privée.","etape":"bariloche"},
+    {"id":"prise-sang-2","categorie":"sante","titre":"Prise de sang n° 2 (bilan prévu) à Salta","detail":"Laboratoire d'une clinique privée.","etape":"salta"}
   ],
 
   "reservations": []
