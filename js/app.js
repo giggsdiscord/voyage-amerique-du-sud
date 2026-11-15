@@ -19,6 +19,33 @@
   };
   var STATUTS = { prevu: 'Prévu', option: 'Option', suggestion: 'Suggestion' };
 
+  /* Moyens de transport entre les étapes (champ "trajet" de chaque étape). */
+  var MODES = {
+    vol: { ico: '✈️', nom: 'Avion', couleur: '#2b6cb0', tirets: '2 8' },
+    bus: { ico: '🚌', nom: 'Bus', couleur: '#b9532f', tirets: '8 6' },
+    train: { ico: '🚆', nom: 'Train', couleur: '#5b3f8c', tirets: null },
+    voiture: { ico: '🚗', nom: 'Voiture', couleur: '#2f7a45', tirets: null },
+    colectivo: { ico: '🚐', nom: 'Colectivo', couleur: '#b9532f', tirets: '8 6' },
+    tour: { ico: '🚐', nom: 'Excursion organisée', couleur: '#b9532f', tirets: '8 6' },
+    taxi: { ico: '🚕', nom: 'Taxi', couleur: '#b9532f', tirets: '8 6' },
+    bateau: { ico: '⛴️', nom: 'Bateau', couleur: '#1f8fa6', tirets: '2 8' },
+    marche: { ico: '🥾', nom: 'À pied', couleur: '#6b7280', tirets: '1 6' },
+    velo: { ico: '🚲', nom: 'Vélo', couleur: '#6b7280', tirets: '1 6' }
+  };
+  var STATUTS_TRAJET = { propose: 'Proposé', choisi: 'Choisi', reserve: 'Réservé' };
+  var CLASSE_TRAJET = { propose: 'suggestion', choisi: 'option', reserve: 'prevu' };
+
+  function icones(t) {
+    return (t.modes || []).map(function (m) { return (MODES[m] || { ico: '📍' }).ico; }).join(' ');
+  }
+  function nomsModes(t) {
+    return (t.modes || []).map(function (m) { return (MODES[m] || { nom: m }).nom; }).join(' + ');
+  }
+  function badgeTrajet(t) {
+    var s = t.statut || 'propose';
+    return '<span class="badge ' + (CLASSE_TRAJET[s] || 'suggestion') + '">' + esc(STATUTS_TRAJET[s] || s) + '</span>';
+  }
+
   var donnees = null;
   var plan = chargerPlan();
   var carte = null, coucheActivites = null, marqueurs = {};
@@ -200,7 +227,12 @@
       html += '<div class="pays-titre"><h3>' + esc(p.drapeau + ' ' + p.nom) + '</h3><span class="doux petit">' +
         esc(dCourt(et[0].arrivee)) + ' → ' + esc(dCourt(et[et.length - 1].depart)) + ' · ' + jours(tot) + '</span></div>';
       et.forEach(function (x) {
-        var h = x.etape.hebergement;
+        var h = x.etape.hebergement, t = x.etape.trajet;
+        if (t) {
+          html += '<button class="trajet" data-fiche="' + esc(x.etape.id) + '" aria-label="Trajet vers ' + esc(x.etape.nom) + '">' +
+            '<span class="trajet-ico" aria-hidden="true">' + icones(t) + '</span>' +
+            '<span class="trajet-texte">' + esc(t.resume || nomsModes(t)) + '</span>' + badgeTrajet(t) + '</button>';
+        }
         html += '<button class="etape-carte" data-fiche="' + esc(x.etape.id) + '">' +
           '<span class="num" style="background:' + esc(p.couleur) + '">' + x.num + '</span>' +
           '<span class="etape-corps"><h4>' + esc(x.etape.nom) + '</h4>' +
@@ -235,6 +267,14 @@
       '</div>';
     if (h && (h.adresse || h.notes)) html += '<p class="petit">' + esc(h.adresse || '') + (h.notes ? '<br><span class="doux">' + esc(h.notes) + '</span>' : '') + '</p>';
     if (e.notes) html += '<p>📝 ' + esc(e.notes) + '</p>';
+
+    if (e.trajet) {
+      var t = e.trajet, prec = x.num > 1 ? cal.etapes[x.num - 2].etape.nom : null;
+      html += '<h3>Pour venir' + (prec ? ' depuis ' + esc(prec) : '') + '</h3>' +
+        '<div class="info"><div class="ligne entre"><span><span aria-hidden="true">' + icones(t) + '</span> <strong>' + esc(nomsModes(t)) + '</strong></span>' + badgeTrajet(t) + '</div>' +
+        '<p style="margin:6px 0 0">' + esc(t.resume || '') + '</p>' +
+        (t.details ? '<p class="petit doux" style="margin:4px 0 0">' + esc(t.details) + '</p>' : '') + '</div>';
+    }
 
     if (acts.length) {
       html += '<h3>Activités</h3><ul class="activites">' + acts.map(function (a) {
@@ -371,12 +411,27 @@
     carte = L.map('carte', { zoomControl: true, attributionControl: true });
     L.tileLayer(TUILES, {
       maxZoom: 18, crossOrigin: '',
+      // OpenStreetMap refuse les tuiles demandées sans l'adresse du site.
+      referrerPolicy: 'strict-origin-when-cross-origin',
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(carte);
 
     var cal = calendrier();
-    var points = cal.etapes.map(function (x) { return [x.etape.lat, x.etape.lng]; });
-    L.polyline(points, { color: '#b9532f', weight: 3, opacity: .85, dashArray: '6 6' }).addTo(carte);
+    // Un segment par trajet, dessiné selon le moyen de transport.
+    cal.etapes.forEach(function (x, i) {
+      if (i === 0) return;
+      var a = cal.etapes[i - 1].etape, b = x.etape, t = b.trajet || { modes: [], statut: 'propose' };
+      var m = MODES[(t.modes || [])[0]] || { couleur: '#6b7280', tirets: '4 6' };
+      var sur = t.statut === 'choisi' || t.statut === 'reserve';
+      L.polyline([[a.lat, a.lng], [b.lat, b.lng]], {
+        color: m.couleur, weight: sur ? 5 : 4, opacity: sur ? 1 : .8, dashArray: m.tirets, interactive: false
+      }).addTo(carte);
+      // Zone de clic plus large, invisible, pour le doigt.
+      L.polyline([[a.lat, a.lng], [b.lat, b.lng]], { color: '#000', weight: 22, opacity: 0 })
+        .bindPopup('<b>' + icones(t) + ' ' + esc(a.nom) + ' → ' + esc(b.nom) + '</b><br>' + esc(t.resume || 'Trajet à définir') +
+          '<br><span>' + esc(STATUTS_TRAJET[t.statut] || '') + '</span>')
+        .addTo(carte);
+    });
 
     coucheActivites = L.layerGroup();
     cal.etapes.forEach(function (x) {
@@ -458,7 +513,7 @@
     var urls = listeTuiles();
     if (!confirm('Télécharger environ ' + urls.length + ' morceaux de carte (≈ ' + Math.round(urls.length * 0.02) + ' Mo) autour des étapes ? À faire en wifi.')) return;
     var fait = 0, erreurs = 0, i = 0, actifs = 0;
-    caches.open('tuiles-prechargees').then(function (cache) {
+    caches.open('tuiles-prechargees-v2').then(function (cache) {
       function suivant() {
         if (i >= urls.length && actifs === 0) {
           etat.textContent = 'Carte hors ligne prête : ' + fait + ' morceaux enregistrés' + (erreurs ? ', ' + erreurs + ' échecs' : '') + '.';
@@ -470,7 +525,11 @@
           (function (u) {
             cache.match(u).then(function (deja) {
               if (deja) return;
-              return fetch(u, { mode: 'cors' }).then(function (rep) { if (rep.ok) return cache.put(u, rep); throw new Error(); });
+              return fetch(u, { mode: 'cors', referrerPolicy: 'strict-origin-when-cross-origin' }).then(function (rep) {
+                // Image de blocage OSM : code 200 mais « no-cache ». On ne l'enregistre pas.
+                if (rep.ok && !/no-cache|no-store/i.test(rep.headers.get('Cache-Control') || '')) return cache.put(u, rep);
+                throw new Error();
+              });
             }).then(function () { fait++; }, function () { erreurs++; }).then(function () {
               actifs--;
               etat.textContent = 'Téléchargement de la carte… ' + Math.round((fait + erreurs) / urls.length * 100) + ' %';

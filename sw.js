@@ -1,9 +1,17 @@
 /* Service worker : rend l'appli et ses données consultables en mode avion.
    Changer VERSION à chaque modification du code pour forcer la mise à jour. */
-var VERSION = 'v3';
+var VERSION = 'v4';
 var COQUILLE = 'coquille-' + VERSION;
-var TUILES = 'tuiles';
-var TUILES_PRECHARGEES = 'tuiles-prechargees';
+// v2 : les anciens caches de tuiles pouvaient contenir l'image « Access blocked » d'OpenStreetMap.
+var TUILES = 'tuiles-v2';
+var TUILES_PRECHARGEES = 'tuiles-prechargees-v2';
+var ANCIENS_CACHES = ['tuiles', 'tuiles-prechargees'];
+
+// OpenStreetMap renvoie son image de blocage avec un code 200 et « Cache-Control: no-cache ».
+// Une vraie tuile a toujours un max-age : on ne garde que celles-là.
+function tuileValide(rep) {
+  return rep && rep.ok && !/no-cache|no-store/i.test(rep.headers.get('Cache-Control') || '');
+}
 var MAX_TUILES = 2500;
 
 var FICHIERS = [
@@ -35,7 +43,7 @@ self.addEventListener('install', function (ev) {
 self.addEventListener('activate', function (ev) {
   ev.waitUntil(caches.keys().then(function (cles) {
     return Promise.all(cles.filter(function (k) {
-      return k.indexOf('coquille-') === 0 && k !== COQUILLE;
+      return (k.indexOf('coquille-') === 0 && k !== COQUILLE) || ANCIENS_CACHES.indexOf(k) >= 0;
     }).map(function (k) { return caches.delete(k); }));
   }).then(function () { return self.clients.claim(); }));
 });
@@ -70,7 +78,7 @@ function tuile(req) {
   return caches.match(req.url).then(function (r) {
     if (r) return r;
     return fetch(req).then(function (rep) {
-      if (rep.ok) {
+      if (tuileValide(rep)) {
         var copie = rep.clone();
         caches.open(TUILES).then(function (c) { return c.put(req.url, copie); }).then(limiterTuiles);
       }

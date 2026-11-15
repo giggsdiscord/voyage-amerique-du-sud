@@ -14,6 +14,7 @@
     {
       "id": "lima",
       "pays": "perou",
+      "trajet": { "modes": ["vol"], "resume": "Vol international jusqu'à Lima", "details": "Ville de départ et date à définir.", "statut": "propose" },
       "nom": "Lima",
       "lat": -12.0464, "lng": -77.0428,
       "altitude": 150,
@@ -28,6 +29,7 @@
     {
       "id": "huaraz",
       "pays": "perou",
+      "trajet": { "modes": ["bus"], "resume": "Bus, environ 8 h", "details": "De jour pour la vue sur la cordillère, ou de nuit pour gagner une journée. Compagnies confortables : Cruz del Sur, Movil Tours, Oltursa.", "statut": "propose" },
       "nom": "Huaraz",
       "lat": -9.5278, "lng": -77.5278,
       "altitude": 3050,
@@ -45,6 +47,7 @@
     {
       "id": "cerro-de-pasco",
       "pays": "perou",
+      "trajet": { "modes": ["bus", "colectivo"], "resume": "Bus ou colectivo, environ 8 à 10 h", "details": "Peu de liaisons directes : passer par Huánuco, ou redescendre à Lima puis remonter. Horaires à vérifier sur place à Huaraz.", "statut": "propose" },
       "nom": "Cerro de Pasco",
       "lat": -10.6826, "lng": -76.2563,
       "altitude": 4330,
@@ -58,6 +61,7 @@
     {
       "id": "paracas",
       "pays": "perou",
+      "trajet": { "modes": ["bus"], "resume": "Bus jusqu'à Lima (environ 8 h), puis Lima → Paracas (environ 4 h)", "details": "Long trajet : prévoir une nuit à Lima entre les deux, ou un bus de nuit jusqu'à Lima.", "statut": "propose" },
       "nom": "Paracas",
       "lat": -13.8340, "lng": -76.2513,
       "altitude": 0,
@@ -71,6 +75,7 @@
     {
       "id": "huacachina",
       "pays": "perou",
+      "trajet": { "modes": ["bus", "taxi"], "resume": "Bus jusqu'à Ica (environ 1 h 30), puis taxi 10 min", "details": "", "statut": "propose" },
       "nom": "Huacachina",
       "lat": -14.0875, "lng": -75.7626,
       "altitude": 400,
@@ -84,6 +89,7 @@
     {
       "id": "nazca",
       "pays": "perou",
+      "trajet": { "modes": ["bus"], "resume": "Bus depuis Ica, environ 2 h 30 à 3 h", "details": "", "statut": "propose" },
       "nom": "Nazca",
       "lat": -14.8350, "lng": -74.9330,
       "altitude": 520,
@@ -98,6 +104,7 @@
     {
       "id": "arequipa",
       "pays": "perou",
+      "trajet": { "modes": ["bus"], "resume": "Bus de nuit, environ 9 à 10 h", "details": "Le bus de nuit évite de perdre une journée. Préférer une compagnie sûre (Cruz del Sur, Oltursa).", "statut": "propose" },
       "nom": "Arequipa",
       "lat": -16.4090, "lng": -71.5375,
       "altitude": 2335,
@@ -112,6 +119,7 @@
     {
       "id": "colca",
       "pays": "perou",
+      "trajet": { "modes": ["bus", "tour"], "resume": "Bus jusqu'à Chivay (environ 3 h 30), ou excursion organisée de 2 jours", "details": "L'excursion organisée depuis Arequipa inclut la Cruz del Cóndor et les thermes. Certaines se terminent directement à Puno.", "statut": "propose" },
       "nom": "Canyon de Colca",
       "lat": -15.6380, "lng": -71.6010,
       "altitude": 3630,
@@ -126,6 +134,7 @@
     {
       "id": "cusco",
       "pays": "perou",
+      "trajet": { "modes": ["bus"], "resume": "Retour à Arequipa puis bus de nuit (environ 10 h)", "details": "Pas de liaison directe pratique depuis Chivay. Pour le Machu Picchu : train PeruRail ou Inca Rail depuis Ollantaytambo jusqu'à Aguas Calientes.", "statut": "propose" },
       "nom": "Cusco",
       "lat": -13.5320, "lng": -71.9675,
       "altitude": 3400,
@@ -147,6 +156,7 @@
     {
       "id": "puno",
       "pays": "perou",
+      "trajet": { "modes": ["bus", "train"], "resume": "Bus, environ 7 h, ou bus touristique « Ruta del Sol » avec visites (environ 10 h)", "details": "Option confort : train PeruRail Titicaca, beaucoup plus cher.", "statut": "propose" },
       "nom": "Puno et lac Titicaca",
       "lat": -15.8402, "lng": -70.0219,
       "altitude": 3830,

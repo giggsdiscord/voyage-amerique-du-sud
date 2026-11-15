@@ -152,6 +152,13 @@ main { outline: none; }
 .etape-carte p { margin: 2px 0 0; }
 .etape-corps { flex: 1; min-width: 0; }
 .chevron { align-self: center; color: var(--doux); font-size: 1.3rem; }
+.trajet {
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+  margin: -2px 0 8px; padding: 6px 10px 6px 14px; border: 0; background: none; cursor: pointer;
+  border-left: 3px dashed var(--trait); margin-left: 15px; color: var(--doux); font-size: .85rem;
+}
+.trajet-ico { flex: none; font-size: 1.1rem; }
+.trajet-texte { flex: 1; min-width: 0; }
 
 /* Fiche (dialog) */
 .fiche {
