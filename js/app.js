@@ -884,9 +884,7 @@
       var popup = '<b>✈️ ' + esc(vol.titre) + '</b><br>' + esc(dLong(v[1])) + '<br><span>' + esc(vol.duree || '') + '</span>';
       for (var i = 0; i < vol.points.length - 1; i++) {
         var seg = arc(vol.points[i], vol.points[i + 1]);
-        // Liseré blanc dessous puis gros pointillés bleu foncé : bien lisibles sur téléphone
-        L.polyline(seg, { color: '#ffffff', weight: 8, opacity: .75, lineCap: 'round', interactive: false }).addTo(coucheVols);
-        L.polyline(seg, { color: '#1d3fa8', weight: 5, opacity: 1, dashArray: '1 11', lineCap: 'round', interactive: false }).addTo(coucheVols);
+        L.polyline(seg, { color: '#2b6cb0', weight: 3, opacity: .9, dashArray: '2 8', lineCap: 'round', interactive: false }).addTo(coucheVols);
         L.polyline(seg, { color: '#000', weight: 22, opacity: 0 }).bindPopup(popup).addTo(coucheVols);
       }
       vol.points.forEach(function (p) {
