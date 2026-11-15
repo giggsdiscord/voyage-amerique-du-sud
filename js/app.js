@@ -222,7 +222,14 @@
         if (duJour.length) {
           html += '<ul class="activites">' + duJour.map(function (ev) { return '<li>' + (ev.heure ? '<b>' + esc(ev.heure) + '</b> ' : '') + esc(ev.titre) + '</li>'; }).join('') + '</ul>';
         }
-        html += '<div class="boutons"><button class="bouton plein" data-fiche="' + esc(enCours.etape.id) + '">Voir la fiche</button></div></div>';
+        var suivante = cal.etapes[enCours.num];
+        if (suivante) {
+          var ts = suivante.etape.trajet;
+          html += '<p class="ensuite petit"><b>Ensuite</b> · ' + (ts ? '<span aria-hidden="true">' + icones(ts) + '</span> ' : '') + esc(suivante.etape.nom) +
+            ' <span class="doux">le ' + esc(dJour(suivante.arrivee)) + '</span></p>';
+        }
+        html += '<div class="boutons"><button class="bouton plein" data-fiche="' + esc(enCours.etape.id) + '">Voir la fiche</button>' +
+          '<a class="bouton" href="' + esc(lienMaps(enCours.etape.lat, enCours.etape.lng)) + '" target="_blank" rel="noopener noreferrer">Ouvrir dans Maps</a></div></div>';
       } else {
         var enMarge = cal.etapes.filter(function (x) { return x.marge && auj >= x.depart && auj < x.finMarge; })[0];
         if (enMarge) {
@@ -245,6 +252,13 @@
       html += '</div>';
     }
 
+    // Les prochaines choses à faire, cochables directement
+    var priorites = prioritesAFaire(3);
+    if (priorites.length) {
+      html += '<div class="bloc"><div class="ligne entre"><p class="surtitre">À faire en priorité</p><a class="petit lien-discret" href="#afaire">Tout voir ›</a></div>' +
+        priorites.map(caseAFaire).join('') + '</div>';
+    }
+
     // Raccourcis
     var aDecider = nbPropositionsADecider();
     html += '<div class="raccourcis">' +
@@ -253,7 +267,8 @@
       '<a class="raccourci" href="#conseils"><span class="ico" aria-hidden="true">🧭</span><b>Conseils</b><span class="doux">' + pluriel((donnees.conseils || []).length, 'fiche') + '</span></a>' +
       (function () {
         var l = listeAFaire(), n = l.filter(function (a) { return a.coche; }).length;
-        return '<a class="raccourci" href="#afaire"><span class="ico" aria-hidden="true">✅</span><b>À faire</b><span class="doux">' + n + ' sur ' + l.length + ' faits</span></a>';
+        return '<a class="raccourci" href="#afaire"><span class="ico" aria-hidden="true">✅</span><b>À faire</b><span class="doux">' + n + ' sur ' + l.length + ' faits</span>' +
+          '<span class="jauge"><span style="width:' + Math.round(n / Math.max(1, l.length) * 100) + '%"></span></span></a>';
       })() +
       '<a class="raccourci" href="#resas"><span class="ico" aria-hidden="true">🎫</span><b>Réservations</b><span class="doux">' +
         ((donnees.reservations || []).length ? pluriel(donnees.reservations.length, 'réservation') : 'Aucune pour l\'instant') + '</span></a>' +
@@ -262,6 +277,7 @@
     var total = dureeTotale;
     html += '<div class="bloc"><p class="surtitre">Le voyage en bref</p>' +
       '<p>' + esc(dCourt(cal.debut)) + ' → ' + esc(dCourt(cal.fin)) + ' · <b>' + jours(total) + '</b> · ' + pluriel(cal.etapes.length, 'étape') + '</p>' +
+      frise(cal, auj) +
       bilanPays(cal).map(lignePays).join('') +
       (function () { var b = calculBudget(); return '<p style="margin:14px 0 0">💶 Budget estimé : <b>' + euros(b.total[0]) + ' à ' + euros(b.total[1]) + '</b> par personne</p>'; })() +
       '<div class="boutons"><a class="bouton plein" href="#planifier">Ajuster les dates</a><a class="bouton" href="#budget">Voir le budget</a></div></div>';
@@ -270,6 +286,24 @@
       html += '<p class="doux petit">Les dates sont provisoires : elles sont calculées à partir de la durée de chaque étape. Réglez-les dans l\'onglet « Dates ».</p>';
     }
     $('#accueil').innerHTML = html;
+  }
+
+  /* Frise du voyage : une bande par section, large selon sa durée, avec un repère « aujourd'hui » pendant le voyage. */
+  function frise(cal, auj) {
+    var duree = cal.fin - cal.debut;
+    if (duree <= 0) return '';
+    var segments = bilanPays(cal).filter(function (b) { return b.total; }).map(function (b) {
+      return '<a href="#etapes" data-aller-section="' + esc(b.pays.id) + '" style="flex:' + b.total + ';background:' + esc(b.pays.couleur) + '" title="' + esc(b.pays.nom + ' : ' + jours(b.total)) + '">' +
+        '<span class="sr-only">' + esc(b.pays.nom + ' : ' + jours(b.total)) + '</span></a>';
+    }).join('');
+    var repere = (auj >= cal.debut && auj < cal.fin)
+      ? '<i class="frise-auj" style="left:' + ((auj - cal.debut) / duree * 100).toFixed(1) + '%" aria-hidden="true"></i>' : '';
+    return '<div class="frise">' + segments + repere + '</div>' +
+      '<div class="ligne entre petit doux frise-dates"><span>' + esc(dCourt(cal.debut)) + '</span><span>' + esc(dCourt(cal.fin)) + '</span></div>';
+  }
+
+  function lienMaps(lat, lng, texte) {
+    return 'https://www.google.com/maps/search/?api=1&query=' + (texte ? encodeURIComponent(texte) : lat + ',' + lng);
   }
 
   function lignePays(b) {
@@ -287,7 +321,10 @@
   function rendreEtapes() {
     var cal = calendrier();
     // Puces pour sauter directement à une section
+    var auj = aujourdhui();
+    var enVoyage = auj >= cal.debut && auj < cal.fin;
     var html = '<div class="barre-sections"><div class="defile" role="group" aria-label="Aller à une section">' +
+      (enVoyage ? '<button type="button" class="puce puce-auj" data-section="aujourdhui">📍 Aujourd\'hui</button>' : '') +
       donnees.pays.map(function (p) {
         return '<button type="button" class="puce" data-section="' + esc(p.id) + '">' + drapeau(p) + ' ' + esc(p.nom) + '</button>';
       }).join('') + '</div></div>';
@@ -303,7 +340,9 @@
         // Texte cherchable : nom, section, notes, hébergement, trajet, toutes les activités (même non cochées)
         var cherchable = [x.etape.nom, p.nom, x.etape.notes, h && h.nom, t && t.resume, t && nomsModes(t)]
           .concat((x.etape.activites || []).map(function (a) { return a.nom + ' ' + (a.description || ''); })).join(' ');
-        html += '<div class="groupe-etape" data-pays="' + esc(p.id) + '" data-recherche="' + esc(normaliser(cherchable)) + '">';
+        var fin = x.finMarge || x.depart;
+        var etat = !enVoyage ? '' : (auj >= fin ? ' passee' : (auj >= x.arrivee ? ' en-cours' : ''));
+        html += '<div class="groupe-etape' + etat + '"' + (etat === ' en-cours' ? ' id="section-aujourdhui"' : '') + ' data-pays="' + esc(p.id) + '" data-recherche="' + esc(normaliser(cherchable)) + '">';
         if (t) {
           html += '<button class="trajet" data-fiche="' + esc(x.etape.id) + '" aria-label="Trajet vers ' + esc(x.etape.nom) + '">' +
             '<span class="trajet-ico" aria-hidden="true">' + icones(t) + '</span>' +
@@ -311,7 +350,7 @@
         }
         html += '<button class="etape-carte" data-fiche="' + esc(x.etape.id) + '">' +
           '<span class="num" style="background:' + esc(p.couleur) + '">' + x.num + '</span>' +
-          '<span class="etape-corps"><h4>' + esc(x.etape.nom) + '</h4>' +
+          '<span class="etape-corps"><h4>' + esc(x.etape.nom) + (etat === ' en-cours' ? ' <span class="badge ok">Vous êtes ici</span>' : '') + '</h4>' +
           '<p class="petit">' + esc(dJour(x.arrivee)) + ' → ' + esc(dJour(x.depart)) + ' · <b>' + jours(x.total) + '</b></p>' +
           '<p class="petit doux">🛏️ ' + (h && h.nom ? esc(h.nom) : 'Hébergement à trouver') + '</p>' +
           (x.activites.length ? '<p class="petit doux">' + esc(x.activites.map(function (a) { return a.nom; }).join(' · ')) + '</p>' : '') +
@@ -344,7 +383,7 @@
       '<div class="vol-carte"><span class="ico" aria-hidden="true">✈</span><div><p class="surtitre" style="margin:0">' + (k === 'aller' ? 'Départ' : 'Retour') + '</p>' +
       '<h4>' + esc(v.titre) + '</h4><p class="petit">' + esc(dLong(date)) + '</p>' +
       (v.duree ? '<p class="petit doux">' + esc(v.duree) + '</p>' : '') +
-      (v.details ? '<p class="petit doux">' + esc(v.details) + '</p>' : '') + '</div></div></div>';
+      (v.details ? '<details class="plus-info"><summary>Conseils pour ce vol</summary><p class="petit doux">' + esc(v.details) + '</p></details>' : '') + '</div></div></div>';
   }
 
   /* ---------- Recherche dans les étapes ---------- */
@@ -383,13 +422,16 @@
   }
 
   /* ---------- Fiche d'une étape ---------- */
-  function ouvrirFiche(id) {
+  var ficheOuverte = null;
+  var ORDRE_STATUT = { prevu: 0, option: 1, suggestion: 2 };
+  function ouvrirFiche(id, garderPosition) {
     var cal = calendrier();
     var x = cal.etapes.filter(function (y) { return y.etape.id === id; })[0];
     if (!x) return;
     var e = x.etape, p = paysDe(e.pays), h = e.hebergement;
     var resas = reservationsTriees().filter(function (r) { return r.etape === id; });
-    var acts = (e.activites || []).slice().sort(function (a, b) { return (activiteChoisie(b) ? 1 : 0) - (activiteChoisie(a) ? 1 : 0); });
+    // Ordre fixe (prévu, option, suggestion) : les lignes ne bougent pas quand on coche
+    var acts = (e.activites || []).slice().sort(function (a, b) { return (ORDRE_STATUT[a.statut] || 0) - (ORDRE_STATUT[b.statut] || 0); });
 
     var html = '<div class="fiche-poignee" aria-hidden="true"></div>' +
       '<div class="fiche-tete"><span class="num" style="background:' + esc(p.couleur) + '">' + x.num + '</span>' +
@@ -401,7 +443,8 @@
       (e.altitude ? '<div class="info"><b>Altitude</b>' + e.altitude.toLocaleString('fr-FR') + ' m</div>' : '') +
       '<div class="info"><b>Hébergement</b>' + (h && h.nom ? esc(h.nom) : 'À trouver') + '</div>' +
       '</div>';
-    if (h && (h.adresse || h.notes)) html += '<p class="petit">' + esc(h.adresse || '') + (h.notes ? '<br><span class="doux">' + esc(h.notes) + '</span>' : '') + '</p>';
+    if (h && (h.adresse || h.notes)) html += '<p class="petit">' + esc(h.adresse || '') + (h.notes ? '<br><span class="doux">' + esc(h.notes) + '</span>' : '') +
+      (h.adresse ? '<br><a href="' + esc(lienMaps(0, 0, (h.nom || '') + ' ' + h.adresse)) + '" target="_blank" rel="noopener noreferrer">Itinéraire vers l\'hébergement</a>' : '') + '</p>';
     if (e.notes) html += '<p>📝 ' + notes(e.notes) + '</p>';
 
     if (e.trajet) {
@@ -413,24 +456,39 @@
     }
 
     if (acts.length) {
-      html += '<h3>Activités</h3><ul class="activites">' + acts.map(function (a) {
+      html += '<h3>Activités</h3><p class="petit doux" style="margin:-4px 0 4px">Cochez ce que vous voulez faire : les dates et le budget suivent.</p>' +
+        '<div class="activites">' + acts.map(function (a) {
         var ch = activiteChoisie(a);
-        return '<li class="' + (ch ? '' : 'act-non') + '"><div class="ligne entre"><span class="nom">' + (ch ? '✓ ' : '') + esc(a.nom) + '</span>' +
-          '<span class="badge ' + esc(a.statut) + '">' + esc(STATUTS[a.statut] || a.statut) + '</span></div>' +
-          '<p class="desc">' + (a.jours ? '+' + jours(a.jours) + ' · ' : 'Dans la journée · ') + esc(a.description || '') + '</p></li>';
-      }).join('') + '</ul>';
+        return '<label class="case' + (ch ? '' : ' act-non') + '"><input type="checkbox" data-act="' + esc(a.id) + '"' + (ch ? ' checked' : '') + '>' +
+          '<span class="case-corps"><span class="ligne entre"><span class="nom">' + esc(a.nom) + '</span>' +
+          '<span class="badge ' + esc(a.statut) + '">' + esc(STATUTS[a.statut] || a.statut) + '</span></span>' +
+          '<span class="desc"><b>' + (a.jours ? '+' + jours(a.jours) : 'Dans la journée') + (a.cout ? ' · ' + fourchette(a.cout) : '') + '</b>' +
+          (a.description ? ' · ' + esc(a.description) : '') + '</span></span></label>';
+      }).join('') + '</div>';
     }
     if (resas.length) {
       html += '<h3>Réservations</h3>' + resas.map(carteResa).join('');
     }
     html += '<div class="boutons"><button class="bouton plein" data-carte="' + esc(e.id) + '">Voir sur la carte</button>' +
-      '<a class="bouton" href="#planifier" data-fermer>Ajuster la durée</a></div>';
+      '<a class="bouton" href="' + esc(lienMaps(e.lat, e.lng)) + '" target="_blank" rel="noopener noreferrer">Ouvrir dans Maps</a>' +
+      '<a class="bouton" href="#planifier" data-fermer data-plan-ouvrir="' + esc(e.pays) + '">Ajuster la durée</a></div>';
 
-    $('#fiche-contenu').innerHTML = html;
+    // Passer d'une étape à l'autre sans refermer la fiche
+    var avant = cal.etapes[x.num - 2], apres = cal.etapes[x.num];
+    html += '<div class="fiche-nav">' +
+      (avant ? '<button class="bouton" data-fiche="' + esc(avant.etape.id) + '"><span aria-hidden="true">‹</span><span class="fiche-nav-nom">' + esc(avant.etape.nom) + '</span></button>' : '<span></span>') +
+      (apres ? '<button class="bouton" data-fiche="' + esc(apres.etape.id) + '"><span class="fiche-nav-nom">' + esc(apres.etape.nom) + '</span><span aria-hidden="true">›</span></button>' : '<span></span>') +
+      '</div>';
+
     var d = $('#fiche');
+    var position = garderPosition ? d.scrollTop : 0;
+    $('#fiche-contenu').innerHTML = html;
+    ficheOuverte = id;
     if (!d.open) { if (d.showModal) d.showModal(); else d.setAttribute('open', ''); }
+    d.scrollTop = position;
   }
   function fermerFiche() {
+    ficheOuverte = null;
     var d = $('#fiche');
     if (d.open) { if (d.close) d.close(); else d.removeAttribute('open'); }
   }
@@ -512,14 +570,14 @@
     return lignes.join('\n');
   }
 
-  function copier(texte) {
+  function copier(texte, message) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(texte).then(function () { toast('Résumé copié'); }, function () { secours(); });
+      navigator.clipboard.writeText(texte).then(function () { toast(message || 'Résumé copié'); }, function () { secours(); });
     } else secours();
     function secours() {
       var t = document.createElement('textarea');
       t.value = texte; document.body.appendChild(t); t.select();
-      try { document.execCommand('copy'); toast('Résumé copié'); } catch (e) { toast('Copie impossible'); }
+      try { document.execCommand('copy'); toast(message || 'Résumé copié'); } catch (e) { toast('Copie impossible'); }
       t.remove();
     }
   }
@@ -579,9 +637,28 @@
     liste.forEach(function (c) { var k = c.categorie || 'Divers'; if (cats.indexOf(k) < 0) cats.push(k); });
     $('#conseils').innerHTML = cats.map(function (k) {
       return '<h3 class="categorie">' + esc(k) + '</h3>' + liste.filter(function (c) { return (c.categorie || 'Divers') === k; }).map(function (c) {
-        return deroulant(esc(c.icone || '💡'), esc(c.titre), esc(c.resume || ''), puces(c.points));
+        return deroulant(esc(c.icone || '💡'), esc(c.titre), esc(c.resume || ''), puces(c.points), '',
+          ' data-recherche="' + esc(normaliser([k, c.titre, c.resume].concat(c.points || []).join(' '))) + '"');
       }).join('');
-    }).join('');
+    }).join('') + '<div class="bloc vide" id="aucun-conseil" hidden><p style="font-size:2rem;margin:0">🔍</p><h3>Aucun conseil trouvé</h3><p class="doux">Essayez un autre mot : altitude, argent, frontière…</p></div>';
+    filtrerConseils();
+  }
+  function filtrerConseils() {
+    var q = normaliser($('#recherche-conseils').value).trim();
+    var mots = q ? q.split(/\s+/) : [];
+    var n = 0, titre = null, vus = 0;
+    function clore() { if (titre) titre.hidden = !vus; }
+    Array.prototype.forEach.call($('#conseils').children, function (el) {
+      if (el.classList.contains('categorie')) { clore(); titre = el; vus = 0; return; }
+      if (!el.hasAttribute('data-recherche')) return;
+      var texte = el.getAttribute('data-recherche');
+      var ok = mots.every(function (m) { return texte.indexOf(m) >= 0; });
+      el.hidden = !ok;
+      if (ok) { n++; vus++; }
+    });
+    clore();
+    var vide = $('#aucun-conseil');
+    if (vide) vide.hidden = !q || n > 0;
   }
 
   /* ---------- Propositions ---------- */
@@ -633,22 +710,34 @@
     l.forEach(function (a) { a.coche = Object.prototype.hasOwnProperty.call(faits, a.id) ? !!faits[a.id] : !!a.fait; });
     return l;
   }
+  /* Les prochaines choses à faire : d'abord ce qui se réserve très tôt, puis par date. */
+  function prioritesAFaire(n) {
+    return listeAFaire().filter(function (a) { return !a.coche && a.categorie !== 'hebergement'; }).sort(function (a, b) {
+      return (b.tot ? 1 : 0) - (a.tot ? 1 : 0) || (a.date || 0) - (b.date || 0);
+    }).slice(0, n);
+  }
+  function caseAFaire(a) {
+    return '<label class="case' + (a.coche ? ' fait' : '') + '"><input type="checkbox" data-fait="' + esc(a.id) + '"' + (a.coche ? ' checked' : '') + '>' +
+      '<span class="case-corps"><b>' + esc(a.titre) + '</b>' + (a.tot ? ' <span class="badge alerte">Très tôt</span>' : '') +
+      (a.detail ? '<br><span class="petit doux">' + esc(a.detail) + '</span>' : '') + '</span>' +
+      (a.date ? '<span class="duree">' + esc(dCourt(a.date)) + '</span>' : '') + '</label>';
+  }
+  var CLE_MASQUER = 'voyage-afaire-masquer-v1';
+  var masquerFaits = (function () { try { return localStorage.getItem(CLE_MASQUER) === '1'; } catch (e) { return false; } })();
+
   function rendreAFaire() {
     var l = listeAFaire();
     var nbFaits = l.filter(function (a) { return a.coche; }).length;
     var html = '<div class="bloc"><div class="ligne entre"><b>' + nbFaits + ' sur ' + l.length + ' faits</b><span class="doux petit">Cochez au fur et à mesure</span></div>' +
       '<div class="jauge"><span style="width:' + Math.round(nbFaits / Math.max(1, l.length) * 100) + '%"></span></div>' +
-      '<p class="doux petit" style="margin:8px 0 0">Les cases cochées restent sur ce téléphone. Pour les partager avec l\'autre téléphone, dites-moi ce qui est fait et je le note dans le fichier du voyage.</p></div>';
+      '<p class="doux petit" style="margin:8px 0 0">Les cases cochées restent sur ce téléphone. Pour les partager avec l\'autre téléphone, dites-moi ce qui est fait et je le note dans le fichier du voyage.</p>' +
+      (nbFaits ? '<div class="boutons"><button type="button" class="puce" id="afaire-masquer" aria-pressed="' + masquerFaits + '">Masquer ce qui est fait</button></div>' : '') + '</div>';
     CATS_AFAIRE.forEach(function (c) {
       var items = l.filter(function (a) { return a.categorie === c[0]; }).sort(function (a, b) { return (a.date || 0) - (b.date || 0); });
       if (!items.length) return;
       var n = items.filter(function (a) { return a.coche; }).length;
-      var corps = items.map(function (a) {
-        return '<label class="case"><input type="checkbox" data-fait="' + esc(a.id) + '"' + (a.coche ? ' checked' : '') + '>' +
-          '<span><b' + (a.coche ? ' style="text-decoration:line-through;opacity:.6"' : '') + '>' + esc(a.titre) + '</b>' + (a.tot ? ' <span class="badge alerte">Très tôt</span>' : '') +
-          (a.detail ? '<br><span class="petit doux">' + esc(a.detail) + '</span>' : '') + '</span>' +
-          (a.date ? '<span class="duree">' + esc(dCourt(a.date)) + '</span>' : '') + '</label>';
-      }).join('');
+      var corps = items.filter(function (a) { return !masquerFaits || !a.coche; }).map(caseAFaire).join('') ||
+        '<p class="petit doux" style="margin:10px 0 0">Tout est fait dans cette catégorie ✓</p>';
       html += deroulant(c[1], esc(c[2]), n + ' sur ' + items.length + ' faits', corps,
         '<span class="badge ' + (n === items.length ? 'ok' : 'a-decider') + '">' + n + '/' + items.length + '</span>',
         ' data-afaire-cat="' + c[0] + '"' + (afaireOuvertes[c[0]] ? ' open' : ''));
@@ -735,7 +824,8 @@
     ];
     $('#menu-plus').innerHTML = items.map(function (i) {
       return '<a href="' + i[0] + '"><span class="ico" aria-hidden="true">' + i[1] + '</span><span><b>' + esc(i[2]) + '</b><span class="petit doux">' + esc(i[3]) + '</span></span><span class="chevron" aria-hidden="true">›</span></a>';
-    }).join('');
+    }).join('') +
+      '<button type="button" id="partager"><span class="ico" aria-hidden="true">📲</span><span><b>Partager l\'appli</b><span class="petit doux">Envoyer le lien pour l\'installer sur un autre téléphone</span></span></button>';
   }
   function majPastille() {
     var n = nbPropositionsADecider(), p = $('#nb-propositions');
@@ -921,6 +1011,27 @@
     });
     coucheVols.addTo(carte);
   }
+  /* Position du téléphone sur la carte (fonctionne aussi sans réseau, grâce au GPS). */
+  var marqueurPosition = null;
+  function localiser() {
+    var etat = $('#carte-etat');
+    if (!carte) return;
+    if (!navigator.geolocation) { etat.textContent = 'Ce téléphone ne donne pas sa position.'; return; }
+    etat.textContent = 'Recherche de votre position…';
+    carte.once('locationfound', function (ev) {
+      etat.textContent = '';
+      if (marqueurPosition) carte.removeLayer(marqueurPosition);
+      marqueurPosition = L.layerGroup([
+        L.circle(ev.latlng, { radius: ev.accuracy, color: '#1a73e8', weight: 1, fillOpacity: .12, interactive: false }),
+        L.circleMarker(ev.latlng, { radius: 8, color: '#fff', weight: 3, fillColor: '#1a73e8', fillOpacity: 1 }).bindPopup('Vous êtes ici')
+      ]).addTo(carte);
+    });
+    carte.once('locationerror', function () {
+      etat.textContent = 'Position introuvable : autorisez la localisation pour ce site.';
+      setTimeout(function () { etat.textContent = ''; }, 5000);
+    });
+    carte.locate({ setView: true, maxZoom: 12, enableHighAccuracy: true, timeout: 15000 });
+  }
   function vueEnsemble() {
     if (!carte) return;
     var pts = donnees.etapes.map(function (e) { return [e.lat, e.lng]; });
@@ -1008,9 +1119,53 @@
   /* ---------- Navigation ---------- */
   var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'plus', 'resas', 'conseils', 'propositions', 'afaire', 'budget'];
   var SOUS_PLUS = ['resas', 'conseils', 'propositions', 'afaire', 'budget'];
-  function afficherVue() {
+  var RENDUS = {
+    accueil: rendreAccueil, etapes: rendreEtapes, planifier: rendrePlanificateur, plus: rendrePlus, resas: rendreReservations,
+    conseils: rendreConseils, propositions: rendrePropositions, afaire: rendreAFaire, budget: rendreBudget
+  };
+  function vueCourante() {
     var v = location.hash.replace('#', '') || 'accueil';
-    if (VUES.indexOf(v) < 0) v = 'accueil';
+    return VUES.indexOf(v) < 0 ? 'accueil' : v;
+  }
+  /* Après un changement (case cochée, durée modifiée) : redessiner l'écran affiché et la fiche ouverte, sans bouger. */
+  function rafraichir() {
+    var y = window.scrollY, v = vueCourante();
+    if (RENDUS[v]) RENDUS[v]();
+    window.scrollTo(0, y);
+    majSousTitre();
+    if (ficheOuverte && $('#fiche').open) ouvrirFiche(ficheOuverte, true);
+  }
+  function refocus(selecteur) {
+    var el = (ficheOuverte && $('#fiche').querySelector(selecteur)) || $('#vue-' + vueCourante()).querySelector(selecteur);
+    if (el) el.focus({ preventScroll: true });
+  }
+
+  /* Dans la liste des étapes, la puce de la section affichée est mise en avant. */
+  var suiviPrevu = false;
+  function suivreSection() {
+    suiviPrevu = false;
+    if (vueCourante() !== 'etapes') return;
+    var barre = document.querySelector('#liste-etapes .barre-sections');
+    if (!barre || barre.hidden) return;
+    var seuil = barre.getBoundingClientRect().bottom + 40, actif = null;
+    document.querySelectorAll('#liste-etapes [data-section-titre]').forEach(function (t) {
+      if (!t.hidden && t.getBoundingClientRect().top <= seuil) actif = t.getAttribute('data-section-titre');
+    });
+    barre.querySelectorAll('.puce').forEach(function (b) {
+      var oui = b.getAttribute('data-section') === actif;
+      if (oui && !b.classList.contains('active')) {
+        var d = b.parentNode;
+        d.scrollLeft = b.offsetLeft - (d.clientWidth - b.offsetWidth) / 2;
+      }
+      b.classList.toggle('active', oui);
+    });
+  }
+  window.addEventListener('scroll', function () {
+    if (!suiviPrevu) { suiviPrevu = true; requestAnimationFrame(suivreSection); }
+  }, { passive: true });
+
+  function afficherVue() {
+    var v = vueCourante();
     majSousTitre();
     majPastille();
     VUES.forEach(function (n) { $('#vue-' + n).hidden = n !== v; });
@@ -1018,15 +1173,8 @@
     document.querySelectorAll('.onglets a').forEach(function (a) {
       if (a.getAttribute('data-vue') === onglet) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
-    if (v === 'accueil') rendreAccueil();
-    if (v === 'etapes') rendreEtapes();
-    if (v === 'planifier') rendrePlanificateur();
-    if (v === 'plus') rendrePlus();
-    if (v === 'resas') rendreReservations();
-    if (v === 'conseils') rendreConseils();
-    if (v === 'propositions') rendrePropositions();
-    if (v === 'afaire') rendreAFaire();
-    if (v === 'budget') rendreBudget();
+    if (RENDUS[v]) RENDUS[v]();
+    suivreSection();
     document.body.classList.toggle('sur-carte', v === 'carte');
     if (v === 'carte') {
       ajusterCarte();
@@ -1038,8 +1186,15 @@
 
   function evenements() {
     document.addEventListener('click', function (ev) {
-      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne');
+      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],[data-aller-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne,#bouton-position,#afaire-masquer,#partager');
       if (!c) return;
+      if (c.hasAttribute('data-plan-ouvrir')) sectionsOuvertes[c.getAttribute('data-plan-ouvrir')] = true;
+      if (c.hasAttribute('data-aller-section')) {
+        // Depuis la frise de l'accueil : ouvrir les étapes directement à la bonne section
+        var sec = c.getAttribute('data-aller-section');
+        setTimeout(function () { var t = document.getElementById('section-' + sec); if (t) t.scrollIntoView({ block: 'start' }); }, 60);
+        return;
+      }
       if (c.hasAttribute('data-section')) {
         var cible = document.getElementById('section-' + c.getAttribute('data-section'));
         if (cible) cible.scrollIntoView({ block: 'start' });
@@ -1062,23 +1217,21 @@
         var et = donnees.etapes.filter(function (x) { return x.id === eid; })[0];
         var v = joursBase(et) + (c.hasAttribute('data-plus') ? 1 : -1);
         plan.jours[eid] = Math.max(0, Math.min(60, v));
-        sauverPlan(); rendrePlanificateur();
-        var b = document.querySelector('[data-' + (c.hasAttribute('data-plus') ? 'plus' : 'moins') + '="' + eid + '"]');
-        if (b) b.focus();
+        sauverPlan(); rafraichir();
+        refocus('[data-' + (c.hasAttribute('data-plus') ? 'plus' : 'moins') + '="' + eid + '"]');
       }
       else if (c.hasAttribute('data-marge-moins') || c.hasAttribute('data-marge-plus')) {
         var plus = c.hasAttribute('data-marge-plus');
         var pid = c.getAttribute(plus ? 'data-marge-plus' : 'data-marge-moins');
         plan.marges[pid] = Math.max(0, Math.min(60, margePays(pid) + (plus ? 1 : -1)));
-        sauverPlan(); rendrePlanificateur();
-        var bm = document.querySelector('[data-marge-' + (plus ? 'plus' : 'moins') + '="' + pid + '"]');
-        if (bm) bm.focus();
+        sauverPlan(); rafraichir();
+        refocus('[data-marge-' + (plus ? 'plus' : 'moins') + '="' + pid + '"]');
       }
       else if (c.hasAttribute('data-copier')) copier(c.getAttribute('data-copier'));
       else if (c.hasAttribute('data-filtre')) { filtreResa = c.getAttribute('data-filtre'); rendreReservations(); }
       else if (c.id === 'plan-copier') copier(resumeTexte());
       else if (c.id === 'plan-reset') {
-        if (confirm('Revenir aux durées et activités de départ ?')) { plan = { debut: null, jours: {}, activites: {}, marges: {} }; sauverPlan(); rendrePlanificateur(); toast('Valeurs de départ rétablies'); }
+        if (confirm('Revenir aux durées et activités de départ ?')) { plan = { debut: null, jours: {}, activites: {}, marges: {} }; sauverPlan(); rafraichir(); toast('Valeurs de départ rétablies'); }
       }
       else if (c.id === 'bouton-activites') {
         var on = c.getAttribute('aria-pressed') !== 'true';
@@ -1086,24 +1239,33 @@
         if (carte) { if (on) coucheActivites.addTo(carte); else carte.removeLayer(coucheActivites); }
       }
       else if (c.id === 'bouton-ensemble') vueEnsemble();
+      else if (c.id === 'bouton-position') localiser();
+      else if (c.id === 'afaire-masquer') {
+        masquerFaits = !masquerFaits;
+        try { localStorage.setItem(CLE_MASQUER, masquerFaits ? '1' : '0'); } catch (e) { /* ignoré */ }
+        rendreAFaire(); refocus('#afaire-masquer');
+      }
+      else if (c.id === 'partager') {
+        var adresse = location.origin + location.pathname;
+        if (navigator.share) navigator.share({ title: donnees.voyage.titre, url: adresse }).catch(function () { /* partage annulé */ });
+        else copier(adresse, 'Lien copié');
+      }
       else if (c.id === 'bouton-hors-ligne') prechargerCarte();
     });
 
     document.addEventListener('change', function (ev) {
       var t = ev.target;
-      if (t.id === 'plan-debut' && t.value) { plan.debut = t.value; sauverPlan(); rendrePlanificateur(); }
+      if (t.id === 'plan-debut' && t.value) { plan.debut = t.value; sauverPlan(); rafraichir(); }
       else if (t.hasAttribute && t.hasAttribute('data-act')) {
         plan.activites[t.getAttribute('data-act')] = t.checked;
-        sauverPlan(); rendrePlanificateur();
-        var cb = document.querySelector('[data-act="' + t.getAttribute('data-act') + '"]');
-        if (cb) cb.focus();
+        sauverPlan(); rafraichir();
+        refocus('[data-act="' + t.getAttribute('data-act') + '"]');
       }
       else if (t.hasAttribute && t.hasAttribute('data-fait')) {
         var fid = t.getAttribute('data-fait');
         faits[fid] = t.checked;
-        sauverFaits(); rendreAFaire();
-        var cf = document.querySelector('[data-fait="' + fid + '"]');
-        if (cf) cf.focus();
+        sauverFaits(); rafraichir();
+        refocus('[data-fait="' + fid + '"]');
         if (t.checked) toast('C\'est fait ✓');
       }
     });
@@ -1111,6 +1273,7 @@
     // Recherche dans les étapes
     $('#bouton-recherche').addEventListener('click', function () { basculerRecherche(); });
     $('#recherche-etapes').addEventListener('input', filtrerEtapes);
+    $('#recherche-conseils').addEventListener('input', filtrerConseils);
     $('#recherche-etapes').addEventListener('keydown', function (ev) {
       if (ev.key === 'Escape') basculerRecherche(false);
       if (ev.key === 'Enter') ev.target.blur();

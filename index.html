@@ -40,7 +40,9 @@
       <div id="carte" role="application" aria-label="Carte de l'itinéraire"></div>
       <div class="carte-outils">
         <button type="button" class="puce" id="bouton-activites" aria-pressed="true">Activités</button>
-        <button type="button" class="puce" id="bouton-ensemble">Vue d'ensemble</button>        <button type="button" class="puce" id="bouton-hors-ligne">Carte hors ligne</button>
+        <button type="button" class="puce" id="bouton-ensemble">Vue d'ensemble</button>
+        <button type="button" class="puce" id="bouton-position">📍 Ma position</button>
+        <button type="button" class="puce" id="bouton-hors-ligne">Carte hors ligne</button>
       </div>
       <p class="carte-etat" id="carte-etat" role="status" aria-live="polite"></p>
     </section>
@@ -77,6 +79,10 @@
 
     <section class="vue" id="vue-conseils" aria-labelledby="t-conseils" hidden>
       <div class="tete-vue"><a class="retour" href="#plus" aria-label="Retour">‹</a><h2 class="titre-vue" id="t-conseils">Conseils</h2></div>
+      <div class="zone-recherche">
+        <label class="sr-only" for="recherche-conseils">Rechercher dans les conseils</label>
+        <input type="search" id="recherche-conseils" placeholder="Altitude, argent, frontière, urgence…" autocomplete="off" enterkeyhint="search">
+      </div>
       <p class="intro">Touchez un conseil pour le déplier.</p>
       <div id="conseils"></div>
     </section>
