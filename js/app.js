@@ -417,6 +417,8 @@
     }).addTo(carte);
 
     var cal = calendrier();
+    dessinerFrontieres();
+
     // Un segment par trajet, dessiné selon le moyen de transport.
     cal.etapes.forEach(function (x, i) {
       if (i === 0) return;
@@ -470,6 +472,48 @@
     vueEnsemble();
     etiquettes();
   }
+  /* Frontières des pays du voyage (data/frontieres.geojson) et nom en grand.
+     Couleur et position du nom : champs "couleur" et "etiquette" du pays dans voyage.json. */
+  var PAYS_PAR_DEFAUT = {
+    perou: { nom: 'Pérou', couleur: '#c8102e', etiquette: [-6.6, -74.4] },
+    bolivie: { nom: 'Bolivie', couleur: '#2e7d32', etiquette: [-16.8, -64.6] },
+    chili: { nom: 'Chili', couleur: '#1565c0', etiquette: [-24.5, -69.6] },
+    argentine: { nom: 'Argentine', couleur: '#4a90c2', etiquette: [-35.5, -65] }
+  };
+  function dessinerFrontieres() {
+    carte.createPane('frontieres').style.zIndex = 350;
+    carte.createPane('nomsPays').style.zIndex = 380;
+    carte.getPane('nomsPays').style.pointerEvents = 'none';
+
+    fetch('data/frontieres.geojson').then(function (r) { return r.json(); }).then(function (geo) {
+      geo.features.forEach(function (f) {
+        var id = f.properties.pays;
+        var p = donnees.pays.filter(function (x) { return x.id === id; })[0] || {};
+        var d = PAYS_PAR_DEFAUT[id] || {};
+        var couleur = p.couleur || d.couleur || '#1f5f66';
+        L.geoJSON(f, {
+          pane: 'frontieres', interactive: false,
+          style: { color: couleur, weight: 3, opacity: .9, fillColor: couleur, fillOpacity: .07 }
+        }).addTo(carte);
+        var pos = p.etiquette || d.etiquette;
+        if (pos) {
+          L.marker(pos, {
+            pane: 'nomsPays', interactive: false, keyboard: false,
+            icon: L.divIcon({ className: '', html: '<span class="nom-pays" style="color:' + esc(couleur) + '">' + esc(p.nom || d.nom || f.properties.nom) + '</span>', iconSize: [0, 0] })
+          }).addTo(carte);
+        }
+      });
+    }).catch(function () { /* pas de frontières : la carte reste utilisable */ });
+
+    function tailleNoms() {
+      var z = carte.getZoom(), c = carte.getContainer();
+      c.classList.toggle('noms-petits', z <= 4);
+      c.classList.toggle('noms-caches', z >= 9);
+    }
+    carte.on('zoomend', tailleNoms);
+    tailleNoms();
+  }
+
   function vueEnsemble() {
     if (!carte) return;
     var pts = donnees.etapes.map(function (e) { return [e.lat, e.lng]; });

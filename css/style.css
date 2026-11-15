@@ -204,6 +204,14 @@ body.sur-carte { overflow: hidden; }
 }
 .leaflet-tooltip.etiquette::before { display: none; }
 .sans-etiquettes .leaflet-tooltip.etiquette { display: none; }
+.nom-pays {
+  position: absolute; transform: translate(-50%, -50%); white-space: nowrap;
+  font: 900 30px/1 system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase;
+  opacity: .55;
+  text-shadow: 0 0 3px #fff, 0 0 6px #fff, 0 0 10px #fff;
+}
+.noms-petits .nom-pays { font-size: 18px; }
+.noms-caches .nom-pays { display: none; }
 .legende {
   display: flex; flex-direction: column; gap: 3px; padding: 6px 8px; border-radius: 8px;
   background: rgba(255,255,255,.92); color: #1b2a30; font: 600 12px/1.2 system-ui, sans-serif;
