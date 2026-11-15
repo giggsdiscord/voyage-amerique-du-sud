@@ -189,6 +189,8 @@
     var html = '';
 
     var evenements = [];
+    if (donnees.vols && donnees.vols.aller) evenements.push({ quand: dateVol('aller', cal), heure: '', titre: '✈️ ' + donnees.vols.aller.titre, provisoire: true });
+    if (donnees.vols && donnees.vols.retour) evenements.push({ quand: dateVol('retour', cal), heure: '', titre: '✈️ ' + donnees.vols.retour.titre, provisoire: true });
     cal.etapes.forEach(function (x) {
       evenements.push({ quand: x.arrivee, heure: '', titre: 'Arrivée : ' + x.etape.nom, etape: x.etape.id, provisoire: true });
     });
@@ -200,10 +202,11 @@
     var duJour = evenements.filter(function (ev) { return ev.quand === auj; });
 
     var dureeTotale = Math.round((cal.fin - cal.debut) / JOUR);
+    var depart = dateVol('aller', cal) || cal.debut;
     if (auj < cal.debut) {
-      var n = Math.round((cal.debut - auj) / JOUR);
+      var n = Math.max(0, Math.round((depart - auj) / JOUR));
       html += '<div class="bloc bloc-heros"><p class="surtitre">Avant le départ</p>' +
-        '<div class="ligne"><span class="grand-chiffre">' + n + '</span><span>' + (n > 1 ? 'jours avant le départ' : 'jour avant le départ') + '<br><span class="doux petit">' + esc(dLong(cal.debut)) + '</span></span></div>' +
+        '<div class="ligne"><span class="grand-chiffre">' + n + '</span><span>' + (n > 1 ? 'jours avant le départ' : (n === 1 ? 'jour avant le départ' : 'C\'est le jour du départ !')) + '<br><span class="doux petit">✈️ ' + esc(dLong(depart)) + '</span></span></div>' +
         '<p class="doux petit" style="margin:10px 0 0">' + jours(dureeTotale) + ' de voyage · ' + pluriel(cal.etapes.length, 'étape') + ' · ' + donnees.pays.map(drapeau).join(' ') + '</p></div>';
     } else if (auj < cal.fin) {
       var jourVoyage = Math.round((auj - cal.debut) / JOUR) + 1;
@@ -288,6 +291,7 @@
       donnees.pays.map(function (p) {
         return '<button type="button" class="puce" data-section="' + esc(p.id) + '">' + drapeau(p) + ' ' + esc(p.nom) + '</button>';
       }).join('') + '</div></div>';
+    html += carteVol('aller', cal);
     donnees.pays.forEach(function (p) {
       var et = cal.etapes.filter(function (x) { return x.etape.pays === p.id; });
       if (!et.length) return;
@@ -320,9 +324,27 @@
         html += '</div>';
       });
     });
+    html += carteVol('retour', cal);
     html += '<div class="bloc vide" id="aucun-resultat" hidden><p style="font-size:2rem;margin:0">🔍</p><h3>Aucune étape trouvée</h3><p class="doux">Essayez un autre mot : une ville, une activité, un trek…</p></div>';
     $('#liste-etapes').innerHTML = html;
     filtrerEtapes();
+  }
+
+  /* Date du vol international : la veille du début pour l'aller (décalage), le dernier jour pour le retour */
+  function dateVol(k, cal) {
+    var v = (donnees.vols || {})[k];
+    if (!v) return null;
+    return k === 'aller' ? cal.debut + (v.decalage || 0) * JOUR : cal.fin + (v.decalage || 0) * JOUR;
+  }
+  function carteVol(k, cal) {
+    var v = (donnees.vols || {})[k];
+    if (!v) return '';
+    var date = dateVol(k, cal);
+    return '<div class="groupe-etape" data-pays="vols" data-recherche="' + esc(normaliser(v.titre + ' vol avion france ' + (v.details || ''))) + '">' +
+      '<div class="vol-carte"><span class="ico" aria-hidden="true">✈</span><div><p class="surtitre" style="margin:0">' + (k === 'aller' ? 'Départ' : 'Retour') + '</p>' +
+      '<h4>' + esc(v.titre) + '</h4><p class="petit">' + esc(dLong(date)) + '</p>' +
+      (v.duree ? '<p class="petit doux">' + esc(v.duree) + '</p>' : '') +
+      (v.details ? '<p class="petit doux">' + esc(v.details) + '</p>' : '') + '</div></div></div>';
   }
 
   /* ---------- Recherche dans les étapes ---------- */
@@ -790,6 +812,8 @@
 
     vueEnsemble();
     etiquettes();
+    // Les arcs des vols se dessinent une fois la carte positionnée (Leaflet a besoin d'une vue)
+    dessinerVols();
   }
   /* Frontières des pays du voyage (data/frontieres.geojson) et nom en grand.
      Couleur et position du nom : champs "couleur" et "etiquette" du pays dans voyage.json. */
@@ -831,6 +855,56 @@
     }
     carte.on('zoomend', tailleNoms);
     tailleNoms();
+  }
+
+  /* Vols internationaux : arcs en pointillés depuis et vers la France */
+  var coucheVols = null;
+  function arc(a, b) {
+    // Courbe de Bézier entre deux aéroports, légèrement bombée, pour évoquer un trajet aérien
+    var lat1 = a.lat, lng1 = a.lng, lat2 = b.lat, lng2 = b.lng;
+    var mlat = (lat1 + lat2) / 2, mlng = (lng1 + lng2) / 2;
+    var dlat = lat2 - lat1, dlng = lng2 - lng1;
+    var k = 0.18;
+    var clat = mlat + dlng * k, clng = mlng - dlat * k;
+    var pts = [];
+    for (var i = 0; i <= 40; i++) {
+      var t = i / 40, u = 1 - t;
+      pts.push([u * u * lat1 + 2 * u * t * clat + t * t * lat2, u * u * lng1 + 2 * u * t * clng + t * t * lng2]);
+    }
+    return pts;
+  }
+  function dessinerVols() {
+    var vols = donnees.vols;
+    if (!vols) return;
+    coucheVols = L.layerGroup();
+    var cal = calendrier();
+    [['aller', cal.debut + ((vols.aller && vols.aller.decalage) || 0) * JOUR], ['retour', cal.fin]].forEach(function (v) {
+      var vol = vols[v[0]];
+      if (!vol || !vol.points || vol.points.length < 2) return;
+      var popup = '<b>✈️ ' + esc(vol.titre) + '</b><br>' + esc(dLong(v[1])) + '<br><span>' + esc(vol.duree || '') + '</span>';
+      for (var i = 0; i < vol.points.length - 1; i++) {
+        var seg = arc(vol.points[i], vol.points[i + 1]);
+        L.polyline(seg, { color: '#2b6cb0', weight: 3, opacity: .9, dashArray: '2 8', lineCap: 'round', interactive: false }).addTo(coucheVols);
+        L.polyline(seg, { color: '#000', weight: 22, opacity: 0 }).bindPopup(popup).addTo(coucheVols);
+      }
+      vol.points.forEach(function (p) {
+        if (p.nom !== 'Paris' || v[0] !== 'aller') return;
+        L.marker([p.lat, p.lng], {
+          title: 'France',
+          icon: L.divIcon({ className: '', html: '<span class="marqueur marqueur-vol">✈</span>', iconSize: [30, 30], iconAnchor: [15, 15] })
+        }).bindPopup('<b>✈️ France (Paris)</b><br>Départ le ' + esc(dLong(cal.debut + ((vols.aller && vols.aller.decalage) || 0) * JOUR)) +
+          '<br>Retour le ' + esc(dLong(cal.fin))).addTo(coucheVols);
+      });
+    });
+    coucheVols.addTo(carte);
+  }
+  function voirVols() {
+    if (!carte || !donnees.vols) return;
+    var pts = [];
+    ['aller', 'retour'].forEach(function (k) { ((donnees.vols[k] || {}).points || []).forEach(function (p) { pts.push([p.lat, p.lng]); }); });
+    donnees.etapes.forEach(function (e) { pts.push([e.lat, e.lng]); });
+    if (coucheVols && !carte.hasLayer(coucheVols)) coucheVols.addTo(carte);
+    carte.fitBounds(pts, { padding: [30, 30] });
   }
 
   function vueEnsemble() {
@@ -940,13 +1014,17 @@
     if (v === 'afaire') rendreAFaire();
     if (v === 'budget') rendreBudget();
     document.body.classList.toggle('sur-carte', v === 'carte');
-    if (v === 'carte') { ajusterCarte(); initCarte(); if (carte) setTimeout(function () { carte.invalidateSize(); }, 50); }
+    if (v === 'carte') {
+      ajusterCarte();
+      try { initCarte(); } catch (err) { $('#carte-etat').textContent = 'Erreur carte : ' + (err && err.message); throw err; }
+      if (carte) setTimeout(function () { carte.invalidateSize(); }, 50);
+    }
     if (v !== 'carte') window.scrollTo(0, 0);
   }
 
   function evenements() {
     document.addEventListener('click', function (ev) {
-      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne');
+      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne,#bouton-vols');
       if (!c) return;
       if (c.hasAttribute('data-section')) {
         var cible = document.getElementById('section-' + c.getAttribute('data-section'));
@@ -994,6 +1072,7 @@
         if (carte) { if (on) coucheActivites.addTo(carte); else carte.removeLayer(coucheActivites); }
       }
       else if (c.id === 'bouton-ensemble') vueEnsemble();
+      else if (c.id === 'bouton-vols') voirVols();
       else if (c.id === 'bouton-hors-ligne') prechargerCarte();
     });
 

@@ -6,6 +6,11 @@
     "datesProvisoires": true
   },
 
+  "vols": {
+    "aller": {"titre":"Vol aller : France → Buenos Aires → Ushuaïa","de":"Paris","vers":"Ushuaïa","escales":["Buenos Aires"],"decalage":-1,"duree":"Environ 13 h 30 jusqu'à Buenos Aires (vol de nuit), puis 3 h 30 jusqu'à Ushuaïa","details":"Départ la veille au soir, arrivée à Ushuaïa le lendemain. Attention : les vols internationaux arrivent à Ezeiza (EZE) et les vols pour Ushuaïa partent souvent d'Aeroparque (AEP), à environ 1 h en taxi : prévoir une correspondance large, ou un billet unique avec bagages enregistrés jusqu'au bout.","statut":"propose","points":[{"nom":"Paris","lat":49.0097,"lng":2.5479},{"nom":"Buenos Aires","lat":-34.8222,"lng":-58.5358},{"nom":"Ushuaïa","lat":-54.8433,"lng":-68.2958}]},
+    "retour": {"titre":"Vol retour : Lima → France","de":"Lima","vers":"Paris","escales":[],"decalage":0,"duree":"Environ 12 h en direct (vol de nuit), ou avec une escale en Europe","details":"Arrivée en France le lendemain. Réserver aller et retour ensemble (billet « open-jaw » : arrivée à Buenos Aires, départ de Lima), souvent moins cher que deux allers simples.","statut":"propose","points":[{"nom":"Lima","lat":-12.0219,"lng":-77.1143},{"nom":"Paris","lat":49.0097,"lng":2.5479}]}
+  },
+
   "pays": [
     {"id":"patagonie","nom":"Patagonie","drapeau":"🏔️","couleur":"#0e7490","marge":17,"fenetre":{"debut":"2028-02-15","fin":"2028-04-30"}},
     {"id":"chili","nom":"Chili (centre)","drapeau":"🇨🇱","couleur":"#1565c0","marge":2,"fenetre":{"debut":"2028-05-01","fin":"2028-05-13"}},
@@ -597,7 +602,7 @@
     {"id":"cartes","categorie":"avant","titre":"Cartes bancaires sans frais","detail":"Deux cartes de réseaux différents."},
     {"id":"esim","categorie":"avant","titre":"eSIM ou cartes SIM","detail":"Forfait données pour l'Amérique du Sud."},
     {"id":"carte-hors-ligne","categorie":"avant","titre":"Télécharger la carte hors ligne","detail":"Bouton « Carte hors ligne » de cette appli, en wifi."},
-    {"id":"vol-aller","categorie":"vol","titre":"Vol aller → Buenos Aires → Ushuaïa","detail":"International, puis vol intérieur.","etape":"ushuaia","tot":true},
+    {"id":"vol-aller","categorie":"vol","titre":"Vol aller France → Buenos Aires → Ushuaïa","detail":"International, puis vol intérieur.","etape":"ushuaia","tot":true},
     {"id":"vol-retour","categorie":"vol","titre":"Vol retour Lima → France","detail":"International, open-jaw avec l'aller.","etape":"lima","fin":true,"tot":true},
     {"id":"vol-salta-iguazu","categorie":"vol","titre":"Vol Iguazú → Salta","detail":"Direct certains jours seulement.","etape":"salta"},
     {"id":"vol-iguazu-santiago","categorie":"vol","titre":"Vol Santiago → Iguazú","detail":"Avec escale.","etape":"iguazu"},
