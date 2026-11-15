@@ -220,7 +220,7 @@
         html += '<div class="bloc"><p class="surtitre">Aujourd\'hui · ' + esc(dJour(auj)) + '</p>' +
           '<div class="ligne"><span class="num">' + enCours.num + '</span><div><h3>' + esc(enCours.etape.nom) + '</h3>' +
           '<p class="doux petit">Jour ' + jourN + ' sur ' + enCours.total + ' · départ le ' + esc(dCourt(enCours.depart)) + '</p></div></div>';
-        var ee = enCours.etape, hh = ee.hebergement, suivante = cal.etapes[enCours.num], points = [];
+        var ee = enCours.etape, suivante = cal.etapes[enCours.num], points = [];
         // Le fil de la journée : trajet d'arrivée, réservations, hébergement, activités, note, départ du lendemain
         if (auj === enCours.arrivee && ee.trajet) points.push(['<span aria-hidden="true">' + icones(ee.trajet) + '</span>', '<b>Trajet du jour</b><br><span class="doux">' + esc(ee.trajet.resume || nomsModes(ee.trajet)) + '</span>']);
         duJour.filter(function (ev) { return ev.resa; }).forEach(function (ev) {
@@ -228,10 +228,17 @@
             (ev.resa.lieu ? '<br><span class="doux">' + esc(ev.resa.lieu) + '</span>' : '') +
             (lienDriveSur(ev.resa.lienDrive) ? '<br><a href="' + esc(ev.resa.lienDrive) + '" target="_blank" rel="noopener noreferrer">Ouvrir le billet (Drive)</a>' : '')]);
         });
-        points.push(['🛏️', hh && hh.nom ? '<b>' + esc(hh.nom) + '</b>' + (hh.adresse ? '<br><a href="' + esc(lienMaps(0, 0, hh.nom + ' ' + hh.adresse)) + '" target="_blank" rel="noopener noreferrer">' + esc(hh.adresse) + '</a>' : '')
-          : '<b>Hébergement à trouver</b>']);
+        var hs = heb(ee);
+        if (ee.id !== 'sud-lipez') points.push(['🛏️', (hs.nom ? '<b>' + esc(hs.nom) + '</b> ' : '<b>Hébergement</b> ') + badgeHeb(hs.statut) +
+          (hs.adresse ? '<br><a href="' + esc(lienMaps(0, 0, hs.nom + ' ' + hs.adresse)) + '" target="_blank" rel="noopener noreferrer">' + esc(hs.adresse) + '</a>' : '') +
+          (lienSur(hs.lien) ? '<br><a href="' + esc(hs.lien) + '" target="_blank" rel="noopener noreferrer">Ouvrir la réservation</a>' : '')]);
         if (enCours.activites.length) points.push(['🎟️', '<b>À faire ici</b><br><span class="doux">' + esc(enCours.activites.map(function (a) { return a.nom; }).join(' · ')) + '</span>']);
         if (notesPerso[ee.id]) points.push(['🗒️', '<span class="texte-journal">' + esc(notesPerso[ee.id]) + '</span>']);
+        var precedente = cal.etapes[enCours.num - 2];
+        if (ee.paysReel && (!precedente || precedente.etape.paysReel !== ee.paysReel) && auj - enCours.arrivee <= JOUR) {
+          points.unshift(['🛂', '<b>Vous entrez ' + ({ argentine: 'en Argentine', chili: 'au Chili', bolivie: 'en Bolivie', perou: 'au Pérou' }[ee.paysReel] || '') + '</b><br>' +
+            '<a href="#pays" data-pays-ouvrir="' + esc(ee.paysReel) + '">Monnaie, heure, prises, urgences : voir la fiche pays</a>']);
+        }
         var mto = ligneMeteo(ee);
         if (mto) points.push(mto);
         if (suivante && auj + JOUR === enCours.depart && !enCours.marge) {
@@ -437,7 +444,7 @@
         var h = x.etape.hebergement, t = x.etape.trajet;
         // Texte cherchable : nom, section, notes, hébergement, trajet, toutes les activités (même non cochées)
         var maNote = notesPerso[x.etape.id];
-        var cherchable = [x.etape.nom, p.nom, x.etape.notes, maNote, h && h.nom, t && t.resume, t && nomsModes(t)]
+        var cherchable = [x.etape.nom, p.nom, NOMS_PAYS_REEL[x.etape.paysReel], x.etape.notes, maNote, heb(x.etape).nom, t && t.resume, t && nomsModes(t)]
           .concat((x.etape.activites || []).map(function (a) { return a.nom + ' ' + (a.description || ''); })).join(' ');
         var fin = x.finMarge || x.depart;
         var etat = !enVoyage ? '' : (auj >= fin ? ' passee' : (auj >= x.arrivee ? ' en-cours' : ''));
@@ -451,7 +458,7 @@
           '<span class="num" style="background:' + esc(p.couleur) + '">' + x.num + '</span>' +
           '<span class="etape-corps"><h4>' + esc(x.etape.nom) + (etat === ' en-cours' ? ' <span class="badge ok">Vous êtes ici</span>' : '') + '</h4>' +
           '<p class="petit">' + esc(dJour(x.arrivee)) + ' → ' + esc(dJour(x.depart)) + ' · <b>' + jours(x.total) + '</b></p>' +
-          '<p class="petit doux">🛏️ ' + (h && h.nom ? esc(h.nom) : 'Hébergement à trouver') + '</p>' +
+          (x.etape.id === 'sud-lipez' ? '' : '<p class="petit doux">🛏️ ' + (heb(x.etape).nom ? esc(heb(x.etape).nom) : 'Hébergement') + ' ' + badgeHeb(heb(x.etape).statut) + '</p>') +
           (x.activites.length ? '<p class="petit doux">' + esc(x.activites.map(function (a) { return a.nom; }).join(' · ')) + '</p>' : '') +
           (x.etape.notes ? '<p class="petit doux">📝 ' + notes(x.etape.notes) + '</p>' : '') +
           (maNote ? '<p class="petit note-apercu">🗒️ ' + esc(maNote.length > 90 ? maNote.slice(0, 90) + '…' : maNote) + '</p>' : '') +
@@ -541,10 +548,10 @@
       '<div class="info"><b>Dates</b>' + esc(dJour(x.arrivee)) + ' → ' + esc(dJour(x.depart)) + '</div>' +
       '<div class="info"><b>Durée</b>' + jours(x.total) + '</div>' +
       (e.altitude ? '<div class="info"><b>Altitude</b>' + e.altitude.toLocaleString('fr-FR') + ' m</div>' : '') +
-      '<div class="info"><b>Hébergement</b>' + (h && h.nom ? esc(h.nom) : 'À trouver') + '</div>' +
+      '<div class="info"><b>Hébergement</b>' + (e.id === 'sud-lipez' ? 'Compris dans le circuit' : esc(heb(e).nom || statutHeb(heb(e).statut)[1])) + '</div>' +
+      (e.paysReel ? '<a class="info info-lien" href="#pays" data-fermer data-pays-ouvrir="' + esc(e.paysReel) + '"><b>Fiche pays</b>' + drapeau({ id: e.paysReel }) + ' ' + esc(NOMS_PAYS_REEL[e.paysReel] || '') + ' ›</a>' : '') +
       '</div>';
-    if (h && (h.adresse || h.notes)) html += '<p class="petit">' + esc(h.adresse || '') + (h.notes ? '<br><span class="doux">' + esc(h.notes) + '</span>' : '') +
-      (h.adresse ? '<br><a href="' + esc(lienMaps(0, 0, (h.nom || '') + ' ' + h.adresse)) + '" target="_blank" rel="noopener noreferrer">Itinéraire vers l\'hébergement</a>' : '') + '</p>';
+    if (h && h.notes) html += '<p class="petit doux">' + esc(h.notes) + '</p>';
     if (e.notes) html += '<p>📝 ' + notes(e.notes) + '</p>';
 
     if (e.trajet) {
@@ -575,6 +582,7 @@
     if (resas.length) {
       html += '<h3>Réservations</h3>' + resas.map(carteResa).join('');
     }
+    if (e.id !== 'sud-lipez') html += formulaireHeb(e);
     html += '<h3><label for="note-etape">Mes notes</label></h3>' +
       '<textarea class="note-etape" id="note-etape" data-note="' + esc(e.id) + '" rows="3" placeholder="Adresses, bons plans, choses à ne pas oublier…">' + esc(notesPerso[e.id] || '') + '</textarea>' +
       '<p class="petit doux" style="margin:4px 0 0">Enregistré automatiquement sur ce téléphone.</p>';
@@ -617,6 +625,7 @@
       '<p style="margin:10px 0 0">Fin : <b>' + esc(dLong(cal.fin)) + '</b> · ' + jours(total) + '</p>' +
       bilanPays(cal).map(lignePays).join('') + '</div>';
 
+    html += '<div class="boutons" style="margin:0 0 12px"><a class="bouton" href="#calendrier">🗓️ Voir le calendrier</a></div>';
     html += '<p class="doux petit">Touchez une section pour la déplier. Les « jours de base » couvrent l\'arrivée, la visite et le repos ; chaque activité cochée ajoute sa durée. Vos réglages restent sur ce téléphone.</p>';
 
     var bilans = bilanPays(cal);
@@ -659,6 +668,8 @@
     html += '<div class="boutons"><button type="button" class="bouton plein" id="plan-copier">Copier le résumé</button>' +
       '<button type="button" class="bouton" id="plan-reset">Revenir aux valeurs de départ</button></div>' +
       '<p class="doux petit">« Copier le résumé » prépare un texte à me renvoyer pour figer ces dates dans le fichier du voyage.</p>';
+
+    html += blocScenarios();
 
     var zone = $('#planificateur');
     var y = window.scrollY;
@@ -777,25 +788,6 @@
 
   /* ---------- Propositions ---------- */
   var STATUTS_PROP = { 'a-decider': 'À décider', acceptee: 'Retenue', refusee: 'Pas retenue' };
-  function nbPropositionsADecider() {
-    return (donnees.propositions || []).filter(function (p) { return p.statut === 'a-decider'; }).length;
-  }
-  function rendrePropositions() {
-    var liste = donnees.propositions || [];
-    var groupes = [['a-decider', 'À décider'], ['acceptee', 'Retenues'], ['refusee', 'Pas retenues']];
-    $('#propositions').innerHTML = groupes.map(function (g) {
-      var l = liste.filter(function (p) { return p.statut === g[0]; });
-      if (!l.length) return '';
-      return '<h3 class="categorie">' + esc(g[1]) + ' (' + l.length + ')</h3>' + l.map(function (p) {
-        var corps = (p.impact ? '<p class="petit"><b>Impact :</b> ' + esc(p.impact) + '</p>' : '') + puces(p.details) +
-          (p.statut === 'a-decider' ? '<p class="petit doux">Dites-moi « on retient » ou « on ne retient pas » et je mets l\'itinéraire à jour.</p>' : '');
-        var ico = p.statut === 'a-decider' ? '💡' : (p.statut === 'acceptee' ? '✅' : '✖️');
-        return deroulant(ico, esc(p.titre), esc(p.resume || ''), corps || '<p class="doux petit">Déjà intégré à l\'itinéraire.</p>',
-          '<span class="badge ' + esc(p.statut) + '">' + esc(STATUTS_PROP[p.statut] || p.statut) + '</span>');
-      }).join('');
-    }).join('');
-  }
-
   /* ---------- À faire : liste à cocher, cochée sur ce téléphone ---------- */
   var CLE_FAIT = 'voyage-afaire-v1';
   var CATS_AFAIRE = [
@@ -806,7 +798,7 @@
   function sauverFaits() { try { localStorage.setItem(CLE_FAIT, JSON.stringify(faits)); } catch (e) { /* ignoré */ } }
 
   function listeAFaire() {
-    var cal = calendrier();
+    var cal = calendrier(), auj = aujourdhui();
     var quand = {};
     cal.etapes.forEach(function (x) { quand[x.etape.id] = x; });
     var l = (donnees.aFaire || []).map(function (a) {
@@ -817,24 +809,28 @@
     cal.etapes.forEach(function (x) {
       var e = x.etape;
       if (e.id === 'sud-lipez') return;
-      var h = e.hebergement;
-      l.push({ id: 'heb-' + e.id, categorie: 'hebergement', titre: e.nom, detail: (h && h.nom) ? h.nom : jours(x.total) + ' sur place',
-        date: x.arrivee, fait: !!(h && h.reserve) });
+      var h = heb(e);
+      l.push({ id: 'heb-' + e.id, categorie: 'hebergement', titre: e.nom, detail: (h.nom || jours(x.total) + ' sur place') + ' · ' + statutHeb(h.statut)[1].toLowerCase(),
+        date: x.arrivee, fait: hebRegle(h.statut), delai: e.pays === 'patagonie' ? 60 : undefined, heb: true });
     });
-    l.forEach(function (a) { a.coche = Object.prototype.hasOwnProperty.call(faits, a.id) ? !!faits[a.id] : !!a.fait; });
+    l.forEach(function (a) {
+      a.coche = a.heb ? a.fait : (Object.prototype.hasOwnProperty.call(faits, a.id) ? !!faits[a.id] : !!a.fait);
+      a.echeance = echeance(a, cal);
+      a.etat = etatEcheance(a, auj);
+    });
     return l;
   }
-  /* Les prochaines choses à faire : d'abord ce qui se réserve très tôt, puis par date. */
+  /* Les prochaines choses à faire : celles dont l'échéance arrive en premier. */
   function prioritesAFaire(n) {
-    return listeAFaire().filter(function (a) { return !a.coche && a.categorie !== 'hebergement'; }).sort(function (a, b) {
-      return (b.tot ? 1 : 0) - (a.tot ? 1 : 0) || (a.date || 0) - (b.date || 0);
-    }).slice(0, n);
+    return listeAFaire().filter(function (a) { return !a.coche; }).sort(function (a, b) { return a.echeance - b.echeance; }).slice(0, n);
   }
   function caseAFaire(a) {
+    var badge = a.etat === 'retard' ? ' <span class="badge alerte">En retard</span>' : (a.etat === 'bientot' ? ' <span class="badge option">Bientôt</span>' : (a.tot && !a.coche ? ' <span class="badge suggestion">Très tôt</span>' : ''));
     return '<label class="case' + (a.coche ? ' fait' : '') + '"><input type="checkbox" data-fait="' + esc(a.id) + '"' + (a.coche ? ' checked' : '') + '>' +
-      '<span class="case-corps"><b>' + esc(a.titre) + '</b>' + (a.tot ? ' <span class="badge alerte">Très tôt</span>' : '') +
-      (a.detail ? '<br><span class="petit doux">' + esc(a.detail) + '</span>' : '') + '</span>' +
-      (a.date ? '<span class="duree">' + esc(dCourt(a.date)) + '</span>' : '') + '</label>';
+      '<span class="case-corps"><b>' + esc(a.titre) + '</b>' + badge +
+      (a.detail ? '<br><span class="petit doux">' + esc(a.detail) + '</span>' : '') +
+      (a.coche ? '' : '<br><span class="petit echeance' + (a.etat ? ' ' + a.etat : '') + '">À faire avant le ' + esc(dAn(a.echeance)) + '</span>') + '</span>' +
+      pastilleQui(a.id) + '</label>';
   }
   var CLE_MASQUER = 'voyage-afaire-masquer-v1';
   var masquerFaits = (function () { try { return localStorage.getItem(CLE_MASQUER) === '1'; } catch (e) { return false; } })();
@@ -844,10 +840,20 @@
     var nbFaits = l.filter(function (a) { return a.coche; }).length;
     var html = '<div class="bloc"><div class="ligne entre"><b>' + nbFaits + ' sur ' + l.length + ' faits</b><span class="doux petit">Cochez au fur et à mesure</span></div>' +
       '<div class="jauge"><span style="width:' + Math.round(nbFaits / Math.max(1, l.length) * 100) + '%"></span></div>' +
-      '<p class="doux petit" style="margin:8px 0 0">Les cases cochées restent sur ce téléphone. Pour les partager avec l\'autre téléphone, dites-moi ce qui est fait et je le note dans le fichier du voyage.</p>' +
-      (nbFaits ? '<div class="boutons"><button type="button" class="puce" id="afaire-masquer" aria-pressed="' + masquerFaits + '">Masquer ce qui est fait</button></div>' : '') + '</div>';
+      (function () {
+        var retard = l.filter(function (a) { return a.etat === 'retard'; }).length, bientot = l.filter(function (a) { return a.etat === 'bientot'; }).length;
+        return retard || bientot ? '<p style="margin:10px 0 0">' + (retard ? '<span class="badge alerte">' + retard + ' en retard</span> ' : '') + (bientot ? '<span class="badge option">' + bientot + ' à faire dans le mois</span>' : '') + '</p>' : '';
+      })() +
+      '<p class="doux petit" style="margin:8px 0 0">Chaque ligne indique une date limite conseillée. Les cases cochées restent sur ce téléphone.</p>' +
+      '<div class="defile" style="margin-top:10px" role="group" aria-label="Filtrer par personne">' +
+      [['tout', 'Tout'], ['0', nomQui(0)], ['1', nomQui(1)]].map(function (f) { return '<button type="button" class="puce" data-filtre-qui="' + f[0] + '" aria-pressed="' + (filtreQui === f[0]) + '">' + esc(f[1]) + '</button>'; }).join('') +
+      (nbFaits ? '<button type="button" class="puce" id="afaire-masquer" aria-pressed="' + masquerFaits + '">Masquer ce qui est fait</button>' : '') + '</div>' +
+      '<details class="plus-info"><summary>Qui fait quoi ?</summary><p class="petit doux" style="margin:4px 0 0">Indiquez vos prénoms, puis touchez le petit rond à droite d\'une ligne pour l\'attribuer : à l\'un, à l\'autre, ou aux deux.</p>' +
+      '<div class="rangee"><label class="champ" style="flex:1">Prénom 1<input type="text" data-nom-qui="0" value="' + esc(qui.noms[0] || '') + '" maxlength="20" autocomplete="off"></label>' +
+      '<label class="champ" style="flex:1">Prénom 2<input type="text" data-nom-qui="1" value="' + esc(qui.noms[1] || '') + '" maxlength="20" autocomplete="off"></label></div></details></div>';
+    if (filtreQui !== 'tout') l = l.filter(function (a) { var v = qui.taches[a.id]; return v === +filtreQui || v === 2; });
     CATS_AFAIRE.forEach(function (c) {
-      var items = l.filter(function (a) { return a.categorie === c[0]; }).sort(function (a, b) { return (a.date || 0) - (b.date || 0); });
+      var items = l.filter(function (a) { return a.categorie === c[0]; }).sort(function (a, b) { return a.echeance - b.echeance; });
       if (!items.length) return;
       var n = items.filter(function (a) { return a.coche; }).length;
       var corps = items.filter(function (a) { return !masquerFaits || !a.coche; }).map(caseAFaire).join('') ||
@@ -856,6 +862,7 @@
         '<span class="badge ' + (n === items.length ? 'ok' : 'a-decider') + '">' + n + '/' + items.length + '</span>',
         ' data-afaire-cat="' + c[0] + '"' + (afaireOuvertes[c[0]] ? ' open' : ''));
     });
+    if (filtreQui !== 'tout' && !l.length) html += '<div class="bloc vide"><p class="doux">Aucune tâche attribuée à ' + esc(nomQui(+filtreQui)) + ' pour l\'instant.</p></div>';
     var y = window.scrollY;
     $('#afaire').innerHTML = html;
     window.scrollTo(0, y);
@@ -1263,6 +1270,278 @@
     lecteur.readAsText(fichier);
   }
 
+  /* ================================================================
+     Organisation : échéances, répartition des tâches, hébergements, scénarios,
+     décisions sur les propositions, calendrier, fiches pays, infos d'urgence.
+     Comme le reste, ces données restent sur le téléphone.
+     ================================================================ */
+  var CLES2 = { heb: 'voyage-hebergements-v1', scenarios: 'voyage-scenarios-v1', decisions: 'voyage-decisions-v1', qui: 'voyage-attributions-v1', urgence: 'voyage-urgence-v1' };
+  var fmtDateAn = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+  function dAn(ms) { return fmtDateAn.format(ms); }
+
+  /* ---------- Échéances : date avant laquelle réserver ou préparer ---------- */
+  /* Délai par défaut, en jours avant la date concernée. Le champ "delai" d'une ligne de aFaire le remplace.
+     Ce sont des repères prudents, pas des dates officielles d'ouverture des ventes. */
+  var DELAIS = { vol: 150, bus: 10, train: 60, activite: 30, voiture: 60, hebergement: 30, sante: 14, avant: 60 };
+  function echeance(a, cal) {
+    var ref = a.date || dateVol('aller', cal) || cal.debut;
+    var delai = typeof a.delai === 'number' ? a.delai : (a.tot ? Math.max(120, DELAIS[a.categorie] || 30) : (DELAIS[a.categorie] || 30));
+    return ref - delai * JOUR;
+  }
+  function etatEcheance(a, auj) {
+    if (a.coche || a.echeance == null) return '';
+    if (a.echeance < auj) return 'retard';
+    return a.echeance - auj <= 30 * JOUR ? 'bientot' : '';
+  }
+
+  /* ---------- Qui s'occupe de quoi ---------- */
+  var qui = lire(CLES2.qui, { noms: ['', ''], taches: {} });
+  var filtreQui = 'tout';
+  function nomQui(i) { return (qui.noms[i] || '').trim() || 'Personne ' + (i + 1); }
+  function pastilleQui(id) {
+    var v = qui.taches[id];
+    var texte = v === 0 || v === 1 ? nomQui(v).charAt(0).toUpperCase() : (v === 2 ? '2' : '＋');
+    var titre = v === 0 || v === 1 ? 'Pour ' + nomQui(v) : (v === 2 ? 'Pour vous deux' : 'À attribuer');
+    return '<button type="button" class="qui' + (v == null ? '' : ' qui-' + v) + '" data-qui="' + esc(id) + '" aria-label="' + esc(titre) + ' : toucher pour changer" title="' + esc(titre) + '">' + esc(texte) + '</button>';
+  }
+
+  /* ---------- Hébergements ---------- */
+  var STATUTS_HEB = [['a-chercher', 'À chercher', 'alerte'], ['repere', 'Repéré', 'option'], ['reserve', 'Réservé', 'prevu'], ['paye', 'Payé', 'ok']];
+  var hebs = lire(CLES2.heb, {});
+  function heb(e) {
+    var h = hebs[e.id] || {}, base = e.hebergement || {};
+    return { statut: h.statut || (base.reserve ? 'reserve' : 'a-chercher'), nom: h.nom || base.nom || '', prix: h.prix || '', lien: h.lien || '', adresse: base.adresse || '' };
+  }
+  function statutHeb(s) { return STATUTS_HEB.filter(function (x) { return x[0] === s; })[0] || STATUTS_HEB[0]; }
+  function badgeHeb(s) { var x = statutHeb(s); return '<span class="badge ' + x[2] + '">' + esc(x[1]) + '</span>'; }
+  function hebRegle(s) { return s === 'reserve' || s === 'paye'; }
+  function lienSur(url) { return typeof url === 'string' && /^https:\/\/[^\s"'<>]+$/.test(url); }
+  function majHeb(id, champ, valeur) {
+    var h = hebs[id] || (hebs[id] = {});
+    if (valeur === '' || valeur == null) delete h[champ]; else h[champ] = valeur;
+    if (!Object.keys(h).length) delete hebs[id];
+    ecrire(CLES2.heb, hebs);
+  }
+  function formulaireHeb(e) {
+    var h = heb(e);
+    return '<h3>Hébergement</h3><div class="choix" role="radiogroup" aria-label="Où en est l\'hébergement">' + STATUTS_HEB.map(function (s) {
+      return '<label><input type="radio" name="heb-statut" data-heb="' + esc(e.id) + '" data-heb-champ="statut" value="' + s[0] + '"' + (h.statut === s[0] ? ' checked' : '') + '><span>' + esc(s[1]) + '</span></label>';
+    }).join('') + '</div>' +
+      '<div class="rangee" style="margin-top:10px"><label class="champ" style="flex:2">Nom<input type="text" data-heb="' + esc(e.id) + '" data-heb-champ="nom" value="' + esc(h.nom) + '" autocomplete="off" maxlength="80" placeholder="Hostal, refuge…"></label>' +
+      '<label class="champ" style="flex:1">Prix total (€)<input type="text" inputmode="decimal" data-heb="' + esc(e.id) + '" data-heb-champ="prix" value="' + esc(h.prix) + '" autocomplete="off" placeholder="0"></label></div>' +
+      '<label class="champ" style="margin-top:10px">Lien de la réservation<input type="url" data-heb="' + esc(e.id) + '" data-heb-champ="lien" value="' + esc(h.lien) + '" autocomplete="off" placeholder="https://…"></label>' +
+      (lienSur(h.lien) ? '<p class="petit" style="margin:6px 0 0"><a href="' + esc(h.lien) + '" target="_blank" rel="noopener noreferrer">Ouvrir la réservation</a></p>' : '') +
+      (h.adresse ? '<p class="petit" style="margin:6px 0 0">' + esc(h.adresse) + ' · <a href="' + esc(lienMaps(0, 0, h.nom + ' ' + h.adresse)) + '" target="_blank" rel="noopener noreferrer">Itinéraire</a></p>' : '');
+  }
+  function rendreHebergements() {
+    var cal = calendrier();
+    var lignes = cal.etapes.filter(function (x) { return x.etape.id !== 'sud-lipez'; });
+    var regles = lignes.filter(function (x) { return hebRegle(heb(x.etape).statut); });
+    var nuits = lignes.reduce(function (s, x) { return s + x.total; }, 0), nuitsOk = regles.reduce(function (s, x) { return s + x.total; }, 0);
+    var prix = lignes.reduce(function (s, x) { return s + (nombre(heb(x.etape).prix) || 0); }, 0);
+    var html = '<div class="bloc"><div class="ligne entre"><b>' + regles.length + ' sur ' + lignes.length + ' étapes réservées</b><span class="petit doux">' + nuitsOk + ' nuits sur ' + nuits + '</span></div>' +
+      '<div class="jauge"><span style="width:' + Math.round(nuitsOk / Math.max(1, nuits) * 100) + '%"></span></div>' +
+      (prix ? '<p style="margin:10px 0 0">Total noté : <b>' + eurosPrecis(prix) + '</b></p>' : '') +
+      '<p class="petit doux" style="margin:8px 0 0">Touchez une étape pour noter le nom, le prix et le lien de la réservation.</p></div>';
+    var section = null;
+    lignes.forEach(function (x) {
+      var e = x.etape, h = heb(e), p = paysDe(e.pays);
+      if (e.pays !== section) { section = e.pays; html += '<h3 class="categorie">' + esc(p.nom) + '</h3>'; }
+      html += '<button class="etape-carte" data-fiche="' + esc(e.id) + '"><span class="num" style="background:' + esc(p.couleur) + '">' + x.num + '</span>' +
+        '<span class="etape-corps"><h4>' + esc(e.nom) + '</h4><p class="petit">' + esc(dCourt(x.arrivee)) + ' → ' + esc(dCourt(x.depart)) + ' · ' + pluriel(x.total, 'nuit') + '</p>' +
+        '<p class="petit doux">' + (h.nom ? esc(h.nom) : 'Rien de noté') + (nombre(h.prix) ? ' · ' + eurosPrecis(nombre(h.prix)) : '') + '</p></span>' + badgeHeb(h.statut) + '</button>';
+    });
+    $('#hebergements').innerHTML = html;
+  }
+
+  /* ---------- Scénarios : plusieurs versions du calculateur, comparées côte à côte ---------- */
+  var scenarios = lire(CLES2.scenarios, []);
+  function copiePlan(p) { return JSON.parse(JSON.stringify({ debut: p.debut || null, jours: p.jours || {}, activites: p.activites || {}, marges: p.marges || {} })); }
+  function mesurer(p) {
+    var garde = plan, r;
+    plan = p;
+    try {
+      var cal = calendrier(), b = calculBudget();
+      r = { fin: cal.fin, duree: Math.round((cal.fin - cal.debut) / JOUR), budget: b.total, sections: bilanPays(cal).map(function (x) { return x.total; }) };
+    } finally { plan = garde; }
+    return r;
+  }
+  function blocScenarios() {
+    var html = '<div class="bloc"><p class="surtitre">Scénarios</p>' +
+      '<p class="petit doux" style="margin:0">Enregistrez la version actuelle sous un nom, modifiez les durées ou les activités, puis comparez.</p>' +
+      '<div class="boutons"><button type="button" class="bouton" id="scenario-enregistrer">Enregistrer ce plan comme scénario</button></div>';
+    if (scenarios.length) {
+      var cols = [{ nom: 'Plan actuel', m: mesurer(plan) }].concat(scenarios.map(function (s) { return { nom: s.nom, m: mesurer(s.plan), id: s.id }; }));
+      var ref = cols[0].m;
+      function ecart(v, base, unite) { var d = v - base; return d ? ' <span class="ecart">' + (d > 0 ? '+' : '−') + Math.abs(d) + unite + '</span>' : ''; }
+      function ligne(titre, f) { return '<tr><th scope="row">' + titre + '</th>' + cols.map(function (c, i) { return '<td>' + f(c.m, i) + '</td>'; }).join('') + '</tr>'; }
+      html += '<div class="table-defile"><table class="comparatif"><thead><tr><td></td>' + cols.map(function (c) { return '<th scope="col">' + esc(c.nom) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+        ligne('Fin', function (m) { return esc(dCourt(m.fin)); }) +
+        ligne('Durée', function (m, i) { return m.duree + ' j' + (i ? ecart(m.duree, ref.duree, ' j') : ''); }) +
+        ligne('Budget mini', function (m, i) { return euros(m.budget[0]) + (i ? ecart(Math.round((m.budget[0] - ref.budget[0]) / 10) * 10, 0, ' €') : ''); }) +
+        ligne('Budget maxi', function (m, i) { return euros(m.budget[1]) + (i ? ecart(Math.round((m.budget[1] - ref.budget[1]) / 10) * 10, 0, ' €') : ''); }) +
+        donnees.pays.map(function (p, k) { return ligne(esc(p.nom), function (m, i) { return m.sections[k] + ' j' + (i ? ecart(m.sections[k], ref.sections[k], '') : ''); }); }).join('') +
+        '</tbody></table></div><p class="petit doux" style="margin:8px 0 0">Budget par personne. Les écarts sont donnés par rapport au plan actuel.</p>' +
+        scenarios.map(function (s) {
+          return '<div class="ligne entre scenario"><b>' + esc(s.nom) + '</b><span><button type="button" class="puce" data-scenario-charger="' + s.id + '">Charger</button> ' +
+            '<button type="button" class="puce" data-scenario-supprimer="' + s.id + '">Supprimer</button></span></div>';
+        }).join('');
+    }
+    return html + '</div>';
+  }
+
+  /* ---------- Propositions décidées dans l'appli ---------- */
+  var decisions = lire(CLES2.decisions, {});
+  function statutProp(p) { return p.statut === 'a-decider' && decisions[p.id] ? decisions[p.id] : p.statut; }
+  function nbPropositionsADecider() {
+    return (donnees.propositions || []).filter(function (p) { return statutProp(p) === 'a-decider'; }).length;
+  }
+  /* Effet d'une proposition liée à des activités de l'itinéraire (champ "activites") */
+  function effetProposition(p) {
+    if (!(p.activites || []).length) return null;
+    var avec = copiePlan(plan), sans = copiePlan(plan);
+    p.activites.forEach(function (id) { avec.activites[id] = true; sans.activites[id] = false; });
+    var a = mesurer(avec), s = mesurer(sans);
+    return { jours: a.duree - s.duree, fin: a.fin, budget: [a.budget[0] - s.budget[0], a.budget[1] - s.budget[1]] };
+  }
+  function rendrePropositions() {
+    var liste = donnees.propositions || [];
+    var groupes = [['a-decider', 'À décider'], ['acceptee', 'Retenues'], ['refusee', 'Pas retenues']];
+    var aEnvoyer = liste.filter(function (p) { return p.statut === 'a-decider' && decisions[p.id] && !(p.activites || []).length; });
+    var html = aEnvoyer.length ? '<div class="bloc"><p class="surtitre">À me transmettre</p><p class="petit" style="margin:0">' + pluriel(aEnvoyer.length, 'décision') +
+      ' change' + (aEnvoyer.length > 1 ? 'nt' : '') + ' l\'itinéraire lui-même (étapes, ordre, dates) : envoyez-les-moi pour que je les intègre.</p>' +
+      '<div class="boutons"><button type="button" class="bouton plein" id="decisions-copier">Copier mes décisions</button></div></div>' : '';
+    html += groupes.map(function (g) {
+      var l = liste.filter(function (p) { return statutProp(p) === g[0]; });
+      if (!l.length) return '';
+      return '<h3 class="categorie">' + esc(g[1]) + ' (' + l.length + ')</h3>' + l.map(function (p) {
+        var st = statutProp(p), locale = p.statut === 'a-decider', liee = (p.activites || []).length > 0, ef = locale && effetProposition(p);
+        var corps = (p.impact ? '<p class="petit"><b>Impact :</b> ' + esc(p.impact) + '</p>' : '') + puces(p.details);
+        if (ef) corps += '<p class="petit effet"><b>Si vous la retenez :</b> ' + (ef.jours ? '+' + jours(ef.jours) : 'même durée') + ', fin du voyage le ' + esc(dCourt(ef.fin)) +
+          ', budget +' + euros(ef.budget[0]) + ' à +' + euros(ef.budget[1]) + ' par personne.</p>';
+        if (locale) {
+          corps += '<div class="boutons">' +
+            (st !== 'acceptee' ? '<button type="button" class="bouton plein" data-decision="acceptee" data-prop="' + esc(p.id) + '">On retient</button>' : '') +
+            (st !== 'refusee' ? '<button type="button" class="bouton" data-decision="refusee" data-prop="' + esc(p.id) + '">On ne retient pas</button>' : '') +
+            (st !== 'a-decider' ? '<button type="button" class="bouton" data-decision="a-decider" data-prop="' + esc(p.id) + '">Remettre à décider</button>' : '') + '</div>' +
+            '<p class="petit doux">' + (liee ? 'Les activités concernées se cochent ou se décochent toutes seules : dates et budget suivent.'
+              : 'Cette idée modifie les étapes : après votre choix, je dois l\'intégrer à l\'itinéraire.') + '</p>';
+        }
+        var ico = st === 'a-decider' ? '💡' : (st === 'acceptee' ? '✅' : '✖️');
+        return deroulant(ico, esc(p.titre), esc(p.resume || ''), corps || '<p class="doux petit">Déjà intégré à l\'itinéraire.</p>',
+          '<span class="badge ' + esc(st) + '">' + esc(STATUTS_PROP[st] || st) + '</span>', ' data-prop-id="' + esc(p.id) + '"' + (propsOuvertes[p.id] ? ' open' : ''));
+      }).join('');
+    }).join('');
+    $('#propositions').innerHTML = html;
+  }
+  var propsOuvertes = {};
+  function texteDecisions() {
+    return 'Nos décisions sur les propositions :\n' + (donnees.propositions || []).filter(function (p) { return p.statut === 'a-decider' && decisions[p.id]; }).map(function (p) {
+      return '- ' + p.titre + ' : ' + (decisions[p.id] === 'acceptee' ? 'on retient' : 'on ne retient pas');
+    }).join('\n');
+  }
+
+  /* ---------- Calendrier mois par mois ---------- */
+  var fmtMois = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  function rendreCalendrier() {
+    var cal = calendrier(), auj = aujourdhui(), parJour = {}, resas = {};
+    cal.etapes.forEach(function (x) {
+      for (var t = x.arrivee; t < x.depart; t += JOUR) parJour[t] = { x: x, premier: t === x.arrivee };
+      if (x.marge) for (t = x.depart; t < x.finMarge; t += JOUR) parJour[t] = { x: x, marge: true };
+    });
+    reservationsTriees().forEach(function (r) { resas[versDate(r.date)] = true; });
+    var volAller = dateVol('aller', cal), volRetour = dateVol('retour', cal);
+    var html = '<div class="bloc legende-cal">' + donnees.pays.map(function (p) { return '<span><i style="background:' + esc(p.couleur) + '"></i>' + esc(p.nom) + '</span>'; }).join('') +
+      '<span><i class="hachure"></i>Jours de marge</span><span><i class="point-resa"></i>Réservation</span></div>';
+    var d0 = new Date(Math.min(cal.debut, volAller || cal.debut)), dFin = new Date(cal.fin);
+    for (var an = d0.getUTCFullYear(), mois = d0.getUTCMonth(); an < dFin.getUTCFullYear() || (an === dFin.getUTCFullYear() && mois <= dFin.getUTCMonth()); mois++) {
+      if (mois > 11) { mois = 0; an++; }
+      var premier = Date.UTC(an, mois, 1), nb = new Date(Date.UTC(an, mois + 1, 0)).getUTCDate();
+      var decalage = (new Date(premier).getUTCDay() + 6) % 7;
+      html += '<div class="bloc mois"><h3>' + esc(fmtMois.format(premier)) + '</h3><div class="grille-mois" role="grid">' +
+        ['L', 'M', 'M', 'J', 'V', 'S', 'D'].map(function (j) { return '<span class="jour-nom" aria-hidden="true">' + j + '</span>'; }).join('');
+      for (var v = 0; v < decalage; v++) html += '<span></span>';
+      for (var j = 1; j <= nb; j++) {
+        var t = Date.UTC(an, mois, j), c = parJour[t], cl = 'jour' + (t === auj ? ' auj' : ''), contenu = '<b>' + j + '</b>';
+        if (c) {
+          var p = paysDe(c.x.etape.pays);
+          html += '<button type="button" class="' + cl + (c.marge ? ' marge' : '') + (c.premier ? ' premier' : '') + '" style="--c:' + esc(p.couleur) + '" data-fiche="' + esc(c.x.etape.id) +
+            '" aria-label="' + esc(dLong(t) + ' : ' + (c.marge ? 'marge après ' : '') + c.x.etape.nom) + '">' + contenu +
+            (c.premier ? '<small>' + c.x.num + '</small>' : '') + (resas[t] ? '<i class="point-resa"></i>' : '') + '</button>';
+        } else {
+          html += '<span class="' + cl + ' vide">' + contenu + (t === volAller || t === volRetour ? '<small>✈️</small>' : '') + '</span>';
+        }
+      }
+      html += '</div></div>';
+    }
+    html += '<p class="petit doux">Le petit chiffre indique le numéro de l\'étape, le jour où vous y arrivez. Touchez un jour pour ouvrir l\'étape.</p>';
+    $('#calendrier').innerHTML = html;
+  }
+
+  /* ---------- Fiches pays ---------- */
+  var NOMS_PAYS_REEL = { argentine: 'Argentine', chili: 'Chili', bolivie: 'Bolivie', perou: 'Pérou' };
+  var paysOuvert = null;
+  function paysCourant() {
+    var cal = calendrier(), auj = aujourdhui();
+    var x = cal.etapes.filter(function (y) { return auj >= y.arrivee && auj < (y.finMarge || y.depart); })[0] || cal.etapes[0];
+    return x.etape.paysReel;
+  }
+  function rendrePays() {
+    var fiches = donnees.fichesPays || [], ouvert = paysOuvert || paysCourant(), cal = calendrier();
+    $('#pays').innerHTML = fiches.map(function (f) {
+      var et = cal.etapes.filter(function (x) { return x.etape.paysReel === f.id; });
+      var nbJours = et.reduce(function (s, x) { return s + x.total; }, 0);
+      var d = DEVISES[f.monnaie];
+      var lignes = [
+        ['💱', 'Monnaie', (d ? esc(d.nom) + ' (' + f.monnaie + ') · 1 € = ' + fmtNombre.format(tauxDe(f.monnaie)) + ' ' + f.monnaie + '<br><span class="doux">' + esc(origineTaux(f.monnaie)) + '</span>' : '') + (f.argent ? '<br>' + esc(f.argent) : '')],
+        ['🕐', 'Heure', esc(f.heure || '')],
+        ['🔌', 'Prises', esc(f.prises || '')],
+        ['🆘', 'Urgences', (f.urgences || []).map(function (u) { return esc(u[0]) + ' <a href="tel:' + esc(u[1]) + '"><b>' + esc(u[1]) + '</b></a>'; }).join(' · ')],
+        ['💧', 'Eau', esc(f.eau || '')],
+        ['🛂', 'Entrée', esc(f.entree || '')],
+        ['💵', 'Pourboire', esc(f.pourboire || '')]
+      ].filter(function (l) { return l[2]; });
+      var corps = '<ul class="fil-jour" style="margin-top:0">' + lignes.map(function (l) {
+        return '<li><span class="fil-ico" aria-hidden="true">' + l[0] + '</span><span class="petit"><b>' + l[1] + '</b><br>' + l[2] + '</span></li>';
+      }).join('') + '</ul>' + ((f.aSavoir || []).length ? '<p class="surtitre" style="margin-top:12px">À savoir</p>' + puces(f.aSavoir) : '') +
+        '<div class="boutons"><a class="bouton" href="#devises" data-devise-ouvrir="' + esc(f.monnaie) + '">Convertisseur</a></div>';
+      return deroulant(drapeau({ id: f.id }), esc(f.nom), pluriel(et.length, 'étape') + ' · ' + jours(nbJours), corps, '', ' data-pays-fiche="' + esc(f.id) + '"' + (f.id === ouvert ? ' open' : ''));
+    }).join('') + '<p class="petit doux">Numéros et règles à revérifier juste avant le départ : ils peuvent changer.</p>';
+  }
+
+  /* ---------- Infos d'urgence : numéros publics par pays et vos propres numéros ---------- */
+  var urgence = lire(CLES2.urgence, null) || [
+    { id: 'u1', libelle: 'Assistance de l\'assurance voyage', valeur: '' },
+    { id: 'u2', libelle: 'Numéro de contrat d\'assurance', valeur: '' },
+    { id: 'u3', libelle: 'Opposition carte bancaire n° 1', valeur: '' },
+    { id: 'u4', libelle: 'Opposition carte bancaire n° 2', valeur: '' },
+    { id: 'u5', libelle: 'Ambassade de France en Argentine', valeur: '' },
+    { id: 'u6', libelle: 'Ambassade de France au Chili', valeur: '' },
+    { id: 'u7', libelle: 'Ambassade de France en Bolivie', valeur: '' },
+    { id: 'u8', libelle: 'Ambassade de France au Pérou', valeur: '' },
+    { id: 'u9', libelle: 'Proche à prévenir en France', valeur: '' }
+  ];
+  function telephone(v) { var t = String(v || '').replace(/[\s.()-]/g, ''); return /^\+?\d{3,15}$/.test(t) ? t : null; }
+  function rendreUrgence() {
+    var html = '<div class="bloc"><p class="surtitre">Numéros d\'urgence sur place</p>' + (donnees.fichesPays || []).map(function (f) {
+      return '<div class="ligne-urgence"><span>' + drapeau({ id: f.id }) + ' <b>' + esc(f.nom) + '</b></span><span class="petit">' +
+        (f.urgences || []).map(function (u) { return esc(u[0]) + ' <a href="tel:' + esc(u[1]) + '"><b>' + esc(u[1]) + '</b></a>'; }).join(' · ') + '</span></div>';
+    }).join('') + '<p class="petit doux" style="margin:10px 0 0">À revérifier avant le départ.</p></div>';
+    html += '<div class="bloc"><p class="surtitre">Mes numéros</p>' +
+      '<p class="petit doux" style="margin:0 0 4px">À remplir une fois, consultables sans réseau. Ils restent sur ce téléphone : n\'y mettez ni numéro de carte, ni code, ni mot de passe.</p>' +
+      urgence.map(function (u) {
+        var tel = telephone(u.valeur);
+        return '<div class="ligne-numero"><label class="champ">' + esc(u.libelle) +
+          '<input type="text" data-urgence="' + esc(u.id) + '" value="' + esc(u.valeur) + '" autocomplete="off" maxlength="60" placeholder="À remplir"></label>' +
+          (tel ? '<a class="bouton" href="tel:' + esc(tel) + '" aria-label="Appeler : ' + esc(u.libelle) + '">📞</a>' : '') +
+          '<button type="button" class="suppr" data-suppr-urgence="' + esc(u.id) + '" aria-label="Retirer : ' + esc(u.libelle) + '">×</button></div>';
+      }).join('') + '</div>';
+    html += '<form class="bloc" id="form-urgence" novalidate><p class="surtitre">Ajouter une ligne</p>' +
+      '<label class="champ">Intitulé<input type="text" name="libelle" autocomplete="off" maxlength="60" placeholder="Médecin traitant, banque…"></label>' +
+      '<div class="boutons"><button type="submit" class="bouton plein">Ajouter</button></div></form>';
+    $('#urgence').innerHTML = html;
+  }
+
   /* ---------- Le voyage en chiffres ---------- */
   function rendreBilan() {
     var cal = calendrier(), auj = aujourdhui(), E = cal.etapes;
@@ -1349,6 +1628,11 @@
     var groupes = [
       ['Préparer', [
         ['#afaire', '✅', 'À faire', nbFaits + ' sur ' + l.length + ' faits : réservations, billets, locations…'],
+        ['#hebergements', '🛏️', 'Hébergements', (function () {
+          var lh = donnees.etapes.filter(function (e) { return e.id !== 'sud-lipez'; });
+          return lh.filter(function (e) { return hebRegle(heb(e).statut); }).length + ' sur ' + lh.length + ' étapes réservées';
+        })()],
+        ['#calendrier', '🗓️', 'Calendrier', 'Le voyage mois par mois'],
         ['#bagages', '🎒', 'Bagages', nbSac + ' sur ' + sac.length + ' dans le sac'],
         ['#propositions', '💡', 'Propositions', aD ? pluriel(aD, 'idée') + ' à décider' : 'Tout est décidé'],
         ['#conseils', '🧭', 'Conseils', pluriel((donnees.conseils || []).length, 'fiche') + ' : santé, argent, équipement…']
@@ -1360,6 +1644,8 @@
       ]],
       ['Pendant le voyage', [
         ['#resas', '🎫', 'Réservations', (donnees.reservations || []).length ? pluriel(donnees.reservations.length, 'réservation') : 'Aucune pour l\'instant'],
+        ['#pays', '🌎', 'Fiches pays', 'Monnaie, heure, prises, urgences, règles d\'entrée'],
+        ['#urgence', '🆘', 'Infos d\'urgence', 'Numéros sur place et vos numéros utiles, hors ligne'],
         ['#journal', '📓', 'Journal de bord', nbPages ? pluriel(nbPages, 'page') : 'Une note et une humeur par jour'],
         ['#bilan', '🏆', 'Le voyage en chiffres', 'Kilomètres, altitude, transports, budget, meilleures journées']
       ]]
@@ -1675,12 +1961,14 @@
   });
 
   /* ---------- Navigation ---------- */
-  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'plus', 'resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal', 'bilan'];
-  var SOUS_PLUS = ['resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal', 'bilan'];
+  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'plus', 'resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal', 'bilan', 'hebergements', 'calendrier', 'pays', 'urgence'];
+  var SOUS_PLUS = ['resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal', 'bilan', 'hebergements', 'pays', 'urgence'];
+  var ONGLET_DE = { calendrier: 'planifier' };
   var RENDUS = {
     accueil: rendreAccueil, etapes: rendreEtapes, planifier: rendrePlanificateur, plus: rendrePlus, resas: rendreReservations,
     conseils: rendreConseils, propositions: rendrePropositions, afaire: rendreAFaire, budget: rendreBudget,
-    depenses: rendreDepenses, devises: rendreDevises, bagages: rendreBagages, journal: rendreJournal, bilan: rendreBilan
+    depenses: rendreDepenses, devises: rendreDevises, bagages: rendreBagages, journal: rendreJournal, bilan: rendreBilan,
+    hebergements: rendreHebergements, calendrier: rendreCalendrier, pays: rendrePays, urgence: rendreUrgence
   };
   function vueCourante() {
     var v = location.hash.replace('#', '') || 'accueil';
@@ -1728,11 +2016,12 @@
     majSousTitre();
     majPastille();
     VUES.forEach(function (n) { $('#vue-' + n).hidden = n !== v; });
-    var onglet = SOUS_PLUS.indexOf(v) >= 0 ? 'plus' : v;
+    var onglet = ONGLET_DE[v] || (SOUS_PLUS.indexOf(v) >= 0 ? 'plus' : v);
     document.querySelectorAll('.onglets a').forEach(function (a) {
       if (a.getAttribute('data-vue') === onglet) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
     if (v !== 'journal') dateJournal = null;
+    if (v !== 'pays') paysOuvert = null;
     if (RENDUS[v]) RENDUS[v]();
     if (v === 'devises' || v === 'depenses') majTaux(false);
     suivreSection();
@@ -1747,8 +2036,52 @@
 
   function evenements() {
     document.addEventListener('click', function (ev) {
-      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],[data-aller-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne,#bouton-position,#afaire-masquer,#partager,#agenda,#sauvegarder,#taux-maj,#depenses-copier,#journal-copier,#bagages-vider,[data-devise],[data-suppr-depense],[data-suppr-bagage],[data-journal-modifier],[data-journal-supprimer]');
+      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],[data-aller-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne,#bouton-position,#afaire-masquer,#partager,#agenda,#sauvegarder,#taux-maj,#depenses-copier,#journal-copier,#bagages-vider,[data-devise],[data-suppr-depense],[data-suppr-bagage],[data-journal-modifier],[data-journal-supprimer],[data-qui],[data-filtre-qui],[data-decision],[data-scenario-charger],[data-scenario-supprimer],[data-suppr-urgence],[data-pays-ouvrir],[data-devise-ouvrir],#scenario-enregistrer,#decisions-copier');
       if (!c) return;
+      if (c.hasAttribute('data-pays-ouvrir')) paysOuvert = c.getAttribute('data-pays-ouvrir');
+      if (c.hasAttribute('data-devise-ouvrir') && DEVISES[c.getAttribute('data-devise-ouvrir')]) { taux.devise = c.getAttribute('data-devise-ouvrir'); ecrire(CLES.taux, taux); return; }
+      if (c.hasAttribute('data-qui')) {
+        // Attribution d'une tâche : personne → 1 → 2 → les deux → personne
+        ev.preventDefault();
+        var tid = c.getAttribute('data-qui'), val = qui.taches[tid];
+        if (val == null) qui.taches[tid] = 0; else if (val < 2) qui.taches[tid] = val + 1; else delete qui.taches[tid];
+        ecrire(CLES2.qui, qui); rafraichir(); refocus('[data-qui="' + tid + '"]');
+        return;
+      }
+      if (c.hasAttribute('data-filtre-qui')) { filtreQui = c.getAttribute('data-filtre-qui'); rendreAFaire(); refocus('[data-filtre-qui="' + filtreQui + '"]'); return; }
+      if (c.hasAttribute('data-decision')) {
+        var pid2 = c.getAttribute('data-prop'), choix = c.getAttribute('data-decision');
+        var prop = (donnees.propositions || []).filter(function (x) { return x.id === pid2; })[0];
+        if (!prop) return;
+        if (choix === 'a-decider') delete decisions[pid2]; else decisions[pid2] = choix;
+        ecrire(CLES2.decisions, decisions);
+        (prop.activites || []).forEach(function (aid) { if (choix === 'a-decider') delete plan.activites[aid]; else plan.activites[aid] = choix === 'acceptee'; });
+        if ((prop.activites || []).length) sauverPlan();
+        propsOuvertes[pid2] = true;
+        rafraichir(); majPastille();
+        toast(choix === 'acceptee' ? 'Retenue ✓' + ((prop.activites || []).length ? ' Dates et budget mis à jour' : '') : (choix === 'refusee' ? 'Pas retenue' : 'Remise à décider'));
+        return;
+      }
+      if (c.id === 'decisions-copier') { copier(texteDecisions(), 'Décisions copiées'); return; }
+      if (c.id === 'scenario-enregistrer') {
+        var nomS = prompt('Nom du scénario (par exemple « Avec Sucre et Potosí »)');
+        if (nomS && nomS.trim()) { scenarios.push({ id: Date.now(), nom: nomS.trim().slice(0, 30), plan: copiePlan(plan) }); ecrire(CLES2.scenarios, scenarios); rafraichir(); toast('Scénario enregistré'); }
+        return;
+      }
+      if (c.hasAttribute('data-scenario-charger') || c.hasAttribute('data-scenario-supprimer')) {
+        var charger = c.hasAttribute('data-scenario-charger'), sid = +c.getAttribute(charger ? 'data-scenario-charger' : 'data-scenario-supprimer');
+        var sc = scenarios.filter(function (x) { return x.id === sid; })[0];
+        if (!sc) return;
+        if (charger) {
+          if (confirm('Remplacer le plan actuel par « ' + sc.nom + ' » ? Enregistrez d\'abord le plan actuel comme scénario si vous voulez le garder.')) { plan = copiePlan(sc.plan); sauverPlan(); rafraichir(); toast('Scénario chargé'); }
+        } else if (confirm('Supprimer le scénario « ' + sc.nom + ' » ?')) { scenarios = scenarios.filter(function (x) { return x.id !== sid; }); ecrire(CLES2.scenarios, scenarios); rafraichir(); }
+        return;
+      }
+      if (c.hasAttribute('data-suppr-urgence')) {
+        var uid = c.getAttribute('data-suppr-urgence');
+        if (confirm('Retirer cette ligne ?')) { urgence = urgence.filter(function (u) { return u.id !== uid; }); ecrire(CLES2.urgence, urgence); rendreUrgence(); }
+        return;
+      }
       if (c.hasAttribute('data-plan-ouvrir')) sectionsOuvertes[c.getAttribute('data-plan-ouvrir')] = true;
       if (c.hasAttribute('data-aller-section')) {
         // Depuis la frise de l'accueil : ouvrir les étapes directement à la bonne section
@@ -1866,9 +2199,19 @@
         ecrire(CLES.bagages, bagages); rafraichir();
         refocus('[data-bagage="' + gid + '"]');
       }
+      else if (t.hasAttribute && t.hasAttribute('data-heb') && t.type === 'radio') {
+        majHeb(t.getAttribute('data-heb'), 'statut', t.value); rafraichir();
+        refocus('[data-heb-champ="statut"][value="' + t.value + '"]');
+      }
+      else if (t.hasAttribute && t.hasAttribute('data-heb') && t.getAttribute('data-heb-champ') === 'lien') {
+        if (t.value && !lienSur(t.value.trim())) toast('Le lien doit commencer par https://');
+        rafraichir();
+      }
+      else if (t.hasAttribute && t.hasAttribute('data-nom-qui')) { rendreAFaire(); }
+      else if (t.hasAttribute && t.hasAttribute('data-urgence')) { rendreUrgence(); }
       else if (t.hasAttribute && t.hasAttribute('data-fait')) {
         var fid = t.getAttribute('data-fait');
-        faits[fid] = t.checked;
+        if (fid.indexOf('heb-') === 0) majHeb(fid.slice(4), 'statut', t.checked ? 'reserve' : 'a-chercher'); else faits[fid] = t.checked;
         sauverFaits(); rafraichir();
         refocus('[data-fait="' + fid + '"]');
         if (t.checked) toast('C\'est fait ✓');
@@ -1881,6 +2224,12 @@
       if (t.id === 'conv-local' || t.id === 'conv-eur') {
         var v = nombre(t.value), tx = tauxDe(taux.devise), autre = $(t.id === 'conv-local' ? '#conv-eur' : '#conv-local');
         autre.value = v == null ? '' : fmtNombre.format(t.id === 'conv-local' ? v / tx : v * tx);
+      }
+      else if (t.hasAttribute && t.hasAttribute('data-heb') && t.type !== 'radio') majHeb(t.getAttribute('data-heb'), t.getAttribute('data-heb-champ'), t.value.trim());
+      else if (t.hasAttribute && t.hasAttribute('data-nom-qui')) { qui.noms[+t.getAttribute('data-nom-qui')] = t.value.trim(); ecrire(CLES2.qui, qui); }
+      else if (t.hasAttribute && t.hasAttribute('data-urgence')) {
+        var ul = urgence.filter(function (u) { return u.id === t.getAttribute('data-urgence'); })[0];
+        if (ul) { ul.valeur = t.value; ecrire(CLES2.urgence, urgence); }
       }
       else if (t.hasAttribute && t.hasAttribute('data-note')) {
         var nid = t.getAttribute('data-note');
@@ -1898,6 +2247,13 @@
         bagages.perso.push({ id: 'perso-' + Date.now(), nom: nom, cat: f.cat.value });
         bagagesOuverts[f.cat.value] = true;
         ecrire(CLES.bagages, bagages); rendreBagages(); toast('Ajouté à la liste');
+      }
+      else if (f.id === 'form-urgence') {
+        ev.preventDefault();
+        var lib = f.libelle.value.trim();
+        if (!lib) { f.libelle.focus(); return; }
+        urgence.push({ id: 'u' + Date.now(), libelle: lib, valeur: '' });
+        ecrire(CLES2.urgence, urgence); rendreUrgence(); refocus('[data-urgence="' + urgence[urgence.length - 1].id + '"]');
       }
       else if (f.id === 'form-journal') {
         ev.preventDefault();
@@ -1929,6 +2285,7 @@
       }
       var s = el.getAttribute('data-plan-section'), a = el.getAttribute('data-afaire-cat'), g = el.getAttribute('data-bagages-cat');
       if (g) bagagesOuverts[g] = el.open;
+      if (el.getAttribute('data-prop-id')) propsOuvertes[el.getAttribute('data-prop-id')] = el.open;
       if (s) sectionsOuvertes[s] = el.open;
       if (a) afaireOuvertes[a] = el.open;
     }, true);

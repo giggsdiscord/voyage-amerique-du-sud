@@ -22,7 +22,7 @@
   "etapes": [
     {
       "id": "ushuaia",
-      "pays": "patagonie",
+      "pays": "patagonie", "paysReel": "argentine",
       "trajet": {"modes":["vol"],"resume":"Vol international jusqu'à Buenos Aires, puis vol Buenos Aires → Ushuaïa (environ 3 h 30)","details":"Arrivée en Amérique du Sud.","statut":"propose","cout":[120,250]},
       "nom": "Ushuaïa",
       "lat": -54.8019,
@@ -41,7 +41,7 @@
     },
     {
       "id": "punta-arenas",
-      "pays": "patagonie",
+      "pays": "patagonie", "paysReel": "chili",
       "trajet": {"modes":["bus","bateau"],"resume":"Bus Ushuaïa → Punta Arenas (environ 12 h, avec le bac du détroit de Magellan)","details":"Passage au Chili.","statut":"propose","cout":[50,80]},
       "nom": "Punta Arenas",
       "lat": -53.1638,
@@ -56,7 +56,7 @@
     },
     {
       "id": "torres-del-paine",
-      "pays": "patagonie",
+      "pays": "patagonie", "paysReel": "chili",
       "trajet": {"modes":["bus"],"resume":"Bus Punta Arenas → Puerto Natales (environ 3 h)","details":"Puerto Natales sert de base pour le parc.","statut":"propose","cout":[30,60]},
       "nom": "Puerto Natales et Torres del Paine",
       "lat": -50.9423,
@@ -75,7 +75,7 @@
     },
     {
       "id": "el-calafate",
-      "pays": "patagonie",
+      "pays": "patagonie", "paysReel": "argentine",
       "trajet": {"modes":["bus"],"resume":"Bus Puerto Natales → El Calafate (environ 6 h, frontière)","details":"Retour en Argentine.","statut":"propose","cout":[30,50]},
       "nom": "El Calafate",
       "lat": -50.3379,
@@ -91,7 +91,7 @@
     },
     {
       "id": "el-chalten",
-      "pays": "patagonie",
+      "pays": "patagonie", "paysReel": "argentine",
       "trajet": {"modes":["bus"],"resume":"Bus El Calafate → El Chaltén (environ 3 h)","details":"","statut":"propose","cout":[20,35]},
       "nom": "El Chaltén",
       "lat": -49.3315,
@@ -108,7 +108,7 @@
     },
     {
       "id": "coyhaique",
-      "pays": "patagonie",
+      "pays": "patagonie", "paysReel": "chili",
       "trajet": {"modes":["bus","bateau"],"resume":"Bus El Chaltén → Los Antiguos par la Ruta 40, frontière, Chile Chico, bac jusqu'à Puerto Ibáñez, puis Coyhaique (2 jours)","details":"Passage au Chili. Les bus de la Ruta 40 circulent surtout en saison : vérifier les horaires de mars. Réserver le bac du lac General Carrera.","statut":"propose","cout":[70,110]},
       "nom": "Coyhaique",
       "lat": -45.5712,
@@ -121,7 +121,7 @@
     },
     {
       "id": "cerro-castillo",
-      "pays": "patagonie",
+      "pays": "patagonie", "paysReel": "chili",
       "trajet": {"modes":["voiture"],"resume":"Voiture de location, environ 1 h 30","details":"","statut":"propose"},
       "nom": "Cerro Castillo",
       "lat": -46.06,
@@ -137,7 +137,7 @@
     },
     {
       "id": "rio-tranquilo",
-      "pays": "patagonie",
+      "pays": "patagonie", "paysReel": "chili",
       "trajet": {"modes":["voiture"],"resume":"Voiture de location, environ 3 h (piste)","details":"","statut":"propose"},
       "nom": "Puerto Río Tranquilo",
       "lat": -46.624,
@@ -153,7 +153,7 @@
     },
     {
       "id": "tortel",
-      "pays": "patagonie",
+      "pays": "patagonie", "paysReel": "chili",
       "trajet": {"modes":["voiture"],"resume":"Voiture de location, environ 4 h (piste) par Cochrane","details":"Ensuite retour à Coyhaique pour rendre la voiture (environ 9 h, à faire en deux fois).","statut":"propose"},
       "nom": "Cochrane et Caleta Tortel",
       "lat": -47.795,
@@ -168,7 +168,7 @@
     },
     {
       "id": "queulat",
-      "pays": "patagonie",
+      "pays": "patagonie", "paysReel": "chili",
       "trajet": {"modes":["voiture","bus"],"resume":"Retour à Coyhaique pour rendre la voiture, puis bus Coyhaique → Puyuhuapi (environ 4 h)","details":"Bus peu fréquents sur la Carretera Austral : l'auto-stop y est courant.","statut":"propose","cout":[15,30]},
       "nom": "Puyuhuapi et Queulat",
       "lat": -44.326,
@@ -183,7 +183,7 @@
     },
     {
       "id": "futaleufu",
-      "pays": "patagonie",
+      "pays": "patagonie", "paysReel": "chili",
       "trajet": {"modes":["bus"],"resume":"Bus Puyuhuapi → Villa Santa Lucía → Futaleufú (environ 5 h)","details":"Bus peu fréquents : vérifier les jours.","statut":"propose","cout":[25,45]},
       "nom": "Futaleufú",
       "lat": -43.1858,
@@ -198,7 +198,7 @@
     },
     {
       "id": "bariloche",
-      "pays": "patagonie",
+      "pays": "patagonie", "paysReel": "argentine",
       "trajet": {"modes":["bus"],"resume":"Bus Futaleufú → Esquel (environ 2 h), puis Esquel → Bariloche (environ 4 h)","details":"Retour en Argentine.","statut":"propose","cout":[30,50]},
       "nom": "Bariloche",
       "lat": -41.1335,
@@ -215,7 +215,7 @@
     },
     {
       "id": "puerto-varas",
-      "pays": "chili",
+      "pays": "chili", "paysReel": "chili",
       "trajet": {"modes":["bus"],"resume":"Bus Bariloche → Puerto Varas par le col Cardenal Samoré (environ 7 h)","details":"Option plus chère et magnifique : la traversée des lacs andins (Cruce Andino) en bateau et en bus. Passage au Chili.","statut":"propose","cout":[40,70]},
       "nom": "Puerto Varas",
       "lat": -41.3195,
@@ -231,7 +231,7 @@
     },
     {
       "id": "pucon",
-      "pays": "chili",
+      "pays": "chili", "paysReel": "chili",
       "trajet": {"modes":["bus"],"resume":"Bus, environ 5 h","details":"","statut":"propose","cout":[15,25]},
       "nom": "Pucón",
       "lat": -39.2725,
@@ -248,7 +248,7 @@
     },
     {
       "id": "santiago",
-      "pays": "chili",
+      "pays": "chili", "paysReel": "chili",
       "trajet": {"modes":["bus","vol"],"resume":"Bus de nuit (environ 10 h), ou bus jusqu'à Temuco puis vol (1 h 15)","details":"","statut":"propose","cout":[25,80]},
       "nom": "Santiago et Valparaíso",
       "lat": -33.4489,
@@ -265,7 +265,7 @@
     },
     {
       "id": "iguazu",
-      "pays": "nord",
+      "pays": "nord", "paysReel": "argentine",
       "trajet": {"modes":["vol"],"resume":"Vol Santiago → Iguazú, avec escale (Buenos Aires ou São Paulo)","details":"","statut":"propose","cout":[150,300]},
       "nom": "Chutes d'Iguazú",
       "lat": -25.5972,
@@ -281,7 +281,7 @@
     },
     {
       "id": "salta",
-      "pays": "nord",
+      "pays": "nord", "paysReel": "argentine",
       "trajet": {"modes":["vol"],"resume":"Vol Iguazú → Salta (direct certains jours, sinon par Buenos Aires)","details":"","statut":"propose","cout":[80,180]},
       "nom": "Salta et Jujuy",
       "lat": -24.7821,
@@ -299,7 +299,7 @@
     },
     {
       "id": "san-pedro",
-      "pays": "nord",
+      "pays": "nord", "paysReel": "chili",
       "trajet": {"modes":["bus"],"resume":"Bus Salta ou Jujuy → San Pedro par le col de Jama (environ 10 h)","details":"Traversée des Andes à 4 200 m. Passage au Chili. Le col peut fermer quelques jours en cas de neige.","statut":"propose","cout":[45,70]},
       "nom": "San Pedro de Atacama",
       "lat": -22.9087,
@@ -318,7 +318,7 @@
     },
     {
       "id": "sud-lipez",
-      "pays": "bolivie",
+      "pays": "bolivie", "paysReel": "bolivie",
       "trajet": {"modes":["tour"],"resume":"Circuit 4x4 organisé de 3 jours depuis San Pedro, frontière à Hito Cajón","details":"Passage en Bolivie. Nuits en refuges simples (pas de tente), non chauffés : en juin, autour de 0 °C à l'intérieur et −15 à −20 °C dehors.","statut":"propose"},
       "nom": "Sud Lípez (lagunes et geysers)",
       "lat": -22.2,
@@ -339,7 +339,7 @@
     },
     {
       "id": "uyuni",
-      "pays": "bolivie",
+      "pays": "bolivie", "paysReel": "bolivie",
       "trajet": {"modes":["tour"],"resume":"Fin du circuit 4x4 : traversée du salar le 3e jour","details":"","statut":"propose"},
       "nom": "Uyuni",
       "lat": -20.463,
@@ -355,7 +355,7 @@
     },
     {
       "id": "la-paz",
-      "pays": "bolivie",
+      "pays": "bolivie", "paysReel": "bolivie",
       "trajet": {"modes":["bus","vol"],"resume":"Bus de nuit Uyuni → La Paz (environ 10 h), ou vol (environ 1 h)","details":"Bus confort : Todo Turismo. Vols : BoA ou Amaszonas.","statut":"propose","cout":[25,120]},
       "nom": "La Paz",
       "lat": -16.4897,
@@ -374,7 +374,7 @@
     },
     {
       "id": "puno",
-      "pays": "perou",
+      "pays": "perou", "paysReel": "perou",
       "trajet": {"modes":["bus","bateau"],"resume":"Bus La Paz → Copacabana (environ 4 h, bac du détroit de Tiquina), puis Copacabana → Puno (environ 3 h)","details":"Passage au Pérou à Kasani.","statut":"propose","cout":[15,30]},
       "nom": "Puno et lac Titicaca",
       "lat": -15.8402,
@@ -392,7 +392,7 @@
     },
     {
       "id": "colca",
-      "pays": "perou",
+      "pays": "perou", "paysReel": "perou",
       "trajet": {"modes":["bus"],"resume":"Bus touristique Puno → Chivay (environ 6 h, arrêts panoramiques)","details":"","statut":"propose","cout":[30,60]},
       "nom": "Canyon de Colca",
       "lat": -15.638,
@@ -408,7 +408,7 @@
     },
     {
       "id": "arequipa",
-      "pays": "perou",
+      "pays": "perou", "paysReel": "perou",
       "trajet": {"modes":["bus","tour"],"resume":"Bus Chivay → Arequipa (environ 3 h 30), ou fin d'excursion organisée","details":"","statut":"propose","cout":[10,25]},
       "nom": "Arequipa",
       "lat": -16.409,
@@ -424,7 +424,7 @@
     },
     {
       "id": "cusco",
-      "pays": "perou",
+      "pays": "perou", "paysReel": "perou",
       "trajet": {"modes":["bus"],"resume":"Bus de nuit Arequipa → Cusco (environ 10 h)","details":"Pour le Machu Picchu : train PeruRail ou Inca Rail depuis Ollantaytambo jusqu'à Aguas Calientes.","statut":"propose","cout":[30,50]},
       "nom": "Cusco",
       "lat": -13.532,
@@ -447,7 +447,7 @@
     },
     {
       "id": "nazca",
-      "pays": "perou",
+      "pays": "perou", "paysReel": "perou",
       "trajet": {"modes":["bus"],"resume":"Bus de nuit Cusco → Nazca (environ 14 h, route de montagne)","details":"Alternative : vol Cusco → Lima, puis la côte vers le sud en bus.","statut":"propose","cout":[30,50]},
       "nom": "Nazca",
       "lat": -14.835,
@@ -463,7 +463,7 @@
     },
     {
       "id": "huacachina",
-      "pays": "perou",
+      "pays": "perou", "paysReel": "perou",
       "trajet": {"modes":["bus","taxi"],"resume":"Bus Nazca → Ica (environ 2 h 30), puis taxi 10 min","details":"","statut":"propose","cout":[8,15]},
       "nom": "Huacachina",
       "lat": -14.0875,
@@ -478,7 +478,7 @@
     },
     {
       "id": "paracas",
-      "pays": "perou",
+      "pays": "perou", "paysReel": "perou",
       "trajet": {"modes":["bus"],"resume":"Bus Ica → Paracas (environ 1 h 30)","details":"","statut":"propose","cout":[8,15]},
       "nom": "Paracas",
       "lat": -13.834,
@@ -493,7 +493,7 @@
     },
     {
       "id": "huaraz",
-      "pays": "perou",
+      "pays": "perou", "paysReel": "perou",
       "trajet": {"modes":["bus"],"resume":"Bus Paracas → Lima (environ 4 h), puis bus Lima → Huaraz (environ 8 h)","details":"Nuit à Lima possible entre les deux. Compagnies confortables : Cruz del Sur, Movil Tours, Oltursa.","statut":"propose","cout":[35,65]},
       "nom": "Huaraz",
       "lat": -9.5278,
@@ -512,7 +512,7 @@
     },
     {
       "id": "cerro-de-pasco",
-      "pays": "perou",
+      "pays": "perou", "paysReel": "perou",
       "trajet": {"modes":["bus","colectivo"],"resume":"Bus ou colectivo par Huánuco, environ 8 à 10 h","details":"Peu de liaisons directes : horaires à vérifier sur place à Huaraz.","statut":"propose","cout":[15,30]},
       "nom": "Cerro de Pasco",
       "lat": -10.6826,
@@ -527,7 +527,7 @@
     },
     {
       "id": "lima",
-      "pays": "perou",
+      "pays": "perou", "paysReel": "perou",
       "trajet": {"modes":["bus"],"resume":"Bus Cerro de Pasco → Lima (environ 8 h)","details":"","statut":"propose","cout":[15,30]},
       "nom": "Lima",
       "lat": -12.0464,
@@ -563,9 +563,9 @@
     {"id":"sac-a-dos","titre":"Sac à dos et bus, locations courtes","statut":"acceptee","impact":"","resume":"Voiture seulement sur la Carretera Austral et autour de Salta (voir Conseils).","details":[]},
     {"id":"marges","titre":"Jours de marge dans chaque section","statut":"acceptee","impact":"","resume":"Pour la météo, le repos et les imprévus.","details":[]},
     {"id":"sucre-potosi","titre":"Bolivie : Potosí et Sucre","statut":"a-decider","impact":"+4 à 5 jours","resume":"Deux villes coloniales, parfaitement sur la route Uyuni → La Paz.","details":["Uyuni → Potosí (environ 4 h) → Sucre (environ 3 h) → La Paz (bus de nuit ou vol).","Potosí (4 070 m) : ville minière historique, visite des mines possible.","Sucre : la ville blanche, très agréable, marché, empreintes de dinosaures."]},
-    {"id":"isla-del-sol","titre":"Copacabana et Isla del Sol","statut":"a-decider","impact":"+1 à 2 jours","resume":"Sur la route La Paz → Puno, côté bolivien du Titicaca.","details":["Île sacrée inca, randonnée nord-sud, une nuit sur l'île conseillée.","Déjà dans le calculateur comme suggestion à La Paz."]},
-    {"id":"chiloe","titre":"Île de Chiloé","statut":"a-decider","impact":"+2 jours","resume":"Depuis Puerto Varas : églises en bois UNESCO, maisons sur pilotis. Début mai : plus de pluie.","details":["Déjà dans le calculateur comme option à Puerto Varas."]},
-    {"id":"grands-treks","titre":"Grands treks : Ausangate et Cerro Castillo","statut":"a-decider","impact":"+5 j et +3 j","resume":"Pour les amoureux de montagne : deux des plus beaux treks de plusieurs jours.","details":["Cerro Castillo : 4 jours en camping, fin mars : couleurs d'automne, nuits plus fraîches.","Ausangate : 5 à 6 jours en camping avec agence depuis Cusco, cols à plus de 5 000 m. Juillet : saison sèche, nuits très froides."]},
+    {"id":"isla-del-sol","activites":["isla-del-sol"],"titre":"Copacabana et Isla del Sol","statut":"a-decider","impact":"+1 à 2 jours","resume":"Sur la route La Paz → Puno, côté bolivien du Titicaca.","details":["Île sacrée inca, randonnée nord-sud, une nuit sur l'île conseillée.","Déjà dans le calculateur comme suggestion à La Paz."]},
+    {"id":"chiloe","activites":["chiloe"],"titre":"Île de Chiloé","statut":"a-decider","impact":"+2 jours","resume":"Depuis Puerto Varas : églises en bois UNESCO, maisons sur pilotis. Début mai : plus de pluie.","details":["Déjà dans le calculateur comme option à Puerto Varas."]},
+    {"id":"grands-treks","activites":["ausangate-trek","trek-cerro-castillo"],"titre":"Grands treks : Ausangate et Cerro Castillo","statut":"a-decider","impact":"+5 j et +3 j","resume":"Pour les amoureux de montagne : deux des plus beaux treks de plusieurs jours.","details":["Cerro Castillo : 4 jours en camping, fin mars : couleurs d'automne, nuits plus fraîches.","Ausangate : 5 à 6 jours en camping avec agence depuis Cusco, cols à plus de 5 000 m. Juillet : saison sèche, nuits très froides."]},
     {"id":"chalten-plus-tard","titre":"Plus de temps avant El Chaltén","statut":"a-decider","impact":"Même durée","resume":"Pour arriver à El Chaltén fin mars plutôt que mi-mars, au moment où les couleurs démarrent.","details":["Prendre quelques jours de la marge de fin de Patagonie et les ajouter à Ushuaïa, Torres del Paine ou El Calafate.","Attention : les manchots quittent les îles Martillo et Magdalena vers fin mars, et les bus de la Ruta 40 vers la Carretera Austral circulent surtout en saison."]},
     {"id":"effet-miroir","titre":"Effet miroir du salar d'Uyuni","statut":"a-decider","impact":"Environ +1 semaine et +400 à 700 € par personne","resume":"Commencer le voyage par la Bolivie vers le 6 février pour voir le salar inondé.","details":["Vol France → La Paz, 2 jours calmes pour s'acclimater, vol La Paz → Uyuni, excursion d'une journée sur le salar (coucher de soleil, étoiles), puis vols Uyuni → La Paz → Buenos Aires → Ushuaïa pour arriver le 15 février comme prévu.","Effet miroir le plus fiable de février à début mars ; s'il pleut beaucoup, certaines sorties sont annulées.","En saison des pluies, seulement le salar : le Sud Lípez et l'île Incahuasi sont souvent inaccessibles (déjà prévus en mai).","Arrivée directe à 3 600 m avec le décalage horaire : 2 jours très tranquilles indispensables.","Pour l'instant : salar sec fin mai, déjà dans l'itinéraire."]},
     {"id":"ba-mendoza","titre":"Buenos Aires et Mendoza","statut":"refusee","impact":"","resume":"Pas retenus : priorité à la montagne.","details":[]}
@@ -604,15 +604,15 @@
   ],
 
   "aFaire": [
-    {"id":"passeport","categorie":"avant","titre":"Vérifier le passeport","detail":"Valable au moins 6 mois après le retour.","tot":true},
-    {"id":"assurance","categorie":"avant","titre":"Souscrire l'assurance voyage","detail":"Couvrant 5 mois, altitude, glacier, rafting.","tot":true},
-    {"id":"vaccins","categorie":"avant","titre":"Rendez-vous vaccinations internationales","detail":"2 à 3 mois avant le départ.","tot":true},
-    {"id":"permis","categorie":"avant","titre":"Permis de conduire international","detail":"Pour les locations au Chili et en Argentine."},
-    {"id":"cartes","categorie":"avant","titre":"Cartes bancaires sans frais","detail":"Deux cartes de réseaux différents."},
-    {"id":"esim","categorie":"avant","titre":"eSIM ou cartes SIM","detail":"Forfait données pour l'Amérique du Sud."},
-    {"id":"carte-hors-ligne","categorie":"avant","titre":"Télécharger la carte hors ligne","detail":"Bouton « Carte hors ligne » de cette appli, en wifi."},
-    {"id":"vol-aller","categorie":"vol","titre":"Vol aller France → Buenos Aires → Ushuaïa","detail":"International, puis vol intérieur.","etape":"ushuaia","tot":true},
-    {"id":"vol-retour","categorie":"vol","titre":"Vol retour Lima → France","detail":"International, open-jaw avec l'aller.","etape":"lima","fin":true,"tot":true},
+    {"id":"passeport","delai":240,"categorie":"avant","titre":"Vérifier le passeport","detail":"Valable au moins 6 mois après le retour.","tot":true},
+    {"id":"assurance","delai":60,"categorie":"avant","titre":"Souscrire l'assurance voyage","detail":"Couvrant 5 mois, altitude, glacier, rafting.","tot":true},
+    {"id":"vaccins","delai":90,"categorie":"avant","titre":"Rendez-vous vaccinations internationales","detail":"2 à 3 mois avant le départ.","tot":true},
+    {"id":"permis","delai":45,"categorie":"avant","titre":"Permis de conduire international","detail":"Pour les locations au Chili et en Argentine."},
+    {"id":"cartes","delai":60,"categorie":"avant","titre":"Cartes bancaires sans frais","detail":"Deux cartes de réseaux différents."},
+    {"id":"esim","delai":14,"categorie":"avant","titre":"eSIM ou cartes SIM","detail":"Forfait données pour l'Amérique du Sud."},
+    {"id":"carte-hors-ligne","delai":3,"categorie":"avant","titre":"Télécharger la carte hors ligne","detail":"Bouton « Carte hors ligne » de cette appli, en wifi."},
+    {"id":"vol-aller","delai":240,"categorie":"vol","titre":"Vol aller France → Buenos Aires → Ushuaïa","detail":"International, puis vol intérieur.","etape":"ushuaia","tot":true},
+    {"id":"vol-retour","delai":240,"categorie":"vol","titre":"Vol retour Lima → France","detail":"International, open-jaw avec l'aller.","etape":"lima","fin":true,"tot":true},
     {"id":"vol-salta-iguazu","categorie":"vol","titre":"Vol Iguazú → Salta","detail":"Direct certains jours seulement.","etape":"salta"},
     {"id":"vol-iguazu-santiago","categorie":"vol","titre":"Vol Santiago → Iguazú","detail":"Avec escale.","etape":"iguazu"},
     {"id":"bus-lima-huaraz","categorie":"bus","titre":"Bus Paracas → Lima → Huaraz","detail":"Cruz del Sur, Movil Tours ou Oltursa.","etape":"huaraz"},
@@ -623,28 +623,35 @@
     {"id":"bus-uyuni-lapaz","categorie":"bus","titre":"Bus de nuit Uyuni → La Paz","detail":"Ou vol.","etape":"la-paz"},
     {"id":"bus-jama","categorie":"bus","titre":"Bus Salta → San Pedro par le col de Jama","detail":"","etape":"san-pedro"},
     {"id":"bus-bariloche-pv","categorie":"bus","titre":"Bus Bariloche → Puerto Varas","detail":"Ou traversée des lacs (Cruce Andino).","etape":"puerto-varas"},
-    {"id":"bac-chile-chico","categorie":"bus","titre":"Bac Chile Chico → Puerto Ibáñez","detail":"Sur le lac General Carrera.","etape":"coyhaique","tot":true},
-    {"id":"bus-chalten-los-antiguos","categorie":"bus","titre":"Bus El Chaltén → Los Antiguos (Ruta 40)","detail":"Circule surtout en saison : vérifier pour mars.","etape":"coyhaique","tot":true},
+    {"id":"bac-chile-chico","delai":60,"categorie":"bus","titre":"Bac Chile Chico → Puerto Ibáñez","detail":"Sur le lac General Carrera.","etape":"coyhaique","tot":true},
+    {"id":"bus-chalten-los-antiguos","delai":60,"categorie":"bus","titre":"Bus El Chaltén → Los Antiguos (Ruta 40)","detail":"Circule surtout en saison : vérifier pour mars.","etape":"coyhaique","tot":true},
     {"id":"bus-futaleufu-bariloche","categorie":"bus","titre":"Bus Futaleufú → Esquel → Bariloche","detail":"","etape":"bariloche"},
     {"id":"bus-ushuaia-punta","categorie":"bus","titre":"Bus Ushuaïa → Punta Arenas","detail":"","etape":"punta-arenas"},
     {"id":"bus-natales-calafate","categorie":"bus","titre":"Bus Puerto Natales → El Calafate","detail":"","etape":"el-calafate"},
     {"id":"bus-calafate-chalten","categorie":"bus","titre":"Bus El Calafate → El Chaltén","detail":"","etape":"el-chalten"},
-    {"id":"train-machu-picchu","categorie":"train","titre":"Train Ollantaytambo ↔ Aguas Calientes","detail":"PeruRail ou Inca Rail.","etape":"cusco","tot":true},
-    {"id":"billets-machu-picchu","categorie":"activite","titre":"Billets Machu Picchu","detail":"Nombre de places limité par jour et par circuit.","etape":"cusco","tot":true},
+    {"id":"train-machu-picchu","delai":120,"categorie":"train","titre":"Train Ollantaytambo ↔ Aguas Calientes","detail":"PeruRail ou Inca Rail.","etape":"cusco","tot":true},
+    {"id":"billets-machu-picchu","delai":120,"categorie":"activite","titre":"Billets Machu Picchu","detail":"Nombre de places limité par jour et par circuit.","etape":"cusco","tot":true},
     {"id":"excursion-amantani","categorie":"activite","titre":"Excursion Uros, Amantaní et Taquile","detail":"2 jours avec nuit chez l'habitant.","etape":"puno"},
     {"id":"circuit-uyuni","categorie":"activite","titre":"Circuit 4x4 San Pedro → Sud Lípez → Uyuni (3 jours)","detail":"Agence sérieuse à San Pedro ; louer un duvet chaud.","etape":"sud-lipez"},
     {"id":"villarrica","categorie":"activite","titre":"Ascension du volcan Villarrica","detail":"Agence à Pucón, selon la météo.","etape":"pucon"},
-    {"id":"martillo","categorie":"activite","titre":"Île Martillo (manchots)","detail":"Une seule agence, très peu de places.","etape":"ushuaia","tot":true},
+    {"id":"martillo","delai":90,"categorie":"activite","titre":"Île Martillo (manchots)","detail":"Une seule agence, très peu de places.","etape":"ushuaia","tot":true},
     {"id":"magdalena","categorie":"activite","titre":"Île Magdalena (manchots)","detail":"Bateau depuis Punta Arenas.","etape":"punta-arenas"},
-    {"id":"torres-refuges","categorie":"activite","titre":"Torres del Paine : refuges ou campings du W","detail":"Plusieurs mois à l'avance.","etape":"torres-del-paine","tot":true},
+    {"id":"torres-refuges","delai":150,"categorie":"activite","titre":"Torres del Paine : refuges ou campings du W","detail":"Plusieurs mois à l'avance.","etape":"torres-del-paine","tot":true},
     {"id":"torres-entree","categorie":"activite","titre":"Torres del Paine : billet d'entrée du parc","detail":"En ligne.","etape":"torres-del-paine"},
     {"id":"upsala","categorie":"activite","titre":"Croisière glaciers Upsala et Spegazzini","detail":"","etape":"el-calafate"},
     {"id":"perito-moreno","categorie":"activite","titre":"Perito Moreno (et mini-trekking en option)","detail":"","etape":"el-calafate"},
-    {"id":"voiture-coyhaique","categorie":"voiture","titre":"Voiture à Coyhaique (Carretera Austral)","detail":"Vérifier l'assurance pour les pistes.","etape":"coyhaique","tot":true},
+    {"id":"voiture-coyhaique","delai":120,"categorie":"voiture","titre":"Voiture à Coyhaique (Carretera Austral)","detail":"Vérifier l'assurance pour les pistes.","etape":"coyhaique","tot":true},
     {"id":"voiture-salta","categorie":"voiture","titre":"Voiture à Salta (4 à 5 jours)","detail":"Boucle Humahuaca, Purmamarca, Cafayate.","etape":"salta"},
-    {"id":"ordonnance-analyses","categorie":"avant","titre":"Ordonnance pour les prises de sang","detail":"Demander au médecin une ordonnance pour les 2 bilans, si possible avec une version en espagnol.","tot":true},
+    {"id":"ordonnance-analyses","delai":30,"categorie":"avant","titre":"Ordonnance pour les prises de sang","detail":"Demander au médecin une ordonnance pour les 2 bilans, si possible avec une version en espagnol.","tot":true},
     {"id":"prise-sang-1","categorie":"sante","titre":"Prise de sang n° 1 (bilan prévu) à Bariloche","detail":"Laboratoire d'une clinique privée.","etape":"bariloche"},
     {"id":"prise-sang-2","categorie":"sante","titre":"Prise de sang n° 2 (bilan prévu) à Salta","detail":"Laboratoire d'une clinique privée.","etape":"salta"}
+  ],
+
+  "fichesPays": [
+    {"id":"argentine","nom":"Argentine","monnaie":"ARS","argent":"Le taux de change et les moyens de paiement changent souvent : se renseigner juste avant d'entrer, et garder des espèces.","heure":"4 h de moins qu'en France en février et mars, 5 h de moins à partir de fin mars (l'Argentine ne change pas d'heure, c'est la France qui passe à l'heure d'été).","prises":"Trois fiches plates en biais (type I) : adaptateur nécessaire. Environ 220 V.","urgences":[["Police","911"],["Ambulance","107"],["Pompiers","100"]],"eau":"En général buvable au robinet dans les villes.","entree":"Pas de visa pour un séjour touristique avec un passeport français ; vérifier la durée accordée à l'entrée.","pourboire":"Environ 10 % au restaurant, en espèces.","aSavoir":["Les distances sont immenses : les bus de nuit en « cama » font gagner des jours.","Les prix bougent vite : les fourchettes du budget sont à revérifier sur place."]},
+    {"id":"chili","nom":"Chili","monnaie":"CLP","argent":"La carte passe presque partout.","heure":"Même heure que l'Argentine jusqu'à début avril, puis une heure de moins. La région de Magallanes (Punta Arenas, Puerto Natales) garde la même heure toute l'année.","prises":"Les fiches françaises à deux broches rondes passent en général. Environ 220 V.","urgences":[["Ambulance","131"],["Pompiers","132"],["Police","133"]],"eau":"En général buvable au robinet dans les villes ; à San Pedro de Atacama, préférer l'eau en bouteille ou filtrée.","entree":"Pas de visa pour un séjour touristique avec un passeport français. Garder le ticket remis à l'entrée : il est demandé à la sortie.","pourboire":"10 % proposés au moment de payer au restaurant.","aSavoir":["Contrôle strict de la nourriture à la frontière : pas de fruits, légumes, viande, fromage ni graines. Déclarer en cas de doute.","L'itinéraire entre et sort du Chili plusieurs fois : finir les produits frais avant chaque passage."]},
+    {"id":"bolivie","nom":"Bolivie","monnaie":"BOB","argent":"Prévoir du liquide : la carte passe peu en dehors des villes. Le taux réel peut différer du taux officiel.","heure":"6 h de moins qu'en France en mai et juin.","prises":"Prises mixtes : fiches plates (type américain) ou rondes. Environ 220 V.","urgences":[["Police","110"],["Ambulance","118"],["Pompiers","119"]],"eau":"Ne pas boire l'eau du robinet.","entree":"Pas de visa pour un séjour touristique avec un passeport français ; vérifier la durée accordée à l'entrée.","pourboire":"Pas systématique, mais apprécié ; attendu pour les guides et chauffeurs.","aSavoir":["Altitude élevée partout sur l'itinéraire : un à deux jours calmes en arrivant.","Nuits très froides dans le Sud Lípez en juin.","Pas de feuilles de coca à emporter hors de Bolivie et du Pérou."]},
+    {"id":"perou","nom":"Pérou","monnaie":"PEN","argent":"Carte acceptée dans les villes touristiques, espèces ailleurs.","heure":"7 h de moins qu'en France en juin et juillet.","prises":"Prises mixtes : fiches plates (type américain) ou rondes. Environ 220 V.","urgences":[["Police","105"],["Ambulance","106"],["Pompiers","116"]],"eau":"Ne pas boire l'eau du robinet.","entree":"Pas de visa pour un séjour touristique avec un passeport français ; vérifier la durée accordée à l'entrée.","pourboire":"Environ 10 % dans les restaurants touristiques ; attendu pour les guides et porteurs.","aSavoir":["Machu Picchu : le passeport est demandé à l'entrée avec le billet.","Juin et juillet sont la haute saison : journées ensoleillées, nuits glaciales en altitude."]}
   ],
 
   "bagages": [

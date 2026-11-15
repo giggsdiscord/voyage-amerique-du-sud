@@ -495,6 +495,57 @@ form.bloc .champ { margin-top: 10px; }
 .tuile .ico { font-size: 1.3rem; }
 .tuile b { font-size: 1.25rem; line-height: 1.2; }
 
+/* ---------- Organisation : échéances, attributions, hébergements, scénarios, calendrier, pays ---------- */
+.echeance { color: var(--doux); font-weight: 700; }
+.echeance.bientot { color: var(--option); }
+.echeance.retard { color: var(--alerte); }
+.qui {
+  flex: none; align-self: center; width: 34px; height: 34px; border-radius: 50%; border: 2px dashed var(--trait);
+  background: none; color: var(--doux); font-weight: 800; font-size: .9rem; cursor: pointer;
+}
+.qui-0 { border: 0; background: var(--primaire); color: var(--primaire-encre); }
+.qui-1 { border: 0; background: var(--accent); color: #fff; }
+.qui-2 { border: 0; background: var(--ok); color: var(--surface); }
+.info-lien { display: block; text-decoration: none; color: var(--encre); font-weight: 700; }
+.table-defile { overflow-x: auto; margin-top: 12px; }
+.comparatif { border-collapse: collapse; width: 100%; font-size: .875rem; }
+.comparatif th, .comparatif td { padding: 7px 8px; text-align: right; white-space: nowrap; border-top: 1px solid var(--trait); }
+.comparatif thead th, .comparatif thead td { border-top: 0; font-size: .78rem; white-space: normal; min-width: 76px; }
+.comparatif tbody th { text-align: left; font-weight: 600; white-space: normal; }
+.comparatif td:nth-child(2), .comparatif thead th:nth-child(2) { background: var(--surface-2); }
+.ecart { display: block; font-size: .75rem; font-weight: 800; color: var(--accent); }
+.scenario { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--trait); }
+.effet { padding: 10px 12px; border-radius: 12px; background: var(--primaire-doux); }
+.legende-cal { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .8rem; font-weight: 600; }
+.legende-cal span { display: inline-flex; align-items: center; gap: 6px; }
+.legende-cal i { width: 14px; height: 14px; border-radius: 4px; }
+.hachure { background: repeating-linear-gradient(45deg, var(--doux) 0 3px, transparent 3px 6px); }
+i.point-resa { width: 8px !important; height: 8px !important; border-radius: 50% !important; background: var(--accent); }
+.mois h3 { margin: 0 0 10px; text-transform: capitalize; }
+.grille-mois { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.jour-nom { text-align: center; font-size: .72rem; font-weight: 800; color: var(--doux); }
+.jour {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  aspect-ratio: 1; min-width: 0; padding: 0; border: 0; border-radius: 10px; font: inherit; font-size: .85rem; line-height: 1.1;
+  background: var(--c); color: #fff; cursor: pointer;
+}
+.jour b { font-weight: 700; }
+.jour small { font-size: .62rem; font-weight: 800; opacity: .9; }
+.jour.vide { background: none; color: var(--doux); cursor: default; }
+.jour.vide b { font-weight: 400; }
+.jour.marge { background: repeating-linear-gradient(45deg, var(--c) 0 4px, transparent 4px 8px), var(--surface-2); color: var(--encre); }
+.jour.premier { box-shadow: inset 3px 0 0 rgba(255,255,255,.75); }
+.jour.auj { outline: 3px solid var(--accent); outline-offset: 1px; }
+.jour .point-resa { position: absolute; top: 3px; right: 3px; box-shadow: 0 0 0 2px #fff; }
+.deroulant .corps ul.fil-jour { padding-left: 0; }
+.deroulant .corps ul.fil-jour li { margin: 0; }
+.ligne-urgence { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-top: 1px solid var(--trait); }
+.surtitre + .ligne-urgence { border-top: 0; }
+.ligne-numero { display: flex; align-items: flex-end; gap: 8px; margin-top: 10px; }
+.ligne-numero .champ { flex: 1; min-width: 0; }
+.ligne-numero .bouton { padding: 10px 12px; }
+.ligne-numero .suppr { margin-bottom: 4px; }
+
 /* ---------- Réservations ---------- */
 .resa-type { font-size: 1.4rem; flex: none; width: 40px; text-align: center; }
 .vide { text-align: center; padding: 28px 16px; }
