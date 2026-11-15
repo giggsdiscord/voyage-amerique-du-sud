@@ -37,6 +37,17 @@ Dans `data/voyage.json`, ajouter un objet dans `etapes`, **à sa place dans l'or
 - `statut` d'une activité : `prevu` (cochée par défaut), `option` ou `suggestion` (décochées).
 - Nouveau pays : l'ajouter aussi dans `pays`, avec `fenetre` (période prévue) et une `couleur`.
 
+## Trajet pour arriver à une étape
+
+Chaque étape peut avoir un champ `trajet` (comment on y arrive depuis l'étape précédente) :
+
+```json
+"trajet": { "modes": ["bus"], "resume": "Bus de nuit, environ 9 h", "details": "Cruz del Sur", "statut": "choisi" }
+```
+
+- `modes` : `vol`, `bus`, `train`, `voiture`, `colectivo`, `tour`, `taxi`, `bateau`, `marche`, `velo` (plusieurs possibles).
+- `statut` : `propose`, `choisi` ou `reserve`. Sur la carte, un trajet choisi ou réservé est tracé plus épais.
+
 ## Ajouter une réservation
 
 Dans `reservations` :
