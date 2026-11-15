@@ -434,6 +434,53 @@ body.sur-carte { overflow: hidden; }
 .jauge span { display: block; height: 100%; background: var(--ok); border-radius: 8px; }
 .jauge.depasse span { background: var(--alerte); }
 
+/* ---------- Outils : dépenses, convertisseur, bagages, journal ---------- */
+.champ select, .champ textarea, .note-etape {
+  min-height: 44px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--trait);
+  background: var(--surface); color: var(--encre); font: inherit; width: 100%;
+}
+.champ input { width: 100%; }
+.champ textarea, .note-etape { resize: vertical; line-height: 1.45; }
+.champ input:focus, .champ select:focus, .champ textarea:focus, .note-etape:focus { outline: none; border-color: var(--primaire); box-shadow: 0 0 0 4px var(--primaire-doux); }
+form.bloc .champ { margin-top: 10px; }
+.rangee { display: flex; gap: 10px; }
+.rangee .champ { min-width: 0; }
+.choix { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.choix label { cursor: pointer; }
+.choix input { position: absolute; opacity: 0; pointer-events: none; }
+.choix label > span {
+  display: inline-flex; align-items: center; gap: 4px; min-height: 40px; padding: 6px 12px; border-radius: 99px;
+  border: 1px solid var(--trait); background: var(--surface); font-size: .875rem; font-weight: 700; white-space: nowrap;
+}
+.choix input:checked + span { background: var(--primaire); color: var(--primaire-encre); border-color: transparent; }
+.choix input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+.humeurs { flex-wrap: nowrap; margin-bottom: 4px; }
+.humeurs label { flex: 1; }
+.humeurs label > span { width: 100%; font-size: 1.5rem; min-height: 48px; justify-content: center; padding: 4px; }
+.humeurs input:checked + span { background: var(--primaire-doux); box-shadow: 0 0 0 2px var(--primaire); }
+.conv-egal { margin: 6px 0 -4px; text-align: center; font-size: 1.3rem; font-weight: 800; color: var(--doux); }
+#conv-local, #conv-eur { font-size: 1.5rem; font-weight: 800; min-height: 56px; }
+.reperes { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; margin-top: 8px; }
+.reperes b { text-align: right; }
+.jour-liste { margin: 14px 0 0; font-size: .78rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--doux); }
+.ligne-depense { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--trait); }
+.jour-liste + .ligne-depense { border-top: 0; }
+.ligne-depense .resa-type { width: 32px; font-size: 1.25rem; }
+.suppr {
+  flex: none; width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--surface-2); color: var(--doux);
+  font-size: 1.2rem; line-height: 1; cursor: pointer;
+}
+.page-journal .surtitre { margin: 0; }
+.humeur { font-size: 1.5rem; line-height: 1; }
+.texte-journal { margin: 8px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.note-apercu { color: var(--primaire); overflow-wrap: anywhere; }
+.menu-plus .categorie { margin: 12px 4px 0; }
+.menu-plus .bouton-menu {
+  display: flex; align-items: center; gap: 14px; padding: 16px; cursor: pointer;
+  background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre);
+}
+.menu-plus .bouton-menu:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
+
 /* ---------- Réservations ---------- */
 .resa-type { font-size: 1.4rem; flex: none; width: 40px; text-align: center; }
 .vide { text-align: center; padding: 28px 16px; }

@@ -91,6 +91,15 @@ Dans `reservations` :
 
 **Ne jamais mettre** de numéro de passeport, de carte bancaire ni de QR code dans ce dépôt.
 
+## Données gardées sur chaque téléphone
+
+Cases cochées, réglages du calculateur, dépenses, journal de bord, bagages, notes d'étape et taux de change
+restent dans le `localStorage` du téléphone (clés `voyage-…`) : rien n'est envoyé au dépôt.
+Plus → « Sauvegarder mes données » en fait une copie en fichier, « Restaurer une sauvegarde » la recharge.
+
+- `bagages` dans `voyage.json` : liste de base du sac, par catégorie (`{ "id", "icone", "titre", "items": [{ "id", "nom", "detail" }] }`).
+- Convertisseur : taux du jour pris sur `open.er-api.com` quand il y a du réseau, taux de secours dans `DEVISES` (`js/app.js`).
+
 ## Astuce
 
 Ajouter `?date=2027-11-02` à l'adresse simule un jour du voyage sur l'accueil.

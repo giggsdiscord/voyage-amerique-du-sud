@@ -1,6 +1,6 @@
 /* Voyage Amérique du Sud : appli hors ligne.
    Toutes les données viennent de data/voyage.json.
-   Les réglages du calculateur de dates restent sur le téléphone (localStorage). */
+   Les réglages, cases cochées, dépenses, journal et notes restent sur le téléphone (localStorage). */
 (function () {
   'use strict';
 
@@ -261,18 +261,28 @@
 
     // Raccourcis
     var aDecider = nbPropositionsADecider();
-    html += '<div class="raccourcis">' +
-      '<a class="raccourci" href="#propositions"><span class="ico" aria-hidden="true">💡</span><b>Propositions</b><span class="doux">' +
-        (aDecider ? pluriel(aDecider, 'idée') + ' à décider' : 'Tout est décidé') + '</span></a>' +
-      '<a class="raccourci" href="#conseils"><span class="ico" aria-hidden="true">🧭</span><b>Conseils</b><span class="doux">' + pluriel((donnees.conseils || []).length, 'fiche') + '</span></a>' +
-      (function () {
-        var l = listeAFaire(), n = l.filter(function (a) { return a.coche; }).length;
-        return '<a class="raccourci" href="#afaire"><span class="ico" aria-hidden="true">✅</span><b>À faire</b><span class="doux">' + n + ' sur ' + l.length + ' faits</span>' +
-          '<span class="jauge"><span style="width:' + Math.round(n / Math.max(1, l.length) * 100) + '%"></span></span></a>';
-      })() +
-      '<a class="raccourci" href="#resas"><span class="ico" aria-hidden="true">🎫</span><b>Réservations</b><span class="doux">' +
-        ((donnees.reservations || []).length ? pluriel(donnees.reservations.length, 'réservation') : 'Aucune pour l\'instant') + '</span></a>' +
-      '</div>';
+    function raccourci(lien, ico, titre, sous, jauge) {
+      return '<a class="raccourci" href="' + lien + '"><span class="ico" aria-hidden="true">' + ico + '</span><b>' + esc(titre) + '</b><span class="doux">' + esc(sous) + '</span>' +
+        (jauge == null ? '' : '<span class="jauge"><span style="width:' + Math.round(jauge * 100) + '%"></span></span>') + '</a>';
+    }
+    var txtResas = (donnees.reservations || []).length ? pluriel(donnees.reservations.length, 'réservation') : 'Aucune pour l\'instant';
+    if (auj >= cal.debut && auj < cal.fin) {
+      // Pendant le voyage : ce qui sert tous les jours
+      var depJour = depenses.filter(function (d) { return d.date === versIso(auj); }).reduce(function (t, d) { return t + d.eur; }, 0);
+      html += '<div class="raccourcis">' +
+        raccourci('#depenses', '🧾', 'Noter une dépense', depJour ? eurosPrecis(depJour) + ' aujourd\'hui' : 'Rien noté aujourd\'hui') +
+        raccourci('#devises', '💱', 'Convertisseur', '1 € = ' + fmtNombre.format(tauxDe(DEVISES[taux.devise] ? taux.devise : 'ARS')) + ' ' + (DEVISES[taux.devise] ? taux.devise : 'ARS')) +
+        raccourci('#journal', '📓', 'Journal', journal[versIso(auj)] ? 'Page du jour écrite ✓' : 'Écrire la page du jour') +
+        raccourci('#resas', '🎫', 'Réservations', txtResas) + '</div>';
+    } else {
+      var lf = listeAFaire(), nf = lf.filter(function (a) { return a.coche; }).length;
+      var sac = listeBagages().reduce(function (t, c) { return t.concat(c.items); }, []), ns = sac.filter(function (i) { return bagages.coches[i.id]; }).length;
+      html += '<div class="raccourcis">' +
+        raccourci('#afaire', '✅', 'À faire', nf + ' sur ' + lf.length + ' faits', nf / Math.max(1, lf.length)) +
+        raccourci('#bagages', '🎒', 'Bagages', ns + ' sur ' + sac.length + ' dans le sac', ns / Math.max(1, sac.length)) +
+        raccourci('#propositions', '💡', 'Propositions', aDecider ? pluriel(aDecider, 'idée') + ' à décider' : 'Tout est décidé') +
+        raccourci('#conseils', '🧭', 'Conseils', pluriel((donnees.conseils || []).length, 'fiche')) + '</div>';
+    }
 
     var total = dureeTotale;
     html += '<div class="bloc"><p class="surtitre">Le voyage en bref</p>' +
@@ -338,7 +348,8 @@
       et.forEach(function (x) {
         var h = x.etape.hebergement, t = x.etape.trajet;
         // Texte cherchable : nom, section, notes, hébergement, trajet, toutes les activités (même non cochées)
-        var cherchable = [x.etape.nom, p.nom, x.etape.notes, h && h.nom, t && t.resume, t && nomsModes(t)]
+        var maNote = notesPerso[x.etape.id];
+        var cherchable = [x.etape.nom, p.nom, x.etape.notes, maNote, h && h.nom, t && t.resume, t && nomsModes(t)]
           .concat((x.etape.activites || []).map(function (a) { return a.nom + ' ' + (a.description || ''); })).join(' ');
         var fin = x.finMarge || x.depart;
         var etat = !enVoyage ? '' : (auj >= fin ? ' passee' : (auj >= x.arrivee ? ' en-cours' : ''));
@@ -355,6 +366,7 @@
           '<p class="petit doux">🛏️ ' + (h && h.nom ? esc(h.nom) : 'Hébergement à trouver') + '</p>' +
           (x.activites.length ? '<p class="petit doux">' + esc(x.activites.map(function (a) { return a.nom; }).join(' · ')) + '</p>' : '') +
           (x.etape.notes ? '<p class="petit doux">📝 ' + notes(x.etape.notes) + '</p>' : '') +
+          (maNote ? '<p class="petit note-apercu">🗒️ ' + esc(maNote.length > 90 ? maNote.slice(0, 90) + '…' : maNote) + '</p>' : '') +
           '</span><span class="chevron" aria-hidden="true">›</span></button>';
         if (x.marge) {
           html += '<div class="marge-ligne">⏳ <b>' + jours(x.marge) + ' de marge</b> · ' + esc(dJour(x.depart)) + ' → ' + esc(dJour(x.finMarge)) +
@@ -469,6 +481,9 @@
     if (resas.length) {
       html += '<h3>Réservations</h3>' + resas.map(carteResa).join('');
     }
+    html += '<h3><label for="note-etape">Mes notes</label></h3>' +
+      '<textarea class="note-etape" id="note-etape" data-note="' + esc(e.id) + '" rows="3" placeholder="Adresses, bons plans, choses à ne pas oublier…">' + esc(notesPerso[e.id] || '') + '</textarea>' +
+      '<p class="petit doux" style="margin:4px 0 0">Enregistré automatiquement sur ce téléphone.</p>';
     html += '<div class="boutons"><button class="bouton plein" data-carte="' + esc(e.id) + '">Voir sur la carte</button>' +
       '<a class="bouton" href="' + esc(lienMaps(e.lat, e.lng)) + '" target="_blank" rel="noopener noreferrer">Ouvrir dans Maps</a>' +
       '<a class="bouton" href="#planifier" data-fermer data-plan-ouvrir="' + esc(e.pays) + '">Ajuster la durée</a></div>';
@@ -810,22 +825,385 @@
     $('#budget').innerHTML = html;
   }
 
+  /* ================================================================
+     Outils personnels : dépenses, convertisseur, bagages, journal, notes d'étape.
+     Tout reste sur ce téléphone (localStorage). « Sauvegarder mes données » en fait une copie.
+     ================================================================ */
+  var CLES = { depenses: 'voyage-depenses-v1', taux: 'voyage-taux-v1', bagages: 'voyage-bagages-v1', journal: 'voyage-journal-v1', notes: 'voyage-notes-v1' };
+  function lire(cle, defaut) {
+    try { var v = JSON.parse(localStorage.getItem(cle)); return v == null ? defaut : v; } catch (e) { return defaut; }
+  }
+  function ecrire(cle, v) { try { localStorage.setItem(cle, JSON.stringify(v)); } catch (e) { toast('Enregistrement impossible sur ce téléphone'); } }
+  function nombre(s) { var n = parseFloat(String(s).replace(/\s/g, '').replace(',', '.')); return isFinite(n) ? n : null; }
+  var fmtNombre = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
+  var fmtEntier = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
+  function eurosPrecis(n) { return (Math.abs(n) >= 100 ? fmtEntier.format(n) : fmtNombre.format(Math.round(n * 100) / 100)) + ' €'; }
+  function isoAuj() { return versIso(aujourdhui()); }
+
+  /* Section du voyage (pays) et étape correspondant à une date */
+  function situer(ms, cal) {
+    if (ms < cal.debut) return { id: 'avant', nom: 'Avant le départ' };
+    for (var i = 0; i < cal.etapes.length; i++) {
+      var x = cal.etapes[i];
+      if (ms < (x.finMarge || x.depart)) return { id: x.etape.pays, nom: paysDe(x.etape.pays).nom, etape: x, jour: Math.round((ms - cal.debut) / JOUR) + 1 };
+    }
+    return { id: 'apres', nom: 'Après le retour' };
+  }
+
+  /* ---------- Devises ---------- */
+  /* Taux de secours, très approximatifs : remplacés par les taux du jour dès qu'il y a du réseau,
+     ou par le taux saisi à la main (utile en Argentine et en Bolivie, où le taux réel diffère souvent). */
+  var DEVISES = {
+    ARS: { nom: 'Peso argentin', court: 'pesos argentins', secours: 1600 },
+    CLP: { nom: 'Peso chilien', court: 'pesos chiliens', secours: 1050 },
+    BOB: { nom: 'Boliviano', court: 'bolivianos', secours: 8 },
+    PEN: { nom: 'Sol péruvien', court: 'soles', secours: 4 },
+    USD: { nom: 'Dollar américain', court: 'dollars', secours: 1.1 }
+  };
+  var SOURCE_TAUX = 'https://open.er-api.com/v6/latest/EUR';
+  var taux = lire(CLES.taux, { auto: {}, date: null, manuel: {}, devise: 'ARS' });
+  function tauxDe(code) {
+    if (code === 'EUR') return 1;
+    return taux.manuel[code] || taux.auto[code] || DEVISES[code].secours;
+  }
+  function origineTaux(code) {
+    if (taux.manuel[code]) return 'taux saisi par vous';
+    if (taux.auto[code] && taux.date) return 'taux du ' + dCourt(versDate(taux.date));
+    return 'taux approximatif, pas encore mis à jour';
+  }
+  var majTauxEnCours = false;
+  function majTaux(force) {
+    if (majTauxEnCours || !navigator.onLine) { if (force && !navigator.onLine) toast('Pas de réseau : taux inchangés'); return; }
+    if (!force && taux.date === versIso(Date.now())) return;
+    majTauxEnCours = true;
+    fetch(SOURCE_TAUX).then(function (r) { if (!r.ok) throw new Error(); return r.json(); }).then(function (d) {
+      if (!d || !d.rates) throw new Error();
+      Object.keys(DEVISES).forEach(function (k) { if (typeof d.rates[k] === 'number' && d.rates[k] > 0) taux.auto[k] = d.rates[k]; });
+      taux.date = versIso(Date.now());
+      ecrire(CLES.taux, taux);
+      if (force) toast('Taux mis à jour ✓');
+      if (vueCourante() === 'devises') rendreDevises();
+    }).catch(function () { if (force) toast('Mise à jour des taux impossible'); }).then(function () { majTauxEnCours = false; });
+  }
+
+  function rendreDevises() {
+    var code = DEVISES[taux.devise] ? taux.devise : 'ARS', d = DEVISES[code], t = tauxDe(code);
+    var html = '<div class="defile" role="group" aria-label="Monnaie">' + Object.keys(DEVISES).map(function (k) {
+      return '<button type="button" class="puce" data-devise="' + k + '" aria-pressed="' + (k === code) + '">' + esc(DEVISES[k].nom) + '</button>';
+    }).join('') + '</div>';
+    html += '<div class="bloc"><label class="champ">Montant en ' + esc(d.court) + ' (' + code + ')' +
+      '<input type="text" inputmode="decimal" id="conv-local" autocomplete="off" placeholder="0"></label>' +
+      '<p class="conv-egal" aria-hidden="true">=</p>' +
+      '<label class="champ">Montant en euros<input type="text" inputmode="decimal" id="conv-eur" autocomplete="off" placeholder="0"></label>' +
+      '<p class="petit doux" style="margin:12px 0 0">1 € = <b>' + fmtNombre.format(t) + ' ' + code + '</b> · ' + esc(origineTaux(code)) + '</p></div>';
+
+    // Repères : montants ronds dans la monnaie locale
+    var ordre = Math.pow(10, Math.round(Math.log(t) / Math.LN10));
+    html += '<div class="bloc"><p class="surtitre">Repères</p><div class="reperes">' + [1, 2, 5, 10, 20, 50, 100, 200].map(function (m) {
+      var v = m * ordre;
+      return '<span>' + fmtNombre.format(v) + ' ' + code + '</span><b>' + eurosPrecis(v / t) + '</b>';
+    }).join('') + '</div></div>';
+
+    html += '<div class="bloc"><p class="surtitre">Taux</p>' +
+      '<label class="champ">Taux obtenu sur place (' + code + ' pour 1 €)' +
+      '<input type="text" inputmode="decimal" id="taux-manuel" autocomplete="off" placeholder="Laisser vide pour le taux automatique" value="' + (taux.manuel[code] ? esc(fmtNombre.format(taux.manuel[code]).replace(/\s/g, '')) : '') + '"></label>' +
+      '<p class="petit doux" style="margin:8px 0 0">À remplir si le taux que vous obtenez vraiment (bureau de change, retrait) est différent du taux officiel. Il sert aussi pour vos dépenses.</p>' +
+      '<div class="boutons"><button type="button" class="bouton" id="taux-maj">Mettre à jour les taux</button></div>' +
+      '<p class="petit doux" style="margin:8px 0 0">Les taux se mettent à jour tout seuls quand il y a du réseau, et restent disponibles hors ligne.</p></div>';
+    $('#devises').innerHTML = html;
+  }
+
+  /* ---------- Dépenses réelles ---------- */
+  var CATS_DEPENSE = [['hebergement', '🛏️', 'Hébergement'], ['repas', '🍽️', 'Repas'], ['transport', '🚌', 'Transport'], ['activite', '🎟️', 'Activités'], ['autre', '🛍️', 'Autre']];
+  var depenses = lire(CLES.depenses, []);
+  var dernierChoix = { devise: 'EUR', cat: 'repas' };
+  function catDepense(id) { return CATS_DEPENSE.filter(function (c) { return c[0] === id; })[0] || CATS_DEPENSE[4]; }
+
+  function rendreDepenses() {
+    var cal = calendrier(), auj = aujourdhui();
+    var nb = (donnees.budget && donnees.budget.personnes) || 1;
+    var total = depenses.reduce(function (s, d) { return s + d.eur; }, 0);
+    var html = '<div class="bloc bloc-heros"><p class="surtitre">Dépensé jusqu\'ici</p>' +
+      '<p class="grand-chiffre" style="font-size:2.2rem">' + eurosPrecis(total) + '</p>' +
+      (nb > 1 ? '<p class="doux" style="margin:8px 0 0">Soit <b style="color:#fff">' + eurosPrecis(total / nb) + '</b> par personne</p>' : '') + '</div>';
+
+    // Saisie
+    var ici = situer(auj, cal);
+    if (dernierChoix.devise === 'EUR' && !depenses.length && taux.devise && ici.etape) dernierChoix.devise = taux.devise;
+    html += '<form class="bloc" id="form-depense" novalidate><p class="surtitre">Ajouter une dépense</p>' +
+      '<div class="rangee"><label class="champ" style="flex:2">Montant<input type="text" inputmode="decimal" name="montant" autocomplete="off" placeholder="0" required></label>' +
+      '<label class="champ" style="flex:1">Monnaie<select name="devise">' + ['EUR'].concat(Object.keys(DEVISES)).map(function (k) {
+        return '<option value="' + k + '"' + (k === dernierChoix.devise ? ' selected' : '') + '>' + k + '</option>';
+      }).join('') + '</select></label></div>' +
+      '<div class="choix" role="radiogroup" aria-label="Catégorie">' + CATS_DEPENSE.map(function (c) {
+        return '<label><input type="radio" name="cat" value="' + c[0] + '"' + (c[0] === dernierChoix.cat ? ' checked' : '') + '><span>' + c[1] + ' ' + esc(c[2]) + '</span></label>';
+      }).join('') + '</div>' +
+      '<div class="rangee"><label class="champ" style="flex:1">Date<input type="date" name="date" value="' + esc(isoAuj()) + '"></label></div>' +
+      '<label class="champ">Note (facultatif)<input type="text" name="note" autocomplete="off" maxlength="80" placeholder="Restaurant, bus pour…"></label>' +
+      '<p class="petit doux" style="margin:10px 0 0">Notez le montant payé pour vous ' + (nb > 1 ? nb : '') + ' : l\'appli calcule la part par personne.</p>' +
+      '<div class="boutons"><button type="submit" class="bouton plein">Ajouter</button></div></form>';
+
+    if (!depenses.length) {
+      html += '<div class="bloc vide"><p style="font-size:2rem;margin:0">🧾</p><h3>Aucune dépense notée</h3><p class="doux">Notez vos dépenses au fur et à mesure pour les comparer au budget prévu.</p></div>';
+      $('#depenses').innerHTML = html;
+      return;
+    }
+
+    // Par section : dépensé, moyenne par jour et par personne, comparée au budget quotidien prévu
+    var parSection = {}, ordreSections = [];
+    depenses.forEach(function (d) {
+      var s = situer(versDate(d.date), cal);
+      if (!parSection[s.id]) { parSection[s.id] = { nom: s.nom, total: 0 }; ordreSections.push(s.id); }
+      parSection[s.id].total += d.eur;
+    });
+    var bilans = bilanPays(cal), parJour = (donnees.budget && donnees.budget.parJour) || {};
+    html += '<div class="bloc"><p class="surtitre">Par section</p>' + ['avant'].concat(donnees.pays.map(function (p) { return p.id; }), ['apres']).filter(function (id) { return parSection[id]; }).map(function (id) {
+      var s = parSection[id], b = bilans.filter(function (y) { return y.pays.id === id; })[0], pj = parJour[id], ligne = '';
+      if (b && b.debut != null) {
+        var ecoules = Math.max(1, Math.min(b.total, Math.round((Math.min(auj + JOUR, b.fin) - b.debut) / JOUR)));
+        var moyenne = s.total / nb / ecoules;
+        ligne = '<p class="petit doux" style="margin:2px 0 0">' + eurosPrecis(moyenne) + ' par jour et par personne sur ' + jours(ecoules) +
+          (pj ? ' · prévu ' + pj[0] + ' à ' + pj[1] + ' € (hors excursions et grands trajets)' : '') + '</p>';
+        if (pj) ligne += '<div class="jauge' + (moyenne > pj[1] ? ' depasse' : '') + '"><span style="width:' + Math.min(100, Math.round(moyenne / pj[1] * 100)) + '%"></span></div>';
+      }
+      return '<div style="margin-top:12px"><div class="ligne entre"><b>' + esc(s.nom) + '</b><b>' + eurosPrecis(s.total) + '</b></div>' + ligne + '</div>';
+    }).join('') + '</div>';
+
+    // Par catégorie
+    html += '<div class="bloc"><p class="surtitre">Par catégorie</p>' + CATS_DEPENSE.map(function (c) {
+      var t = depenses.filter(function (d) { return catDepense(d.cat)[0] === c[0]; }).reduce(function (s, d) { return s + d.eur; }, 0);
+      if (!t) return '';
+      return '<div style="margin-top:10px"><div class="ligne entre"><span>' + c[1] + ' <b>' + esc(c[2]) + '</b></span><span class="petit">' + eurosPrecis(t) + ' · ' + Math.round(t / total * 100) + ' %</span></div>' +
+        '<div class="jauge"><span style="width:' + Math.round(t / total * 100) + '%;background:var(--accent)"></span></div></div>';
+    }).join('') + '</div>';
+
+    // Liste, la plus récente en premier
+    var liste = depenses.slice().sort(function (a, b) { return b.date.localeCompare(a.date) || b.id - a.id; });
+    var jourCourant = null;
+    html += '<div class="bloc"><div class="ligne entre"><p class="surtitre">Toutes les dépenses (' + liste.length + ')</p><button type="button" class="puce" id="depenses-copier">Copier</button></div>' +
+      liste.map(function (d) {
+        var c = catDepense(d.cat), tete = '';
+        if (d.date !== jourCourant) { jourCourant = d.date; tete = '<p class="jour-liste">' + esc(dJour(versDate(d.date))) + '</p>'; }
+        return tete + '<div class="ligne-depense"><span class="resa-type" aria-hidden="true">' + c[1] + '</span>' +
+          '<span class="case-corps"><b>' + esc(d.note || c[2]) + '</b>' + (d.devise !== 'EUR' ? '<br><span class="petit doux">' + fmtNombre.format(d.montant) + ' ' + esc(d.devise) + '</span>' : '') + '</span>' +
+          '<b style="white-space:nowrap">' + eurosPrecis(d.eur) + '</b>' +
+          '<button type="button" class="suppr" data-suppr-depense="' + d.id + '" aria-label="Supprimer : ' + esc(d.note || c[2]) + '">×</button></div>';
+      }).join('') + '</div>';
+    $('#depenses').innerHTML = html;
+  }
+  function ajouterDepense(f) {
+    var m = nombre(f.montant.value);
+    if (!m || m <= 0) { toast('Indiquez un montant'); f.montant.focus(); return; }
+    var devise = f.devise.value, cat = f.cat.value || 'autre';
+    depenses.push({ id: Date.now(), date: f.date.value || isoAuj(), montant: m, devise: devise, eur: m / tauxDe(devise), cat: cat, note: f.note.value.trim() });
+    dernierChoix = { devise: devise, cat: cat };
+    ecrire(CLES.depenses, depenses);
+    rendreDepenses();
+    toast('Dépense ajoutée ✓');
+  }
+  function texteDepenses() {
+    return ['Date;Catégorie;Note;Montant;Monnaie;Euros'].concat(depenses.slice().sort(function (a, b) { return a.date.localeCompare(b.date) || a.id - b.id; }).map(function (d) {
+      return [d.date, catDepense(d.cat)[2], (d.note || '').replace(/;/g, ','), String(d.montant).replace('.', ','), d.devise, (Math.round(d.eur * 100) / 100).toFixed(2).replace('.', ',')].join(';');
+    })).join('\n');
+  }
+
+  /* ---------- Bagages ---------- */
+  var bagages = lire(CLES.bagages, { coches: {}, perso: [] });
+  function listeBagages() {
+    var cats = (donnees.bagages || []).map(function (c) {
+      return { id: c.id, icone: c.icone, titre: c.titre, items: (c.items || []).map(function (i) { return { id: i.id, nom: i.nom, detail: i.detail }; }) };
+    });
+    bagages.perso.forEach(function (p) {
+      var c = cats.filter(function (x) { return x.id === p.cat; })[0] || cats.filter(function (x) { return x.id === 'perso'; })[0];
+      if (!c) { c = { id: 'perso', icone: '➕', titre: 'Mes ajouts', items: [] }; cats.push(c); }
+      c.items.push({ id: p.id, nom: p.nom, perso: true });
+    });
+    return cats;
+  }
+  var bagagesOuverts = {};
+  function rendreBagages() {
+    var cats = listeBagages();
+    var tous = cats.reduce(function (l, c) { return l.concat(c.items); }, []);
+    var n = tous.filter(function (i) { return bagages.coches[i.id]; }).length;
+    var html = '<div class="bloc"><div class="ligne entre"><b>' + n + ' sur ' + tous.length + ' dans le sac</b>' +
+      (n ? '<button type="button" class="puce" id="bagages-vider">Tout décocher</button>' : '') + '</div>' +
+      '<div class="jauge"><span style="width:' + Math.round(n / Math.max(1, tous.length) * 100) + '%"></span></div>' +
+      '<p class="doux petit" style="margin:8px 0 0">La liste resservira à chaque fois que vous refaites le sac : « Tout décocher » la remet à zéro.</p></div>';
+    cats.forEach(function (c) {
+      var k = c.items.filter(function (i) { return bagages.coches[i.id]; }).length;
+      var corps = c.items.map(function (i) {
+        return '<label class="case' + (bagages.coches[i.id] ? ' fait' : '') + '"><input type="checkbox" data-bagage="' + esc(i.id) + '"' + (bagages.coches[i.id] ? ' checked' : '') + '>' +
+          '<span class="case-corps"><b>' + esc(i.nom) + '</b>' + (i.detail ? '<br><span class="petit doux">' + esc(i.detail) + '</span>' : '') + '</span>' +
+          (i.perso ? '<button type="button" class="suppr" data-suppr-bagage="' + esc(i.id) + '" aria-label="Retirer ' + esc(i.nom) + ' de la liste">×</button>' : '') + '</label>';
+      }).join('');
+      html += deroulant(esc(c.icone || '🎒'), esc(c.titre), k + ' sur ' + c.items.length, corps,
+        '<span class="badge ' + (k === c.items.length ? 'ok' : 'a-decider') + '">' + k + '/' + c.items.length + '</span>',
+        ' data-bagages-cat="' + esc(c.id) + '"' + (bagagesOuverts[c.id] ? ' open' : ''));
+    });
+    html += '<form class="bloc" id="form-bagage" novalidate><p class="surtitre">Ajouter un objet</p>' +
+      '<div class="rangee"><label class="champ" style="flex:2">Objet<input type="text" name="nom" autocomplete="off" maxlength="60" placeholder="Jumelles, carnet…"></label>' +
+      '<label class="champ" style="flex:1.4">Catégorie<select name="cat">' + (donnees.bagages || []).map(function (c) { return '<option value="' + esc(c.id) + '">' + esc(c.titre) + '</option>'; }).join('') + '</select></label></div>' +
+      '<div class="boutons"><button type="submit" class="bouton plein">Ajouter</button></div></form>';
+    $('#bagages').innerHTML = html;
+  }
+
+  /* ---------- Journal de bord ---------- */
+  var HUMEURS = [['5', '😍', 'Génial'], ['4', '🙂', 'Bien'], ['3', '😐', 'Moyen'], ['2', '😕', 'Difficile'], ['1', '😫', 'Très dur']];
+  var journal = lire(CLES.journal, {});
+  var dateJournal = null;
+  function humeur(v) { return HUMEURS.filter(function (h) { return h[0] === String(v); })[0]; }
+  function rendreJournal() {
+    var cal = calendrier();
+    var date = dateJournal || isoAuj(), e = journal[date] || {};
+    var s = situer(versDate(date), cal);
+    var html = '<form class="bloc" id="form-journal" novalidate><p class="surtitre">' + (journal[date] ? 'Modifier la page' : 'Écrire la page du jour') + '</p>' +
+      '<label class="champ">Jour<input type="date" name="date" id="journal-date" value="' + esc(date) + '"></label>' +
+      '<p class="petit doux" style="margin:6px 0 0">' + esc(dLong(versDate(date))) + (s.etape ? ' · jour ' + s.jour + ' · ' + esc(s.etape.etape.nom) : '') + '</p>' +
+      '<div class="choix humeurs" role="radiogroup" aria-label="Humeur du jour">' + HUMEURS.map(function (h) {
+        return '<label><input type="radio" name="humeur" value="' + h[0] + '"' + (String(e.humeur) === h[0] ? ' checked' : '') + '><span title="' + esc(h[2]) + '"><span aria-hidden="true">' + h[1] + '</span><span class="sr-only">' + esc(h[2]) + '</span></span></label>';
+      }).join('') + '</div>' +
+      '<label class="champ">Ce qu\'on a fait, vu, mangé…<textarea name="texte" rows="5" placeholder="Quelques lignes suffisent.">' + esc(e.texte || '') + '</textarea></label>' +
+      '<div class="boutons"><button type="submit" class="bouton plein">Enregistrer</button></div></form>';
+
+    var dates = Object.keys(journal).sort().reverse();
+    if (!dates.length) {
+      html += '<div class="bloc vide"><p style="font-size:2rem;margin:0">📓</p><h3>Le journal est vide</h3><p class="doux">Une note par jour, même courte : dans cinq mois, ce sera le meilleur souvenir du voyage.</p></div>';
+    } else {
+      html += '<div class="ligne entre" style="margin:18px 4px 8px"><h3 class="categorie" style="margin:0">' + pluriel(dates.length, 'page') + '</h3><button type="button" class="puce" id="journal-copier">Copier tout</button></div>' +
+        dates.map(function (d) {
+          var j = journal[d], h = humeur(j.humeur), x = situer(versDate(d), cal);
+          return '<div class="bloc page-journal"><div class="ligne entre"><p class="surtitre">' + esc(dJour(versDate(d))) + (x.etape ? ' · J' + x.jour + ' · ' + esc(x.etape.etape.nom) : '') + '</p>' +
+            (h ? '<span class="humeur" title="' + esc(h[2]) + '">' + h[1] + '</span>' : '') + '</div>' +
+            (j.texte ? '<p class="texte-journal">' + esc(j.texte) + '</p>' : '') +
+            '<div class="boutons"><button type="button" class="puce" data-journal-modifier="' + esc(d) + '">Modifier</button>' +
+            '<button type="button" class="puce" data-journal-supprimer="' + esc(d) + '">Supprimer</button></div></div>';
+        }).join('');
+    }
+    $('#journal').innerHTML = html;
+  }
+  function texteJournal() {
+    var cal = calendrier();
+    return Object.keys(journal).sort().map(function (d) {
+      var j = journal[d], h = humeur(j.humeur), x = situer(versDate(d), cal);
+      return dLong(versDate(d)) + (x.etape ? ' · jour ' + x.jour + ' · ' + x.etape.etape.nom : '') + (h ? ' ' + h[1] : '') + '\n' + (j.texte || '');
+    }).join('\n\n');
+  }
+
+  /* ---------- Notes personnelles par étape ---------- */
+  var notesPerso = lire(CLES.notes, {});
+
+  /* ---------- Export vers l'agenda (.ics) ---------- */
+  function telecharger(nom, contenu, type) {
+    var url = URL.createObjectURL(new Blob([contenu], { type: type }));
+    var a = document.createElement('a');
+    a.href = url; a.download = nom; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+  function exporterAgenda() {
+    var cal = calendrier();
+    function jourIcs(ms) { return versIso(ms).replace(/-/g, ''); }
+    function texte(s) { return String(s || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n'); }
+    function plier(l) { var r = []; while (l.length > 60) { r.push(l.slice(0, 60)); l = ' ' + l.slice(60); } r.push(l); return r.join('\r\n'); }
+    var tampon = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+    var lignes = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Voyage Amerique du Sud//FR', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:' + texte(donnees.voyage.titre)];
+    function evenement(uid, debut, fin, titre, description, lieu) {
+      lignes.push('BEGIN:VEVENT', 'UID:' + uid + '@voyage-amerique-du-sud', 'DTSTAMP:' + tampon, debut, fin, 'SUMMARY:' + texte(titre));
+      if (description) lignes.push('DESCRIPTION:' + texte(description));
+      if (lieu) lignes.push('LOCATION:' + texte(lieu));
+      lignes.push('TRANSP:TRANSPARENT', 'END:VEVENT');
+    }
+    function journee(uid, debut, fin, titre, description, lieu) {
+      evenement(uid, 'DTSTART;VALUE=DATE:' + jourIcs(debut), 'DTEND;VALUE=DATE:' + jourIcs(Math.max(fin, debut + JOUR)), titre, description, lieu);
+    }
+    ['aller', 'retour'].forEach(function (k) {
+      var v = (donnees.vols || {})[k];
+      if (v) journee('vol-' + k, dateVol(k, cal), dateVol(k, cal) + JOUR, '✈️ ' + v.titre, [v.duree, v.details].filter(Boolean).join('\n'));
+    });
+    cal.etapes.forEach(function (x) {
+      var e = x.etape, h = e.hebergement, t = e.trajet;
+      journee('etape-' + e.id, x.arrivee, x.depart, x.num + '. ' + e.nom,
+        [t && t.resume ? 'Pour venir : ' + t.resume : '', h && h.nom ? 'Hébergement : ' + h.nom : '', x.activites.length ? 'Activités : ' + x.activites.map(function (a) { return a.nom; }).join(', ') : '', e.notes, notesPerso[e.id]].filter(Boolean).join('\n'),
+        (h && h.adresse) || e.nom);
+      if (x.marge) journee('marge-' + e.id, x.depart, x.finMarge, '⏳ Marge ' + paysDe(e.pays).nom, 'Météo, repos, imprévus');
+    });
+    reservationsTriees().forEach(function (r, i) {
+      var titre = (TYPES[r.type] || TYPES.autre).ico + ' ' + r.titre, d = versDate(r.date);
+      var desc = [r.compagnie, r.notes, lienDriveSur(r.lienDrive) ? r.lienDrive : ''].filter(Boolean).join('\n');
+      if (/^\d{2}:\d{2}$/.test(r.heure || '')) {
+        // Heure locale du lieu, sans fuseau : l'agenda l'affiche telle quelle
+        var hh = r.heure.replace(':', ''), fin = ('0' + Math.min(23, +hh.slice(0, 2) + 1)).slice(-2) + hh.slice(2);
+        evenement('resa-' + i + '-' + r.date, 'DTSTART:' + jourIcs(d) + 'T' + hh + '00', 'DTEND:' + jourIcs(d) + 'T' + fin + '00', titre, desc, r.lieu);
+      } else journee('resa-' + i + '-' + r.date, d, d + JOUR, titre, desc, r.lieu);
+    });
+    lignes.push('END:VCALENDAR');
+    telecharger('voyage-amerique-du-sud.ics', lignes.map(plier).join('\r\n') + '\r\n', 'text/calendar;charset=utf-8');
+    toast('Fichier agenda créé');
+  }
+
+  /* ---------- Sauvegarde et restauration des données du téléphone ---------- */
+  function sauvegarder() {
+    var copie = {};
+    try {
+      for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k.indexOf('voyage-') === 0) copie[k] = localStorage.getItem(k); }
+    } catch (e) { toast('Sauvegarde impossible'); return; }
+    telecharger('voyage-sauvegarde-' + versIso(Date.now()) + '.json', JSON.stringify({ appli: 'voyage-amerique-du-sud', date: new Date().toISOString(), donnees: copie }, null, 1), 'application/json');
+    toast('Sauvegarde créée');
+  }
+  function restaurer(fichier) {
+    var lecteur = new FileReader();
+    lecteur.onload = function () {
+      var s;
+      try { s = JSON.parse(lecteur.result); } catch (e) { s = null; }
+      if (!s || s.appli !== 'voyage-amerique-du-sud' || !s.donnees) { toast('Ce fichier n\'est pas une sauvegarde de l\'appli'); return; }
+      if (!confirm('Remplacer les données de ce téléphone (cases cochées, dépenses, journal, notes) par celles de la sauvegarde du ' + dCourt(Date.parse(s.date)) + ' ?')) return;
+      try {
+        Object.keys(s.donnees).forEach(function (k) { if (k.indexOf('voyage-') === 0 && typeof s.donnees[k] === 'string') localStorage.setItem(k, s.donnees[k]); });
+      } catch (e) { toast('Restauration impossible'); return; }
+      location.reload();
+    };
+    lecteur.readAsText(fichier);
+  }
+
   /* ---------- Menu « Plus » ---------- */
   function rendrePlus() {
     var l = listeAFaire();
     var nbFaits = l.filter(function (a) { return a.coche; }).length;
     var aD = nbPropositionsADecider();
-    var items = [
-      ['#afaire', '✅', 'À faire', nbFaits + ' sur ' + l.length + ' faits : réservations, billets, locations…'],
-      ['#budget', '💶', 'Budget', (function () { var b = calculBudget(); return euros(b.total[0]) + ' à ' + euros(b.total[1]) + ' par personne'; })()],
-      ['#resas', '🎫', 'Réservations', (donnees.reservations || []).length ? pluriel(donnees.reservations.length, 'réservation') : 'Aucune pour l\'instant'],
-      ['#propositions', '💡', 'Propositions', aD ? pluriel(aD, 'idée') + ' à décider' : 'Tout est décidé'],
-      ['#conseils', '🧭', 'Conseils', pluriel((donnees.conseils || []).length, 'fiche') + ' : santé, argent, équipement…']
+    var sac = listeBagages().reduce(function (t, c) { return t.concat(c.items); }, []);
+    var nbSac = sac.filter(function (i) { return bagages.coches[i.id]; }).length;
+    var totalDepense = depenses.reduce(function (s, d) { return s + d.eur; }, 0);
+    var nbPages = Object.keys(journal).length;
+    var groupes = [
+      ['Préparer', [
+        ['#afaire', '✅', 'À faire', nbFaits + ' sur ' + l.length + ' faits : réservations, billets, locations…'],
+        ['#bagages', '🎒', 'Bagages', nbSac + ' sur ' + sac.length + ' dans le sac'],
+        ['#propositions', '💡', 'Propositions', aD ? pluriel(aD, 'idée') + ' à décider' : 'Tout est décidé'],
+        ['#conseils', '🧭', 'Conseils', pluriel((donnees.conseils || []).length, 'fiche') + ' : santé, argent, équipement…']
+      ]],
+      ['Argent', [
+        ['#budget', '💶', 'Budget prévu', (function () { var b = calculBudget(); return euros(b.total[0]) + ' à ' + euros(b.total[1]) + ' par personne'; })()],
+        ['#depenses', '🧾', 'Dépenses réelles', depenses.length ? eurosPrecis(totalDepense) + ' · ' + pluriel(depenses.length, 'dépense') : 'À noter au fur et à mesure'],
+        ['#devises', '💱', 'Convertisseur', 'Pesos, bolivianos, soles ↔ euros, même hors ligne']
+      ]],
+      ['Pendant le voyage', [
+        ['#resas', '🎫', 'Réservations', (donnees.reservations || []).length ? pluriel(donnees.reservations.length, 'réservation') : 'Aucune pour l\'instant'],
+        ['#journal', '📓', 'Journal de bord', nbPages ? pluriel(nbPages, 'page') : 'Une note et une humeur par jour']
+      ]]
     ];
-    $('#menu-plus').innerHTML = items.map(function (i) {
-      return '<a href="' + i[0] + '"><span class="ico" aria-hidden="true">' + i[1] + '</span><span><b>' + esc(i[2]) + '</b><span class="petit doux">' + esc(i[3]) + '</span></span><span class="chevron" aria-hidden="true">›</span></a>';
+    function bouton(id, ico, titre, sous) {
+      return '<button type="button" id="' + id + '"><span class="ico" aria-hidden="true">' + ico + '</span><span><b>' + esc(titre) + '</b><span class="petit doux">' + esc(sous) + '</span></span></button>';
+    }
+    $('#menu-plus').innerHTML = groupes.map(function (g) {
+      return '<h3 class="categorie">' + esc(g[0]) + '</h3>' + g[1].map(function (i) {
+        return '<a href="' + i[0] + '"><span class="ico" aria-hidden="true">' + i[1] + '</span><span><b>' + esc(i[2]) + '</b><span class="petit doux">' + esc(i[3]) + '</span></span><span class="chevron" aria-hidden="true">›</span></a>';
+      }).join('');
     }).join('') +
-      '<button type="button" id="partager"><span class="ico" aria-hidden="true">📲</span><span><b>Partager l\'appli</b><span class="petit doux">Envoyer le lien pour l\'installer sur un autre téléphone</span></span></button>';
+      '<h3 class="categorie">Outils</h3>' +
+      bouton('agenda', '📅', 'Ajouter à l\'agenda', 'Fichier avec les étapes, les vols et les réservations') +
+      bouton('partager', '📲', 'Partager l\'appli', 'Envoyer le lien pour l\'installer sur un autre téléphone') +
+      bouton('sauvegarder', '💾', 'Sauvegarder mes données', 'Cases cochées, dépenses, journal, notes : une copie en fichier') +
+      '<label class="bouton-menu"><span class="ico" aria-hidden="true">♻️</span><span><b>Restaurer une sauvegarde</b><span class="petit doux">Reprendre les données d\'un fichier de sauvegarde</span></span>' +
+      '<input type="file" id="restaurer" accept="application/json,.json" class="sr-only"></label>';
   }
   function majPastille() {
     var n = nbPropositionsADecider(), p = $('#nb-propositions');
@@ -1123,11 +1501,12 @@
   });
 
   /* ---------- Navigation ---------- */
-  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'plus', 'resas', 'conseils', 'propositions', 'afaire', 'budget'];
-  var SOUS_PLUS = ['resas', 'conseils', 'propositions', 'afaire', 'budget'];
+  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'plus', 'resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal'];
+  var SOUS_PLUS = ['resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal'];
   var RENDUS = {
     accueil: rendreAccueil, etapes: rendreEtapes, planifier: rendrePlanificateur, plus: rendrePlus, resas: rendreReservations,
-    conseils: rendreConseils, propositions: rendrePropositions, afaire: rendreAFaire, budget: rendreBudget
+    conseils: rendreConseils, propositions: rendrePropositions, afaire: rendreAFaire, budget: rendreBudget,
+    depenses: rendreDepenses, devises: rendreDevises, bagages: rendreBagages, journal: rendreJournal
   };
   function vueCourante() {
     var v = location.hash.replace('#', '') || 'accueil';
@@ -1179,7 +1558,9 @@
     document.querySelectorAll('.onglets a').forEach(function (a) {
       if (a.getAttribute('data-vue') === onglet) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
+    if (v !== 'journal') dateJournal = null;
     if (RENDUS[v]) RENDUS[v]();
+    if (v === 'devises' || v === 'depenses') majTaux(false);
     suivreSection();
     document.body.classList.toggle('sur-carte', v === 'carte');
     if (v === 'carte') {
@@ -1192,7 +1573,7 @@
 
   function evenements() {
     document.addEventListener('click', function (ev) {
-      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],[data-aller-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne,#bouton-position,#afaire-masquer,#partager');
+      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],[data-aller-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne,#bouton-position,#afaire-masquer,#partager,#agenda,#sauvegarder,#taux-maj,#depenses-copier,#journal-copier,#bagages-vider,[data-devise],[data-suppr-depense],[data-suppr-bagage],[data-journal-modifier],[data-journal-supprimer]');
       if (!c) return;
       if (c.hasAttribute('data-plan-ouvrir')) sectionsOuvertes[c.getAttribute('data-plan-ouvrir')] = true;
       if (c.hasAttribute('data-aller-section')) {
@@ -1251,6 +1632,36 @@
         try { localStorage.setItem(CLE_MASQUER, masquerFaits ? '1' : '0'); } catch (e) { /* ignoré */ }
         rendreAFaire(); refocus('#afaire-masquer');
       }
+      else if (c.id === 'agenda') {
+        if (!donnees.voyage.datesProvisoires || confirm('Les dates sont encore provisoires : l\'agenda ne se mettra pas à jour tout seul si elles changent. Créer le fichier quand même ?')) exporterAgenda();
+      }
+      else if (c.id === 'sauvegarder') sauvegarder();
+      else if (c.id === 'taux-maj') majTaux(true);
+      else if (c.id === 'depenses-copier') copier(texteDepenses(), 'Dépenses copiées');
+      else if (c.id === 'journal-copier') copier(texteJournal(), 'Journal copié');
+      else if (c.id === 'bagages-vider') {
+        if (confirm('Décocher tous les objets pour refaire le sac ?')) { bagages.coches = {}; ecrire(CLES.bagages, bagages); rendreBagages(); }
+      }
+      else if (c.hasAttribute('data-devise')) { taux.devise = c.getAttribute('data-devise'); ecrire(CLES.taux, taux); rendreDevises(); refocus('[data-devise="' + taux.devise + '"]'); }
+      else if (c.hasAttribute('data-suppr-depense')) {
+        if (confirm('Supprimer cette dépense ?')) {
+          var did = +c.getAttribute('data-suppr-depense');
+          depenses = depenses.filter(function (d) { return d.id !== did; });
+          ecrire(CLES.depenses, depenses); rafraichir();
+        }
+      }
+      else if (c.hasAttribute('data-suppr-bagage')) {
+        ev.preventDefault();
+        var bid = c.getAttribute('data-suppr-bagage');
+        bagages.perso = bagages.perso.filter(function (b) { return b.id !== bid; });
+        delete bagages.coches[bid];
+        ecrire(CLES.bagages, bagages); rafraichir();
+      }
+      else if (c.hasAttribute('data-journal-modifier')) { dateJournal = c.getAttribute('data-journal-modifier'); rendreJournal(); window.scrollTo(0, 0); }
+      else if (c.hasAttribute('data-journal-supprimer')) {
+        var jd = c.getAttribute('data-journal-supprimer');
+        if (confirm('Supprimer la page du ' + dCourt(versDate(jd)) + ' ?')) { delete journal[jd]; ecrire(CLES.journal, journal); rafraichir(); }
+      }
       else if (c.id === 'partager') {
         var adresse = location.origin + location.pathname;
         if (navigator.share) navigator.share({ title: donnees.voyage.titre, url: adresse }).catch(function () { /* partage annulé */ });
@@ -1267,12 +1678,59 @@
         sauverPlan(); rafraichir();
         refocus('[data-act="' + t.getAttribute('data-act') + '"]');
       }
+      else if (t.id === 'journal-date' && t.value) { dateJournal = t.value; rendreJournal(); refocus('#journal-date'); }
+      else if (t.id === 'restaurer' && t.files && t.files[0]) restaurer(t.files[0]);
+      else if (t.id === 'taux-manuel') {
+        var tm = nombre(t.value), code = taux.devise;
+        if (tm && tm > 0) taux.manuel[code] = tm; else delete taux.manuel[code];
+        ecrire(CLES.taux, taux); rendreDevises();
+        toast(tm && tm > 0 ? 'Votre taux est utilisé' : 'Retour au taux automatique');
+      }
+      else if (t.hasAttribute && t.hasAttribute('data-bagage')) {
+        var gid = t.getAttribute('data-bagage');
+        if (t.checked) bagages.coches[gid] = true; else delete bagages.coches[gid];
+        ecrire(CLES.bagages, bagages); rafraichir();
+        refocus('[data-bagage="' + gid + '"]');
+      }
       else if (t.hasAttribute && t.hasAttribute('data-fait')) {
         var fid = t.getAttribute('data-fait');
         faits[fid] = t.checked;
         sauverFaits(); rafraichir();
         refocus('[data-fait="' + fid + '"]');
         if (t.checked) toast('C\'est fait ✓');
+      }
+    });
+
+    // Saisie en direct : convertisseur (les deux champs se répondent) et notes d'étape
+    document.addEventListener('input', function (ev) {
+      var t = ev.target;
+      if (t.id === 'conv-local' || t.id === 'conv-eur') {
+        var v = nombre(t.value), tx = tauxDe(taux.devise), autre = $(t.id === 'conv-local' ? '#conv-eur' : '#conv-local');
+        autre.value = v == null ? '' : fmtNombre.format(t.id === 'conv-local' ? v / tx : v * tx);
+      }
+      else if (t.hasAttribute && t.hasAttribute('data-note')) {
+        var nid = t.getAttribute('data-note');
+        if (t.value.trim()) notesPerso[nid] = t.value; else delete notesPerso[nid];
+        ecrire(CLES.notes, notesPerso);
+      }
+    });
+    document.addEventListener('submit', function (ev) {
+      var f = ev.target;
+      if (f.id === 'form-depense') { ev.preventDefault(); ajouterDepense(f); }
+      else if (f.id === 'form-bagage') {
+        ev.preventDefault();
+        var nom = f.nom.value.trim();
+        if (!nom) { f.nom.focus(); return; }
+        bagages.perso.push({ id: 'perso-' + Date.now(), nom: nom, cat: f.cat.value });
+        bagagesOuverts[f.cat.value] = true;
+        ecrire(CLES.bagages, bagages); rendreBagages(); toast('Ajouté à la liste');
+      }
+      else if (f.id === 'form-journal') {
+        ev.preventDefault();
+        var jd = f.date.value || isoAuj(), txt = f.texte.value.trim(), hum = f.humeur.value;
+        if (!txt && !hum) { toast('Écrivez quelques mots ou choisissez une humeur'); return; }
+        journal[jd] = { humeur: hum || null, texte: txt };
+        ecrire(CLES.journal, journal); dateJournal = null; rendreJournal(); toast('Page enregistrée ✓');
       }
     });
 
@@ -1289,13 +1747,19 @@
     document.addEventListener('toggle', function (ev) {
       var el = ev.target;
       if (!el.getAttribute) return;
-      var s = el.getAttribute('data-plan-section'), a = el.getAttribute('data-afaire-cat');
+      var s = el.getAttribute('data-plan-section'), a = el.getAttribute('data-afaire-cat'), g = el.getAttribute('data-bagages-cat');
+      if (g) bagagesOuverts[g] = el.open;
       if (s) sectionsOuvertes[s] = el.open;
       if (a) afaireOuvertes[a] = el.open;
     }, true);
 
     var d = $('#fiche');
     d.addEventListener('click', function (ev) { if (ev.target === d) fermerFiche(); });
+    // À la fermeture (bouton, touche Échap, geste retour) : la liste des étapes affiche la note qu'on vient d'écrire
+    d.addEventListener('close', function () {
+      ficheOuverte = null;
+      if (vueCourante() === 'etapes') { var yy = window.scrollY; rendreEtapes(); window.scrollTo(0, yy); }
+    });
 
     window.addEventListener('hashchange', afficherVue);
     function reseau() { $('#hors-ligne').hidden = navigator.onLine; }
@@ -1317,6 +1781,9 @@
       .catch(function () {
         $('#accueil').innerHTML = '<div class="bloc"><h3>Données introuvables</h3><p>Ouvrez l\'appli une première fois avec du réseau pour l\'enregistrer sur le téléphone.</p></div>';
       });
+
+    // Demander au téléphone de ne pas effacer les données de l'appli quand il manque de place
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () { /* ignoré */ });
 
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
       // Quand une nouvelle version est publiée, le nouveau service worker prend la main :
