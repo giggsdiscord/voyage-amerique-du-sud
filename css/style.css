@@ -318,7 +318,8 @@ body.sur-carte { overflow: hidden; }
 .carte-etat { position: absolute; bottom: 10px; left: 10px; right: 10px; z-index: 500; margin: 0; }
 .carte-etat:not(:empty) { background: var(--surface); padding: 8px 12px; border-radius: 10px; box-shadow: var(--ombre); font-size: .875rem; }
 .marqueur { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 800 13px/1 system-ui, sans-serif; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
-.marqueur-vol { background: #2b6cb0; font-size: 15px; }
+.marqueur-vol { background: #1d3fa8; font-size: 15px; }
+.marqueur-vol.petit-vol { width: 24px; height: 24px; font-size: 12px; }
 .vol-carte {
   display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px;
   padding: 14px; border-radius: var(--rayon); border: 2px dashed var(--primaire);

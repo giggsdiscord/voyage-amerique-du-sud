@@ -884,10 +884,19 @@
       var popup = '<b>✈️ ' + esc(vol.titre) + '</b><br>' + esc(dLong(v[1])) + '<br><span>' + esc(vol.duree || '') + '</span>';
       for (var i = 0; i < vol.points.length - 1; i++) {
         var seg = arc(vol.points[i], vol.points[i + 1]);
-        L.polyline(seg, { color: '#2b6cb0', weight: 3, opacity: .9, dashArray: '2 8', lineCap: 'round', interactive: false }).addTo(coucheVols);
+        // Liseré blanc dessous puis gros pointillés bleu foncé : bien lisibles sur téléphone
+        L.polyline(seg, { color: '#ffffff', weight: 8, opacity: .75, lineCap: 'round', interactive: false }).addTo(coucheVols);
+        L.polyline(seg, { color: '#1d3fa8', weight: 5, opacity: 1, dashArray: '1 11', lineCap: 'round', interactive: false }).addTo(coucheVols);
         L.polyline(seg, { color: '#000', weight: 22, opacity: 0 }).bindPopup(popup).addTo(coucheVols);
       }
       vol.points.forEach(function (p) {
+        // Escale (Buenos Aires) : petit avion pour montrer d'où part le vol intérieur
+        if (p.nom === 'Buenos Aires') {
+          L.marker([p.lat, p.lng], { title: 'Escale : Buenos Aires',
+            icon: L.divIcon({ className: '', html: '<span class="marqueur marqueur-vol petit-vol">✈</span>', iconSize: [24, 24], iconAnchor: [12, 12] })
+          }).bindPopup('<b>✈️ Escale à Buenos Aires</b><br>' + esc(vol.details || '')).addTo(coucheVols);
+          return;
+        }
         if (p.nom !== 'Paris' || v[0] !== 'aller') return;
         L.marker([p.lat, p.lng], {
           title: 'France',
@@ -898,15 +907,6 @@
     });
     coucheVols.addTo(carte);
   }
-  function voirVols() {
-    if (!carte || !donnees.vols) return;
-    var pts = [];
-    ['aller', 'retour'].forEach(function (k) { ((donnees.vols[k] || {}).points || []).forEach(function (p) { pts.push([p.lat, p.lng]); }); });
-    donnees.etapes.forEach(function (e) { pts.push([e.lat, e.lng]); });
-    if (coucheVols && !carte.hasLayer(coucheVols)) coucheVols.addTo(carte);
-    carte.fitBounds(pts, { padding: [30, 30] });
-  }
-
   function vueEnsemble() {
     if (!carte) return;
     var pts = donnees.etapes.map(function (e) { return [e.lat, e.lng]; });
@@ -1024,7 +1024,7 @@
 
   function evenements() {
     document.addEventListener('click', function (ev) {
-      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne,#bouton-vols');
+      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne');
       if (!c) return;
       if (c.hasAttribute('data-section')) {
         var cible = document.getElementById('section-' + c.getAttribute('data-section'));
@@ -1072,7 +1072,6 @@
         if (carte) { if (on) coucheActivites.addTo(carte); else carte.removeLayer(coucheActivites); }
       }
       else if (c.id === 'bouton-ensemble') vueEnsemble();
-      else if (c.id === 'bouton-vols') voirVols();
       else if (c.id === 'bouton-hors-ligne') prechargerCarte();
     });
 
@@ -1137,7 +1136,23 @@
       });
 
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-      navigator.serviceWorker.register('sw.js').catch(function () { /* ignoré */ });
+      // Quand une nouvelle version est publiée, le nouveau service worker prend la main :
+      // on recharge une fois pour afficher tout de suite la nouvelle version (sauf à la toute première installation).
+      var dejaControle = !!navigator.serviceWorker.controller, recharge = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        if (!dejaControle || recharge) return;
+        recharge = true;
+        try { sessionStorage.setItem('voyage-maj', '1'); } catch (e) { /* ignoré */ }
+        location.reload();
+      });
+      navigator.serviceWorker.register('sw.js').then(function (reg) {
+        // Vérifier les mises à jour à chaque ouverture et quand l'appli revient au premier plan
+        reg.update();
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) reg.update(); });
+      }).catch(function () { /* ignoré */ });
+      try {
+        if (sessionStorage.getItem('voyage-maj')) { sessionStorage.removeItem('voyage-maj'); setTimeout(function () { toast('Appli mise à jour ✓'); }, 600); }
+      } catch (e) { /* ignoré */ }
     }
   }
 

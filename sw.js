@@ -1,6 +1,6 @@
 /* Service worker : rend l'appli et ses données consultables en mode avion.
    Changer VERSION à chaque modification du code pour forcer la mise à jour. */
-var VERSION = 'v15';
+var VERSION = 'v16';
 var COQUILLE = 'coquille-' + VERSION;
 // v2 : les anciens caches de tuiles pouvaient contenir l'image « Access blocked » d'OpenStreetMap.
 var TUILES = 'tuiles-v2';
@@ -33,7 +33,8 @@ var EXTERNES = [
 
 self.addEventListener('install', function (ev) {
   ev.waitUntil(caches.open(COQUILLE).then(function (c) {
-    return c.addAll(FICHIERS).then(function () {
+    // cache: 'reload' : ignorer le cache HTTP du navigateur pour enregistrer la vraie nouvelle version
+    return c.addAll(FICHIERS.map(function (u) { return new Request(u, { cache: 'reload' }); })).then(function () {
       return Promise.all(EXTERNES.map(function (u) {
         return fetch(u, { mode: 'cors' }).then(function (r) { if (r.ok) return c.put(u, r); });
       }));
@@ -55,7 +56,8 @@ function reseauDAbord(req) {
   var cle = req.mode === 'navigate' ? 'index.html' : req;
   return caches.open(COQUILLE).then(function (c) {
     function enCache() { return c.match(cle, { ignoreSearch: true }); }
-    var reseau = fetch(req).then(function (r) {
+    // Une requête de navigation ne peut pas être recopiée avec des options : on refait la requête par son adresse
+    var reseau = fetch(req.mode === 'navigate' ? req.url : req, { cache: 'no-cache' }).then(function (r) {
       if (r.ok) c.put(cle, r.clone());
       return r;
     });
