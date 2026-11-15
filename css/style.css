@@ -73,6 +73,10 @@ a { color: var(--primaire); }
 }
 .entete h1 { margin: 0; font-size: 1.1rem; line-height: 1.2; }
 .entete-sous { margin: 0; font-size: .8rem; opacity: .85; }
+.drapeau {
+  display: inline-block; width: 1.35em; height: .9em; vertical-align: -.08em;
+  border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.25);
+}
 .pastille-hors-ligne { font-size: .75rem; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: rgba(0,0,0,.25); }
 
 main { outline: none; }
@@ -161,6 +165,11 @@ main { outline: none; }
   border-left: 3px dashed var(--trait); margin-left: 15px; color: var(--doux); font-size: .85rem;
 }
 .trajet-ico { flex: none; font-size: 1.1rem; }
+.marge-ligne {
+  margin: 0 0 12px; padding: 10px 14px; border-radius: var(--rayon);
+  border: 2px dashed var(--trait); font-size: .875rem;
+}
+.bloc-marge { border: 2px dashed var(--trait); box-shadow: none; background: transparent; }
 .trajet-texte { flex: 1; min-width: 0; }
 
 /* Fiche (dialog) */

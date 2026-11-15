@@ -87,9 +87,9 @@
   function chargerPlan() {
     try {
       var p = JSON.parse(localStorage.getItem(CLE_PLAN));
-      if (p && typeof p === 'object') return { debut: p.debut || null, jours: p.jours || {}, activites: p.activites || {} };
+      if (p && typeof p === 'object') return { debut: p.debut || null, jours: p.jours || {}, activites: p.activites || {}, marges: p.marges || {} };
     } catch (e) { /* stockage indisponible */ }
-    return { debut: null, jours: {}, activites: {} };
+    return { debut: null, jours: {}, activites: {}, marges: {} };
   }
   function sauverPlan() {
     try { localStorage.setItem(CLE_PLAN, JSON.stringify(plan)); } catch (e) { /* ignoré */ }
@@ -104,7 +104,16 @@
     return typeof v === 'number' ? v : (e.jours || 0);
   }
 
-  /* Calcule les dates de chaque étape, à la suite, depuis la date de départ. */
+  /* Jours de marge (météo, repos, imprévus) ajoutés à la fin de chaque section (champ "marge" du pays). */
+  function margePays(pid) {
+    var v = plan.marges[pid];
+    if (typeof v === 'number') return v;
+    var p = donnees.pays.filter(function (x) { return x.id === pid; })[0];
+    return (p && p.marge) || 0;
+  }
+
+  /* Calcule les dates de chaque étape, à la suite, depuis la date de départ.
+     La dernière étape d'une section porte la marge de cette section (champs marge et finMarge). */
   function calendrier() {
     var debut = versDate(plan.debut || donnees.voyage.debut);
     var cur = debut;
@@ -113,9 +122,28 @@
       var total = joursBase(e) + acts.reduce(function (s, a) { return s + (a.jours || 0); }, 0);
       var r = { etape: e, num: i + 1, arrivee: cur, depart: cur + total * JOUR, total: total, activites: acts };
       cur = r.depart;
+      var suiv = donnees.etapes[i + 1];
+      if (!suiv || suiv.pays !== e.pays) {
+        r.marge = margePays(e.pays);
+        r.finMarge = cur + r.marge * JOUR;
+        cur = r.finMarge;
+      }
       return r;
     });
     return { debut: debut, fin: cur, etapes: liste };
+  }
+
+  /* Petits drapeaux dessinés : Windows n'affiche pas les emojis de drapeaux (il montre « PE », « BO »…). */
+  var DRAPEAUX = {
+    perou: '<rect width="3" height="2" fill="#d91023"/><rect x="1" width="1" height="2" fill="#fff"/>',
+    bolivie: '<rect width="3" height="2" fill="#007934"/><rect width="3" height="1.333" fill="#f9e300"/><rect width="3" height=".667" fill="#d52b1e"/>',
+    chili: '<rect width="3" height="2" fill="#d52b1e"/><rect width="3" height="1" fill="#fff"/><rect width="1" height="1" fill="#0039a6"/><circle cx=".5" cy=".5" r=".2" fill="#fff"/>',
+    argentine: '<rect width="3" height="2" fill="#74acdf"/><rect y=".667" width="3" height=".667" fill="#fff"/><circle cx="1.5" cy="1" r=".2" fill="#f6b40e"/>'
+  };
+  function drapeau(p) {
+    var d = DRAPEAUX[p.id];
+    if (d) return '<svg class="drapeau" viewBox="0 0 3 2" aria-hidden="true">' + d + '</svg>';
+    return '<span aria-hidden="true">' + esc(p.drapeau || '') + '</span>';
   }
 
   function paysDe(id) {
@@ -126,12 +154,14 @@
   function bilanPays(cal) {
     return donnees.pays.map(function (p) {
       var et = cal.etapes.filter(function (x) { return x.etape.pays === p.id; });
-      var total = et.reduce(function (s, x) { return s + x.total; }, 0);
+      var marge = et.reduce(function (s, x) { return s + (x.marge || 0); }, 0);
+      var total = et.reduce(function (s, x) { return s + x.total; }, 0) + marge;
       var prevus = p.fenetre ? Math.round((versDate(p.fenetre.fin) - versDate(p.fenetre.debut)) / JOUR) + 1 : null;
+      var der = et[et.length - 1];
       return {
-        pays: p, total: total, prevus: prevus,
+        pays: p, total: total, marge: marge, prevus: prevus,
         debut: et.length ? et[0].arrivee : null,
-        fin: et.length ? et[et.length - 1].depart : null
+        fin: der ? (der.finMarge || der.depart) : null
       };
     });
   }
@@ -178,6 +208,13 @@
           html += '<ul class="activites">' + duJour.map(function (ev) { return '<li>' + (ev.heure ? '<b>' + esc(ev.heure) + '</b> ' : '') + esc(ev.titre) + '</li>'; }).join('') + '</ul>';
         }
         html += '<div class="boutons"><button class="bouton plein" data-fiche="' + esc(enCours.etape.id) + '">Voir la fiche</button></div></div>';
+      } else {
+        var enMarge = cal.etapes.filter(function (x) { return x.marge && auj >= x.depart && auj < x.finMarge; })[0];
+        if (enMarge) {
+          html += '<div class="bloc"><p class="surtitre">Aujourd\'hui · ' + esc(dJour(auj)) + '</p>' +
+            '<h3>⏳ Jour de marge</h3><p class="doux petit">Après ' + esc(enMarge.etape.nom) + ' · ' + esc(paysDe(enMarge.etape.pays).nom) +
+            ' · jusqu\'au ' + esc(dCourt(enMarge.finMarge)) + '</p></div>';
+        }
       }
     } else {
       html += '<div class="bloc"><p class="surtitre">Voyage terminé</p><h3>Bon retour !</h3></div>';
@@ -211,7 +248,7 @@
       ? '<span class="badge alerte">+' + jours(b.total - b.prevus) + '</span>'
       : '<span class="badge ok">' + (b.prevus - b.total === 0 ? 'pile' : 'reste ' + jours(b.prevus - b.total)) + '</span>');
     var pct = b.prevus ? Math.min(100, Math.round(b.total / b.prevus * 100)) : 0;
-    return '<div style="margin-top:10px"><div class="ligne entre"><span><b>' + esc(b.pays.drapeau) + ' ' + esc(b.pays.nom) + '</b> · ' + jours(b.total) +
+    return '<div style="margin-top:10px"><div class="ligne entre"><span><b>' + drapeau(b.pays) + ' ' + esc(b.pays.nom) + '</b> · ' + jours(b.total) +
       (b.prevus != null ? ' <span class="doux">/ ' + b.prevus + ' prévus</span>' : '') + '</span>' + badge + '</div>' +
       (b.prevus ? '<div class="jauge' + (depasse ? ' depasse' : '') + '"><span style="width:' + pct + '%"></span></div>' : '') + '</div>';
   }
@@ -223,9 +260,9 @@
     donnees.pays.forEach(function (p) {
       var et = cal.etapes.filter(function (x) { return x.etape.pays === p.id; });
       if (!et.length) return;
-      var tot = et.reduce(function (s, x) { return s + x.total; }, 0);
-      html += '<div class="pays-titre"><h3>' + esc(p.drapeau + ' ' + p.nom) + '</h3><span class="doux petit">' +
-        esc(dCourt(et[0].arrivee)) + ' → ' + esc(dCourt(et[et.length - 1].depart)) + ' · ' + jours(tot) + '</span></div>';
+      var b = bilanPays(cal).filter(function (y) { return y.pays.id === p.id; })[0];
+      html += '<div class="pays-titre"><h3>' + drapeau(p) + ' ' + esc(p.nom) + '</h3><span class="doux petit">' +
+        esc(dCourt(b.debut)) + ' → ' + esc(dCourt(b.fin)) + ' · ' + jours(b.total) + '</span></div>';
       et.forEach(function (x) {
         var h = x.etape.hebergement, t = x.etape.trajet;
         if (t) {
@@ -241,6 +278,10 @@
           (x.activites.length ? '<p class="petit doux">' + esc(x.activites.map(function (a) { return a.nom; }).join(' · ')) + '</p>' : '') +
           (x.etape.notes ? '<p class="petit doux">📝 ' + esc(x.etape.notes) + '</p>' : '') +
           '</span><span class="chevron" aria-hidden="true">›</span></button>';
+        if (x.marge) {
+          html += '<div class="marge-ligne">⏳ <b>' + jours(x.marge) + ' de marge</b> · ' + esc(dJour(x.depart)) + ' → ' + esc(dJour(x.finMarge)) +
+            '<br><span class="doux">Météo, repos, imprévus</span></div>';
+        }
       });
     });
     $('#liste-etapes').innerHTML = html;
@@ -257,7 +298,7 @@
 
     var html = '<div class="fiche-poignee" aria-hidden="true"></div>' +
       '<div class="fiche-tete"><span class="num" style="background:' + esc(p.couleur) + '">' + x.num + '</span>' +
-      '<div><p class="surtitre">' + esc(p.drapeau + ' ' + p.nom) + '</p><h2 id="fiche-titre">' + esc(e.nom) + '</h2></div>' +
+      '<div><p class="surtitre">' + drapeau(p) + ' ' + esc(p.nom) + '</p><h2 id="fiche-titre">' + esc(e.nom) + '</h2></div>' +
       '<button class="fermer" data-fermer aria-label="Fermer">×</button></div>' +
       '<div class="infos">' +
       '<div class="info"><b>Dates</b>' + esc(dJour(x.arrivee)) + ' → ' + esc(dJour(x.depart)) + '</div>' +
@@ -324,6 +365,14 @@
           '<span class="duree">' + (a.jours ? '+' + a.jours + ' j' : 'inclus') + '</span></label>';
       });
       html += '</div>';
+      if (x.marge !== undefined) {
+        var pm = paysDe(e.pays);
+        html += '<div class="bloc bloc-marge"><div class="base" style="margin:0"><span><b>⏳ Marge ' + esc(pm.nom) + '</b><br>' +
+          '<span class="petit doux">' + esc(dJour(x.depart)) + ' → ' + esc(dJour(x.finMarge)) + ' · météo, repos, imprévus</span></span>' +
+          '<span class="compteur"><button type="button" data-marge-moins="' + esc(pm.id) + '" aria-label="Un jour de marge en moins (' + esc(pm.nom) + ')">−</button>' +
+          '<output aria-live="polite">' + x.marge + '</output>' +
+          '<button type="button" data-marge-plus="' + esc(pm.id) + '" aria-label="Un jour de marge en plus (' + esc(pm.nom) + ')">+</button></span></div></div>';
+      }
     });
 
     html += '<div class="boutons"><button type="button" class="bouton plein" id="plan-copier">Copier le résumé</button>' +
@@ -339,8 +388,8 @@
 
   function majSousTitre() {
     var cal = calendrier();
-    $('#sous-titre').textContent = dCourt(cal.debut) + ' → ' + dCourt(cal.fin) + ' · ' +
-      donnees.pays.map(function (p) { return p.drapeau; }).join(' ') + (donnees.voyage.datesProvisoires ? ' · dates provisoires' : '');
+    $('#sous-titre').innerHTML = esc(dCourt(cal.debut) + ' → ' + dCourt(cal.fin)) + ' · ' +
+      donnees.pays.map(drapeau).join(' ') + (donnees.voyage.datesProvisoires ? ' · dates provisoires' : '');
   }
 
   function resumeTexte() {
@@ -349,6 +398,7 @@
     cal.etapes.forEach(function (x) {
       lignes.push(x.num + '. ' + x.etape.nom + ' : ' + versIso(x.arrivee) + ' → ' + versIso(x.depart) + ' (' + jours(x.total) + ', base ' + joursBase(x.etape) + ')' +
         (x.activites.length ? ' — ' + x.activites.map(function (a) { return a.nom; }).join(', ') : ''));
+      if (x.marge) lignes.push('   Marge ' + paysDe(x.etape.pays).nom + ' : ' + jours(x.marge) + ' (' + versIso(x.depart) + ' → ' + versIso(x.finMarge) + ')');
     });
     return lignes.join('\n');
   }
@@ -630,7 +680,7 @@
 
   function evenements() {
     document.addEventListener('click', function (ev) {
-      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-copier],[data-filtre],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne');
+      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne');
       if (!c) return;
       if (c.hasAttribute('data-fiche')) { carte && carte.closePopup(); ouvrirFiche(c.getAttribute('data-fiche')); }
       else if (c.hasAttribute('data-fermer')) fermerFiche();
@@ -654,11 +704,19 @@
         var b = document.querySelector('[data-' + (c.hasAttribute('data-plus') ? 'plus' : 'moins') + '="' + eid + '"]');
         if (b) b.focus();
       }
+      else if (c.hasAttribute('data-marge-moins') || c.hasAttribute('data-marge-plus')) {
+        var plus = c.hasAttribute('data-marge-plus');
+        var pid = c.getAttribute(plus ? 'data-marge-plus' : 'data-marge-moins');
+        plan.marges[pid] = Math.max(0, Math.min(60, margePays(pid) + (plus ? 1 : -1)));
+        sauverPlan(); rendrePlanificateur();
+        var bm = document.querySelector('[data-marge-' + (plus ? 'plus' : 'moins') + '="' + pid + '"]');
+        if (bm) bm.focus();
+      }
       else if (c.hasAttribute('data-copier')) copier(c.getAttribute('data-copier'));
       else if (c.hasAttribute('data-filtre')) { filtreResa = c.getAttribute('data-filtre'); rendreReservations(); }
       else if (c.id === 'plan-copier') copier(resumeTexte());
       else if (c.id === 'plan-reset') {
-        if (confirm('Revenir aux durées et activités de départ ?')) { plan = { debut: null, jours: {}, activites: {} }; sauverPlan(); rendrePlanificateur(); toast('Valeurs de départ rétablies'); }
+        if (confirm('Revenir aux durées et activités de départ ?')) { plan = { debut: null, jours: {}, activites: {}, marges: {} }; sauverPlan(); rendrePlanificateur(); toast('Valeurs de départ rétablies'); }
       }
       else if (c.id === 'bouton-activites') {
         var on = c.getAttribute('aria-pressed') !== 'true';
