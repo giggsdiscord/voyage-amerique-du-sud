@@ -65,6 +65,7 @@
   function dCourt(ms) { return fmtCourt.format(ms); }
   function dLong(ms) { return fmtLong.format(ms); }
   function dJour(ms) { return fmtJour.format(ms); }
+  var fmtJourCourt = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', timeZone: 'UTC' });
   function pluriel(n, mot) { return n + ' ' + mot + (Math.abs(n) > 1 ? 's' : ''); }
   function jours(n) { return pluriel(n, 'jour'); }
 
@@ -219,17 +220,35 @@
         html += '<div class="bloc"><p class="surtitre">Aujourd\'hui · ' + esc(dJour(auj)) + '</p>' +
           '<div class="ligne"><span class="num">' + enCours.num + '</span><div><h3>' + esc(enCours.etape.nom) + '</h3>' +
           '<p class="doux petit">Jour ' + jourN + ' sur ' + enCours.total + ' · départ le ' + esc(dCourt(enCours.depart)) + '</p></div></div>';
-        if (duJour.length) {
-          html += '<ul class="activites">' + duJour.map(function (ev) { return '<li>' + (ev.heure ? '<b>' + esc(ev.heure) + '</b> ' : '') + esc(ev.titre) + '</li>'; }).join('') + '</ul>';
+        var ee = enCours.etape, hh = ee.hebergement, suivante = cal.etapes[enCours.num], points = [];
+        // Le fil de la journée : trajet d'arrivée, réservations, hébergement, activités, note, départ du lendemain
+        if (auj === enCours.arrivee && ee.trajet) points.push(['<span aria-hidden="true">' + icones(ee.trajet) + '</span>', '<b>Trajet du jour</b><br><span class="doux">' + esc(ee.trajet.resume || nomsModes(ee.trajet)) + '</span>']);
+        duJour.filter(function (ev) { return ev.resa; }).forEach(function (ev) {
+          points.push(['<span aria-hidden="true">' + (TYPES[ev.resa.type] || TYPES.autre).ico + '</span>', '<b>' + (ev.heure ? esc(ev.heure) + ' · ' : '') + esc(ev.resa.titre) + '</b>' +
+            (ev.resa.lieu ? '<br><span class="doux">' + esc(ev.resa.lieu) + '</span>' : '') +
+            (lienDriveSur(ev.resa.lienDrive) ? '<br><a href="' + esc(ev.resa.lienDrive) + '" target="_blank" rel="noopener noreferrer">Ouvrir le billet (Drive)</a>' : '')]);
+        });
+        points.push(['🛏️', hh && hh.nom ? '<b>' + esc(hh.nom) + '</b>' + (hh.adresse ? '<br><a href="' + esc(lienMaps(0, 0, hh.nom + ' ' + hh.adresse)) + '" target="_blank" rel="noopener noreferrer">' + esc(hh.adresse) + '</a>' : '')
+          : '<b>Hébergement à trouver</b>']);
+        if (enCours.activites.length) points.push(['🎟️', '<b>À faire ici</b><br><span class="doux">' + esc(enCours.activites.map(function (a) { return a.nom; }).join(' · ')) + '</span>']);
+        if (notesPerso[ee.id]) points.push(['🗒️', '<span class="texte-journal">' + esc(notesPerso[ee.id]) + '</span>']);
+        var mto = ligneMeteo(ee);
+        if (mto) points.push(mto);
+        if (suivante && auj + JOUR === enCours.depart && !enCours.marge) {
+          var td = suivante.etape.trajet;
+          points.push(['🧳', '<b>Demain : départ pour ' + esc(suivante.etape.nom) + '</b>' + (td ? '<br><span class="doux">' + esc(td.resume || nomsModes(td)) + '</span>' : '')]);
         }
-        var suivante = cal.etapes[enCours.num];
+        html += '<ul class="fil-jour">' + points.map(function (pt) { return '<li><span class="fil-ico">' + pt[0] + '</span><span class="petit">' + pt[1] + '</span></li>'; }).join('') + '</ul>';
         if (suivante) {
           var ts = suivante.etape.trajet;
           html += '<p class="ensuite petit"><b>Ensuite</b> · ' + (ts ? '<span aria-hidden="true">' + icones(ts) + '</span> ' : '') + esc(suivante.etape.nom) +
             ' <span class="doux">le ' + esc(dJour(suivante.arrivee)) + '</span></p>';
         }
-        html += '<div class="boutons"><button class="bouton plein" data-fiche="' + esc(enCours.etape.id) + '">Voir la fiche</button>' +
-          '<a class="bouton" href="' + esc(lienMaps(enCours.etape.lat, enCours.etape.lng)) + '" target="_blank" rel="noopener noreferrer">Ouvrir dans Maps</a></div></div>';
+        var iti = suivante && lienItineraire(ee, suivante.etape);
+        html += '<div class="boutons"><button class="bouton plein" data-fiche="' + esc(ee.id) + '">Voir la fiche</button>' +
+          '<a class="bouton" href="' + esc(lienMaps(ee.lat, ee.lng)) + '" target="_blank" rel="noopener noreferrer">Ouvrir dans Maps</a>' +
+          (iti ? '<a class="bouton" href="' + esc(iti) + '" target="_blank" rel="noopener noreferrer">Trajet vers ' + esc(suivante.etape.nom) + '</a>' : '') + '</div></div>';
+        chargerMeteo(ee, function () { if (vueCourante() === 'accueil') rafraichir(); });
       } else {
         var enMarge = cal.etapes.filter(function (x) { return x.marge && auj >= x.depart && auj < x.finMarge; })[0];
         if (enMarge) {
@@ -314,6 +333,75 @@
 
   function lienMaps(lat, lng, texte) {
     return 'https://www.google.com/maps/search/?api=1&query=' + (texte ? encodeURIComponent(texte) : lat + ',' + lng);
+  }
+
+  /* Itinéraire routier d'une étape à la suivante dans Maps (pas pour les vols ni les bateaux). */
+  function lienItineraire(a, b) {
+    var modes = (b.trajet && b.trajet.modes) || [];
+    if (!modes.length || modes[0] === 'vol' || modes[0] === 'bateau' || (a.lat === b.lat && a.lng === b.lng)) return null;
+    var mode = modes[0] === 'marche' ? 'walking' : (modes[0] === 'velo' ? 'bicycling' : 'driving');
+    return 'https://www.google.com/maps/dir/?api=1&origin=' + a.lat + ',' + a.lng + '&destination=' + b.lat + ',' + b.lng + '&travelmode=' + mode;
+  }
+  function distanceKm(a, b) {
+    var r = Math.PI / 180, dLat = (b.lat - a.lat) * r, dLng = (b.lng - a.lng) * r;
+    var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 12742 * Math.asin(Math.sqrt(h));
+  }
+
+  /* ---------- Météo de l'étape (Open-Meteo, gratuit et sans compte ; seules les coordonnées de l'étape sont envoyées) ---------- */
+  var CLE_METEO = 'voyage-meteo-v1';
+  var meteo = (function () { try { return JSON.parse(localStorage.getItem(CLE_METEO)) || {}; } catch (e) { return {}; } })();
+  var meteoEnCours = {}, meteoOuverte = false;
+  var CIEL = [[0, '☀️', 'Ciel dégagé'], [1, '🌤️', 'Peu nuageux'], [2, '⛅', 'Éclaircies'], [3, '☁️', 'Couvert'], [48, '🌫️', 'Brouillard'], [57, '🌦️', 'Bruine'],
+    [67, '🌧️', 'Pluie'], [77, '🌨️', 'Neige'], [82, '🌧️', 'Averses'], [86, '🌨️', 'Averses de neige'], [99, '⛈️', 'Orage']];
+  function ciel(code) {
+    for (var i = 0; i < CIEL.length; i++) if (code <= CIEL[i][0]) return CIEL[i];
+    return [0, '🌡️', ''];
+  }
+  function chargerMeteo(e, puis) {
+    var m = meteo[e.id];
+    if ((m && Date.now() - m.t < 3 * 3600000) || meteoEnCours[e.id] || !navigator.onLine) return;
+    meteoEnCours[e.id] = true;
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=' + e.lat + '&longitude=' + e.lng +
+      '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset&timezone=auto&forecast_days=5')
+      .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+      .then(function (d) {
+        if (!d || !d.daily || !d.daily.time) throw new Error();
+        meteo[e.id] = { t: Date.now(), d: d.daily };
+        // Ne garder que les étapes consultées récemment
+        Object.keys(meteo).sort(function (a, b) { return meteo[b].t - meteo[a].t; }).slice(8).forEach(function (k) { delete meteo[k]; });
+        try { localStorage.setItem(CLE_METEO, JSON.stringify(meteo)); } catch (err) { /* ignoré */ }
+        delete meteoEnCours[e.id];
+        puis();
+      }).catch(function () { meteoEnCours[e.id] = 'echec'; });
+  }
+  function ageMeteo(m) {
+    var h = Math.round((Date.now() - m.t) / 3600000);
+    return h < 1 ? 'à l\'instant' : (h < 24 ? 'il y a ' + h + ' h' : 'il y a ' + pluriel(Math.round(h / 24), 'jour'));
+  }
+  /* Prévisions à 5 jours dans la fiche d'une étape */
+  function blocMeteo(e) {
+    var m = meteo[e.id];
+    if (!m) return '<p class="petit doux">' + (navigator.onLine && meteoEnCours[e.id] !== 'echec' ? 'Chargement de la météo…' : 'Météo indisponible sans réseau.') + '</p>';
+    var d = m.d;
+    return '<div class="meteo">' + d.time.map(function (jour, i) {
+      var c = ciel(d.weather_code[i]);
+      return '<div class="meteo-jour"><span class="petit doux">' + esc(i === 0 ? 'Auj.' : fmtJourCourt.format(versDate(jour))) + '</span>' +
+        '<span class="meteo-ico" title="' + esc(c[2]) + '"><span aria-hidden="true">' + c[1] + '</span><span class="sr-only">' + esc(c[2]) + '</span></span>' +
+        '<b>' + Math.round(d.temperature_2m_max[i]) + '°</b><span class="doux">' + Math.round(d.temperature_2m_min[i]) + '°</span>' +
+        '<span class="petit doux">💧' + (d.precipitation_probability_max[i] == null ? '–' : d.precipitation_probability_max[i] + ' %') + '</span>' +
+        '<span class="petit doux">💨' + Math.round(d.wind_speed_10m_max[i]) + '</span></div>';
+    }).join('') + '</div>' +
+      '<p class="petit doux" style="margin:8px 0 0">🌅 Lever ' + esc(String(d.sunrise[0]).slice(11, 16)) + ' · 🌇 coucher ' + esc(String(d.sunset[0]).slice(11, 16)) +
+      ' (heure locale) · vent en km/h · mis à jour ' + esc(ageMeteo(m)) + '</p>';
+  }
+  /* Une ligne pour le bloc « Aujourd'hui » de l'accueil */
+  function ligneMeteo(e) {
+    var m = meteo[e.id];
+    if (!m || Date.now() - m.t > 36 * 3600000) return null;
+    var d = m.d, c = ciel(d.weather_code[0]);
+    return ['<span aria-hidden="true">' + c[1] + '</span>', '<b>' + esc(c[2]) + ' · ' + Math.round(d.temperature_2m_min[0]) + '° à ' + Math.round(d.temperature_2m_max[0]) + '°</b>' +
+      '<br><span class="doux">Vent jusqu\'à ' + Math.round(d.wind_speed_10m_max[0]) + ' km/h · lever ' + esc(String(d.sunrise[0]).slice(11, 16)) + ', coucher ' + esc(String(d.sunset[0]).slice(11, 16)) + '</span>'];
   }
 
   function lignePays(b) {
@@ -464,8 +552,14 @@
       html += '<h3>Pour venir' + (prec ? ' depuis ' + esc(prec) : '') + '</h3>' +
         '<div class="info"><div class="ligne entre"><span><span aria-hidden="true">' + icones(t) + '</span> <strong>' + esc(nomsModes(t)) + '</strong></span>' + badgeTrajet(t) + '</div>' +
         '<p style="margin:6px 0 0">' + esc(t.resume || '') + '</p>' +
-        (t.details ? '<p class="petit doux" style="margin:4px 0 0">' + esc(t.details) + '</p>' : '') + '</div>';
+        (t.details ? '<p class="petit doux" style="margin:4px 0 0">' + esc(t.details) + '</p>' : '') +
+        (function () {
+          var l = x.num > 1 && lienItineraire(cal.etapes[x.num - 2].etape, e);
+          return l ? '<p class="petit" style="margin:8px 0 0"><a href="' + esc(l) + '" target="_blank" rel="noopener noreferrer">Voir le trajet dans Maps</a></p>' : '';
+        })() + '</div>';
     }
+    html += '<details class="plus-info" id="meteo-fiche"' + (meteoOuverte ? ' open' : '') + '><summary>🌤️ Météo sur place (5 jours)</summary><div id="meteo-contenu">' + (meteoOuverte ? blocMeteo(e) : '') + '</div></details>';
+    if (meteoOuverte) chargerMeteo(e, majMeteoFiche);
 
     if (acts.length) {
       html += '<h3>Activités</h3><p class="petit doux" style="margin:-4px 0 4px">Cochez ce que vous voulez faire : les dates et le budget suivent.</p>' +
@@ -501,6 +595,11 @@
     ficheOuverte = id;
     if (!d.open) { if (d.showModal) d.showModal(); else d.setAttribute('open', ''); }
     d.scrollTop = position;
+  }
+  function majMeteoFiche() {
+    var zone = $('#meteo-contenu');
+    var e = ficheOuverte && donnees.etapes.filter(function (y) { return y.id === ficheOuverte; })[0];
+    if (zone && e) zone.innerHTML = blocMeteo(e);
   }
   function fermerFiche() {
     ficheOuverte = null;
@@ -1164,6 +1263,80 @@
     lecteur.readAsText(fichier);
   }
 
+  /* ---------- Le voyage en chiffres ---------- */
+  function rendreBilan() {
+    var cal = calendrier(), auj = aujourdhui(), E = cal.etapes;
+    var enVoyage = auj >= cal.debut, fini = auj >= cal.fin;
+    var km = 0, kmFaits = 0, parMode = {}, nbTrajets = {};
+    E.forEach(function (x, i) {
+      if (i === 0) return;
+      var d = distanceKm(E[i - 1].etape, x.etape), mode = ((x.etape.trajet && x.etape.trajet.modes) || ['autre'])[0];
+      km += d; parMode[mode] = (parMode[mode] || 0) + d; nbTrajets[mode] = (nbTrajets[mode] || 0) + 1;
+      if (auj >= x.arrivee) kmFaits += d;
+    });
+    var vols = donnees.vols || {}, kmVols = 0;
+    ['aller', 'retour'].forEach(function (k) { var pts = (vols[k] || {}).points || []; for (var i = 1; i < pts.length; i++) kmVols += distanceKm(pts[i - 1], pts[i]); });
+    var haut = E.slice().sort(function (a, b) { return (b.etape.altitude || 0) - (a.etape.altitude || 0); })[0];
+    var sud = E.slice().sort(function (a, b) { return a.etape.lat - b.etape.lat; })[0], nord = E.slice().sort(function (a, b) { return b.etape.lat - a.etape.lat; })[0];
+    var longue = E.slice().sort(function (a, b) { return b.total - a.total; })[0];
+    var nbActs = E.reduce(function (s, x) { return s + x.activites.length; }, 0);
+    var etapesFaites = E.filter(function (x) { return auj >= x.arrivee; }).length;
+    var joursTotal = Math.round((cal.fin - cal.debut) / JOUR), joursFaits = Math.max(0, Math.min(joursTotal, Math.round((auj - cal.debut) / JOUR) + 1));
+    function rond(n) { return fmtEntier.format(Math.round(n / 10) * 10); }
+    function tuile(ico, chiffre, texte) { return '<div class="tuile"><span class="ico" aria-hidden="true">' + ico + '</span><b>' + chiffre + '</b><span class="petit doux">' + texte + '</span></div>'; }
+
+    var html = '<div class="bloc bloc-heros"><p class="surtitre">' + (fini ? 'Le voyage en chiffres' : (enVoyage ? 'Jusqu\'ici' : 'Ce qui vous attend')) + '</p>' +
+      '<p class="grand-chiffre" style="font-size:2.2rem">' + rond(enVoyage && !fini ? kmFaits : km) + ' km</p>' +
+      '<p class="doux" style="margin:8px 0 0">' + (enVoyage && !fini ? 'parcourus sur ' + rond(km) + ' km prévus · jour ' + joursFaits + ' sur ' + joursTotal
+        : 'entre les étapes, à vol d\'oiseau · ' + jours(joursTotal)) + '</p>' +
+      (enVoyage && !fini ? '<div class="progression"><span style="width:' + Math.round(kmFaits / Math.max(1, km) * 100) + '%"></span></div>' : '') + '</div>';
+
+    html += '<div class="tuiles">' +
+      tuile('📍', (enVoyage && !fini ? etapesFaites + ' / ' : '') + E.length, 'étapes') +
+      tuile('🗓️', (enVoyage && !fini ? joursFaits + ' / ' : '') + joursTotal, 'jours de voyage') +
+      tuile('🎟️', nbActs, 'activités prévues') +
+      tuile('⛰️', (haut.etape.altitude || 0).toLocaleString('fr-FR') + ' m', 'point le plus haut : ' + esc(haut.etape.nom)) +
+      tuile('🧭', Math.abs(sud.etape.lat).toFixed(1).replace('.', ',') + '° S', 'le plus au sud : ' + esc(sud.etape.nom)) +
+      tuile('🌎', rond(distanceKm(sud.etape, nord.etape)) + ' km', 'du sud au nord : ' + esc(sud.etape.nom) + ' → ' + esc(nord.etape.nom)) +
+      tuile('🛋️', jours(longue.total), 'la plus longue étape : ' + esc(longue.etape.nom)) +
+      (kmVols ? tuile('✈️', rond(kmVols) + ' km', 'en vols depuis et vers la France') : '') + '</div>';
+
+    // Transports
+    html += '<div class="bloc"><p class="surtitre">Sur la route</p>' + Object.keys(parMode).sort(function (a, b) { return parMode[b] - parMode[a]; }).map(function (m) {
+      var M = MODES[m] || { ico: '📍', nom: 'Autre' };
+      return '<div style="margin-top:10px"><div class="ligne entre"><span>' + M.ico + ' <b>' + esc(M.nom) + '</b> <span class="doux petit">· ' + pluriel(nbTrajets[m], 'trajet') + '</span></span><span class="petit">' + rond(parMode[m]) + ' km</span></div>' +
+        '<div class="jauge"><span style="width:' + Math.round(parMode[m] / km * 100) + '%;background:var(--accent)"></span></div></div>';
+    }).join('') + '<p class="petit doux" style="margin:12px 0 0">Distances en ligne droite entre les étapes : les routes réelles sont plus longues.</p></div>';
+
+    // Argent
+    var b = calculBudget(), nb = b.personnes, depense = depenses.reduce(function (s, d) { return s + d.eur; }, 0);
+    html += '<div class="bloc"><p class="surtitre">Argent</p>' +
+      '<div class="ligne entre" style="margin-top:8px"><span>Budget prévu par personne</span><b>' + euros(b.total[0]) + ' à ' + euros(b.total[1]) + '</b></div>' +
+      '<div class="ligne entre" style="margin-top:8px"><span>Dépensé par personne</span><b>' + (depenses.length ? eurosPrecis(depense / nb) : 'rien de noté') + '</b></div>' +
+      (depenses.length ? '<div class="jauge' + (depense / nb > b.total[1] ? ' depasse' : '') + '"><span style="width:' + Math.min(100, Math.round(depense / nb / b.total[1] * 100)) + '%"></span></div>' +
+        (function () {
+          var g = depenses.slice().sort(function (x, y) { return y.eur - x.eur; })[0];
+          return '<p class="petit doux" style="margin:10px 0 0">Plus grosse dépense : ' + esc(g.note || catDepense(g.cat)[2]) + ', ' + eurosPrecis(g.eur) + ' le ' + esc(dCourt(versDate(g.date))) + '.</p>';
+        })() : '') + '</div>';
+
+    // Journal
+    var pages = Object.keys(journal).sort();
+    if (pages.length) {
+      var notees = pages.filter(function (d) { return journal[d].humeur; });
+      var moyenne = notees.length ? notees.reduce(function (s, d) { return s + (+journal[d].humeur); }, 0) / notees.length : 0;
+      var top = notees.filter(function (d) { return String(journal[d].humeur) === '5'; }).slice(-5).reverse();
+      html += '<div class="bloc"><p class="surtitre">Journal de bord</p>' +
+        '<p style="margin:6px 0 0"><b>' + pluriel(pages.length, 'page') + '</b> écrite' + (pages.length > 1 ? 's' : '') +
+        (moyenne ? ' · humeur moyenne ' + (humeur(Math.round(moyenne)) || [0, ''])[1] : '') + '</p>' +
+        (top.length ? '<p class="surtitre" style="margin-top:14px">Les meilleures journées</p>' + top.map(function (d) {
+          var x = situer(versDate(d), cal), t = journal[d].texte || '';
+          return '<p class="petit" style="margin:6px 0 0">😍 <b>' + esc(dCourt(versDate(d))) + (x.etape ? ' · ' + esc(x.etape.etape.nom) : '') + '</b>' +
+            (t ? '<br><span class="doux">' + esc(t.length > 120 ? t.slice(0, 120) + '…' : t) + '</span>' : '') + '</p>';
+        }).join('') : '') + '</div>';
+    }
+    $('#bilan').innerHTML = html;
+  }
+
   /* ---------- Menu « Plus » ---------- */
   function rendrePlus() {
     var l = listeAFaire();
@@ -1187,7 +1360,8 @@
       ]],
       ['Pendant le voyage', [
         ['#resas', '🎫', 'Réservations', (donnees.reservations || []).length ? pluriel(donnees.reservations.length, 'réservation') : 'Aucune pour l\'instant'],
-        ['#journal', '📓', 'Journal de bord', nbPages ? pluriel(nbPages, 'page') : 'Une note et une humeur par jour']
+        ['#journal', '📓', 'Journal de bord', nbPages ? pluriel(nbPages, 'page') : 'Une note et une humeur par jour'],
+        ['#bilan', '🏆', 'Le voyage en chiffres', 'Kilomètres, altitude, transports, budget, meilleures journées']
       ]]
     ];
     function bouton(id, ico, titre, sous) {
@@ -1501,12 +1675,12 @@
   });
 
   /* ---------- Navigation ---------- */
-  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'plus', 'resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal'];
-  var SOUS_PLUS = ['resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal'];
+  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'plus', 'resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal', 'bilan'];
+  var SOUS_PLUS = ['resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal', 'bilan'];
   var RENDUS = {
     accueil: rendreAccueil, etapes: rendreEtapes, planifier: rendrePlanificateur, plus: rendrePlus, resas: rendreReservations,
     conseils: rendreConseils, propositions: rendrePropositions, afaire: rendreAFaire, budget: rendreBudget,
-    depenses: rendreDepenses, devises: rendreDevises, bagages: rendreBagages, journal: rendreJournal
+    depenses: rendreDepenses, devises: rendreDevises, bagages: rendreBagages, journal: rendreJournal, bilan: rendreBilan
   };
   function vueCourante() {
     var v = location.hash.replace('#', '') || 'accueil';
@@ -1747,6 +1921,12 @@
     document.addEventListener('toggle', function (ev) {
       var el = ev.target;
       if (!el.getAttribute) return;
+      if (el.id === 'meteo-fiche') {
+        meteoOuverte = el.open;
+        var em = ficheOuverte && donnees.etapes.filter(function (y) { return y.id === ficheOuverte; })[0];
+        if (el.open && em) { majMeteoFiche(); chargerMeteo(em, majMeteoFiche); setTimeout(majMeteoFiche, 6000); }
+        return;
+      }
       var s = el.getAttribute('data-plan-section'), a = el.getAttribute('data-afaire-cat'), g = el.getAttribute('data-bagages-cat');
       if (g) bagagesOuverts[g] = el.open;
       if (s) sectionsOuvertes[s] = el.open;

@@ -481,6 +481,20 @@ form.bloc .champ { margin-top: 10px; }
 }
 .menu-plus .bouton-menu:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
 
+/* ---------- Fil de la journée, météo, chiffres du voyage ---------- */
+.fil-jour { list-style: none; margin: 12px 0 0; padding: 0; }
+.fil-jour li { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-top: 1px solid var(--trait); }
+.fil-ico { flex: none; width: 28px; text-align: center; font-size: 1.15rem; line-height: 1.3; }
+.fil-jour a { overflow-wrap: anywhere; }
+.meteo { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 8px; }
+.meteo-jour { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 8px 2px; border-radius: 12px; background: var(--surface-2); text-align: center; }
+.meteo-jour .petit { font-size: .75rem; white-space: nowrap; }
+.meteo-ico { font-size: 1.5rem; line-height: 1.2; }
+.tuiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.tuile { display: flex; flex-direction: column; gap: 2px; padding: 14px; background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); }
+.tuile .ico { font-size: 1.3rem; }
+.tuile b { font-size: 1.25rem; line-height: 1.2; }
+
 /* ---------- Réservations ---------- */
 .resa-type { font-size: 1.4rem; flex: none; width: 40px; text-align: center; }
 .vide { text-align: center; padding: 28px 16px; }
