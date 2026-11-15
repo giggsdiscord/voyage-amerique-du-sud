@@ -7,7 +7,8 @@
   },
 
   "pays": [
-    { "id": "perou", "nom": "Pérou", "drapeau": "🇵🇪", "couleur": "#c8102e", "fenetre": { "debut": "2027-10-25", "fin": "2027-11-14" } }
+    { "id": "perou", "nom": "Pérou", "drapeau": "🇵🇪", "couleur": "#c8102e", "fenetre": { "debut": "2027-10-25", "fin": "2027-11-14" } },
+    { "id": "bolivie", "nom": "Bolivie", "drapeau": "🇧🇴", "couleur": "#2e7d32", "fenetre": { "debut": "2027-11-15", "fin": "2027-12-05" } }
   ],
 
   "etapes": [
@@ -169,6 +170,71 @@
         { "id": "taquile", "nom": "Île de Taquile", "jours": 0, "statut": "suggestion", "lat": -15.7720, "lng": -69.6870, "description": "Textiles classés à l'UNESCO, le 2e jour de l'excursion." },
         { "id": "sillustani", "nom": "Tours de Sillustani", "jours": 0, "statut": "suggestion", "lat": -15.7220, "lng": -70.1550, "description": "Tours funéraires pré-incas au bord d'un lac." }
       ]
+    },
+    {
+      "id": "la-paz",
+      "pays": "bolivie",
+      "trajet": { "modes": ["bus", "bateau"], "resume": "Bus Puno → Copacabana (environ 3 h), puis Copacabana → La Paz (environ 4 h)", "details": "Frontière à Kasani. Traversée du détroit de Tiquina en bateau (le bus passe sur un bac).", "statut": "propose" },
+      "nom": "La Paz",
+      "lat": -16.4897, "lng": -68.1193,
+      "altitude": 3640,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "Capitale la plus haute du monde.",
+      "activites": [
+        { "id": "valle-animas", "nom": "Valle de las Ánimas", "jours": 0, "statut": "prevu", "lat": -16.5600, "lng": -68.0500, "description": "Canyon d'aiguilles rocheuses, randonnée d'une demi-journée au sud de La Paz." },
+        { "id": "isla-del-sol", "nom": "Copacabana et Isla del Sol", "jours": 1, "statut": "suggestion", "lat": -16.0200, "lng": -69.1800, "description": "Sur la route depuis Puno : île sacrée inca, une nuit sur place conseillée." },
+        { "id": "teleferico", "nom": "Téléphérique Mi Teleférico", "jours": 0, "statut": "suggestion", "lat": -16.4950, "lng": -68.1330, "description": "Les lignes de téléphérique urbain, vue sur toute la ville et l'Illimani." },
+        { "id": "valle-luna", "nom": "Valle de la Luna", "jours": 0, "statut": "suggestion", "lat": -16.5680, "lng": -68.0940, "description": "Formations d'argile, à combiner avec la Valle de las Ánimas." },
+        { "id": "camino-muerte", "nom": "Route de la Mort à VTT", "jours": 1, "statut": "suggestion", "lat": -16.3000, "lng": -67.8500, "description": "Descente à VTT encadrée de 4 700 m à 1 200 m vers les Yungas." }
+      ]
+    },
+    {
+      "id": "uyuni",
+      "pays": "bolivie",
+      "trajet": { "modes": ["bus", "vol"], "resume": "Bus de nuit, environ 10 h, ou vol, environ 1 h", "details": "Bus confort : Todo Turismo. Vols : BoA ou Amaszonas.", "statut": "propose" },
+      "nom": "Uyuni",
+      "lat": -20.4630, "lng": -66.8250,
+      "altitude": 3700,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "Départ du circuit 4x4 de 3 jours : salar le 1er jour, puis Sud Lípez. À réserver auprès d'une agence d'Uyuni.",
+      "activites": [
+        { "id": "salar-incahuasi", "nom": "Salar d'Uyuni et île Incahuasi", "jours": 1, "statut": "prevu", "lat": -20.2420, "lng": -67.6250, "description": "Jour 1 du circuit : le plus grand désert de sel du monde, île aux cactus géants." },
+        { "id": "cimetiere-trains", "nom": "Cimetière de trains", "jours": 0, "statut": "suggestion", "lat": -20.4810, "lng": -66.8340, "description": "Premier arrêt du circuit, à la sortie d'Uyuni." }
+      ]
+    },
+    {
+      "id": "sud-lipez",
+      "pays": "bolivie",
+      "trajet": { "modes": ["tour"], "resume": "Suite du circuit 4x4 organisé", "details": "Nuits en refuges simples, très froides (jusqu'à −10 °C), altitude jusqu'à 4 900 m.", "statut": "propose" },
+      "nom": "Sud Lípez (lagunes et geysers)",
+      "lat": -22.2000, "lng": -67.7800,
+      "altitude": 4278,
+      "jours": 2,
+      "hebergement": null,
+      "notes": "Jours 2 et 3 du circuit. Prévoir duvet chaud, bonnet, crème solaire.",
+      "activites": [
+        { "id": "ollague", "nom": "Volcan Ollagüe (mirador)", "jours": 0, "statut": "prevu", "lat": -21.3000, "lng": -68.1800, "description": "Volcan actif à la frontière chilienne, vu depuis un mirador." },
+        { "id": "laguna-hedionda", "nom": "Laguna Hedionda", "jours": 0, "statut": "prevu", "lat": -21.5680, "lng": -68.0480, "description": "Lagune aux flamants roses." },
+        { "id": "siloli", "nom": "Désert de Siloli et Árbol de Piedra", "jours": 0, "statut": "prevu", "lat": -22.0450, "lng": -67.8800, "description": "Désert d'altitude, rocher sculpté par le vent en forme d'arbre." },
+        { "id": "laguna-colorada", "nom": "Laguna Colorada", "jours": 0, "statut": "prevu", "lat": -22.2000, "lng": -67.7800, "description": "Lagune rouge aux milliers de flamants, nuit au refuge à côté." },
+        { "id": "sol-de-manana", "nom": "Geysers Sol de Mañana", "jours": 0, "statut": "prevu", "lat": -22.4330, "lng": -67.7570, "description": "Champ de geysers et de fumerolles à 4 850 m, au lever du soleil." },
+        { "id": "polques", "nom": "Thermes de Polques", "jours": 0, "statut": "prevu", "lat": -22.5380, "lng": -67.6510, "description": "Bain chaud en plein air au petit matin." },
+        { "id": "laguna-verde", "nom": "Laguna Verde", "jours": 0, "statut": "prevu", "lat": -22.7940, "lng": -67.8330, "description": "Lagune verte au pied du volcan Licancabur, près de la frontière chilienne." }
+      ]
+    },
+    {
+      "id": "uyuni-retour",
+      "pays": "bolivie",
+      "trajet": { "modes": ["tour"], "resume": "Retour du circuit 4x4 à Uyuni, le soir du 3e jour (environ 7 h de piste)", "details": "", "statut": "propose" },
+      "nom": "Uyuni (fin de la Bolivie)",
+      "lat": -20.4630, "lng": -66.8250,
+      "altitude": 3700,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "Dernière nuit en Bolivie. Ensuite : Chili.",
+      "activites": []
     }
   ],
 
