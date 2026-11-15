@@ -542,6 +542,18 @@
     });
   }
 
+  /* La carte occupe exactement l'espace entre l'en-tête et le menu du bas,
+     quelle que soit leur hauteur réelle (titre sur deux lignes, encoche, etc.). */
+  function ajusterCarte() {
+    var haut = $('.entete').getBoundingClientRect().bottom;
+    var bas = $('.onglets').getBoundingClientRect().top;
+    $('#carte').style.height = Math.max(200, bas - haut) + 'px';
+    if (carte) carte.invalidateSize();
+  }
+  window.addEventListener('resize', function () {
+    if (!$('#vue-carte').hidden) ajusterCarte();
+  });
+
   /* ---------- Navigation ---------- */
   var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'resas'];
   function afficherVue() {
@@ -556,7 +568,8 @@
     if (v === 'etapes') rendreEtapes();
     if (v === 'planifier') rendrePlanificateur();
     if (v === 'resas') rendreReservations();
-    if (v === 'carte') { initCarte(); if (carte) setTimeout(function () { carte.invalidateSize(); }, 50); }
+    document.body.classList.toggle('sur-carte', v === 'carte');
+    if (v === 'carte') { ajusterCarte(); initCarte(); if (carte) setTimeout(function () { carte.invalidateSize(); }, 50); }
     if (v !== 'carte') window.scrollTo(0, 0);
   }
 
