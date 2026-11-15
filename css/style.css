@@ -546,6 +546,22 @@ i.point-resa { width: 8px !important; height: 8px !important; border-radius: 50%
 .ligne-numero .bouton { padding: 10px 12px; }
 .ligne-numero .suppr { margin-bottom: 4px; }
 
+/* ---------- Dates fixées, hors-ligne, suivi des proches ---------- */
+.alerte-bloc { background: var(--alerte-fond); box-shadow: 0 0 0 2px var(--alerte); }
+.alerte-bloc .surtitre { color: var(--alerte); }
+.lien-bouton { border: 0; background: none; padding: 0; color: var(--primaire); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.info-alerte { background: var(--alerte-fond); box-shadow: 0 0 0 2px var(--alerte); }
+.ligne-hl { display: flex; gap: 12px; align-items: flex-start; }
+.etat-hl { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; font-weight: 800; }
+.etat-hl.oui { background: var(--ok-fond); color: var(--ok); }
+.etat-hl.non { background: var(--alerte-fond); color: var(--alerte); }
+.etat-hl.neutre { background: var(--surface-2); color: var(--doux); }
+.onglet-proches { display: none !important; }
+.mode-proches .onglets { grid-template-columns: repeat(3, 1fr); }
+.mode-proches .onglets a[data-vue="accueil"], .mode-proches .onglets a[data-vue="planifier"], .mode-proches .onglets a[data-vue="plus"] { display: none; }
+.mode-proches .onglet-proches { display: flex !important; }
+.mode-proches .info-lien, .mode-proches [data-plan-ouvrir] { display: none; }
+
 /* ---------- Réservations ---------- */
 .resa-type { font-size: 1.4rem; flex: none; width: 40px; text-align: center; }
 .vide { text-align: center; padding: 28px 16px; }

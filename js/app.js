@@ -93,6 +93,7 @@
     return { debut: null, jours: {}, activites: {}, marges: {} };
   }
   function sauverPlan() {
+    if (modeProches) return; // lien de suivi : le plan affiché n'est pas celui de ce téléphone
     try { localStorage.setItem(CLE_PLAN, JSON.stringify(plan)); } catch (e) { /* ignoré */ }
   }
 
@@ -187,7 +188,7 @@
   function rendreAccueil() {
     var cal = calendrier();
     var auj = aujourdhui();
-    var html = '';
+    var html = blocConflits(cal);
 
     var evenements = [];
     if (donnees.vols && donnees.vols.aller) evenements.push({ quand: dateVol('aller', cal), heure: '', titre: '✈️ ' + donnees.vols.aller.titre, provisoire: true });
@@ -254,14 +255,18 @@
         var iti = suivante && lienItineraire(ee, suivante.etape);
         html += '<div class="boutons"><button class="bouton plein" data-fiche="' + esc(ee.id) + '">Voir la fiche</button>' +
           '<a class="bouton" href="' + esc(lienMaps(ee.lat, ee.lng)) + '" target="_blank" rel="noopener noreferrer">Ouvrir dans Maps</a>' +
-          (iti ? '<a class="bouton" href="' + esc(iti) + '" target="_blank" rel="noopener noreferrer">Trajet vers ' + esc(suivante.etape.nom) + '</a>' : '') + '</div></div>';
+          (iti ? '<a class="bouton" href="' + esc(iti) + '" target="_blank" rel="noopener noreferrer">Trajet vers ' + esc(suivante.etape.nom) + '</a>' : '') + '</div>' +
+          blocRecalage(enCours, auj) + '</div>';
         chargerMeteo(ee, function () { if (vueCourante() === 'accueil') rafraichir(); });
       } else {
         var enMarge = cal.etapes.filter(function (x) { return x.marge && auj >= x.depart && auj < x.finMarge; })[0];
         if (enMarge) {
           html += '<div class="bloc"><p class="surtitre">Aujourd\'hui · ' + esc(dJour(auj)) + '</p>' +
             '<h3>⏳ Jour de marge</h3><p class="doux petit">Après ' + esc(enMarge.etape.nom) + ' · ' + esc(paysDe(enMarge.etape.pays).nom) +
-            ' · jusqu\'au ' + esc(dCourt(enMarge.finMarge)) + '</p></div>';
+            ' · jusqu\'au ' + esc(dCourt(enMarge.finMarge)) + '</p>' +
+            '<p class="petit" style="margin:8px 0 0">Il reste <b>' + jours(Math.round((enMarge.finMarge - auj) / JOUR)) + '</b> de marge, aujourd\'hui compris.</p>' +
+            '<div class="boutons">' + (enMarge.finMarge - auj > JOUR ? '<button type="button" class="bouton plein" data-recaler="repartir">Repartir demain</button>' : '') +
+            '<button type="button" class="bouton" data-recaler="plus">Ajouter un jour de marge</button></div></div>';
         }
       }
     } else {
@@ -457,8 +462,9 @@
         html += '<button class="etape-carte" data-fiche="' + esc(x.etape.id) + '">' +
           '<span class="num" style="background:' + esc(p.couleur) + '">' + x.num + '</span>' +
           '<span class="etape-corps"><h4>' + esc(x.etape.nom) + (etat === ' en-cours' ? ' <span class="badge ok">Vous êtes ici</span>' : '') + '</h4>' +
-          '<p class="petit">' + esc(dJour(x.arrivee)) + ' → ' + esc(dJour(x.depart)) + ' · <b>' + jours(x.total) + '</b></p>' +
-          (x.etape.id === 'sud-lipez' ? '' : '<p class="petit doux">🛏️ ' + (heb(x.etape).nom ? esc(heb(x.etape).nom) : 'Hébergement') + ' ' + badgeHeb(heb(x.etape).statut) + '</p>') +
+          '<p class="petit">' + esc(dJour(x.arrivee)) + ' → ' + esc(dJour(x.depart)) + ' · <b>' + jours(x.total) + '</b>' +
+          (fixes[x.etape.id] && !modeProches ? (versDate(fixes[x.etape.id].date) === x.arrivee ? ' <span class="badge ok">🔒 date fixée</span>' : ' <span class="badge alerte">🔒 date ratée</span>') : '') + '</p>' +
+          (x.etape.id === 'sud-lipez' || modeProches ? '' : '<p class="petit doux">🛏️ ' + (heb(x.etape).nom ? esc(heb(x.etape).nom) : 'Hébergement') + ' ' + badgeHeb(heb(x.etape).statut) + '</p>') +
           (x.activites.length ? '<p class="petit doux">' + esc(x.activites.map(function (a) { return a.nom; }).join(' · ')) + '</p>' : '') +
           (x.etape.notes ? '<p class="petit doux">📝 ' + notes(x.etape.notes) + '</p>' : '') +
           (maNote ? '<p class="petit note-apercu">🗒️ ' + esc(maNote.length > 90 ? maNote.slice(0, 90) + '…' : maNote) + '</p>' : '') +
@@ -569,10 +575,10 @@
     if (meteoOuverte) chargerMeteo(e, majMeteoFiche);
 
     if (acts.length) {
-      html += '<h3>Activités</h3><p class="petit doux" style="margin:-4px 0 4px">Cochez ce que vous voulez faire : les dates et le budget suivent.</p>' +
+      html += '<h3>Activités</h3>' + (modeProches ? '' : '<p class="petit doux" style="margin:-4px 0 4px">Cochez ce que vous voulez faire : les dates et le budget suivent.</p>') +
         '<div class="activites">' + acts.map(function (a) {
         var ch = activiteChoisie(a);
-        return '<label class="case' + (ch ? '' : ' act-non') + '"><input type="checkbox" data-act="' + esc(a.id) + '"' + (ch ? ' checked' : '') + '>' +
+        return '<label class="case' + (ch ? '' : ' act-non') + '"><input type="checkbox" data-act="' + esc(a.id) + '"' + (ch ? ' checked' : '') + (modeProches ? ' disabled' : '') + '>' +
           '<span class="case-corps"><span class="ligne entre"><span class="nom">' + esc(a.nom) + '</span>' +
           '<span class="badge ' + esc(a.statut) + '">' + esc(STATUTS[a.statut] || a.statut) + '</span></span>' +
           '<span class="desc"><b>' + (a.jours ? '+' + jours(a.jours) : 'Dans la journée') + (a.cout ? ' · ' + fourchette(a.cout) : '') + '</b>' +
@@ -582,10 +588,13 @@
     if (resas.length) {
       html += '<h3>Réservations</h3>' + resas.map(carteResa).join('');
     }
-    if (e.id !== 'sud-lipez') html += formulaireHeb(e);
-    html += '<h3><label for="note-etape">Mes notes</label></h3>' +
-      '<textarea class="note-etape" id="note-etape" data-note="' + esc(e.id) + '" rows="3" placeholder="Adresses, bons plans, choses à ne pas oublier…">' + esc(notesPerso[e.id] || '') + '</textarea>' +
-      '<p class="petit doux" style="margin:4px 0 0">Enregistré automatiquement sur ce téléphone.</p>';
+    if (!modeProches) {
+      html += blocFixe(x);
+      if (e.id !== 'sud-lipez') html += formulaireHeb(e);
+      html += '<h3><label for="note-etape">Mes notes</label></h3>' +
+        '<textarea class="note-etape" id="note-etape" data-note="' + esc(e.id) + '" rows="3" placeholder="Adresses, bons plans, choses à ne pas oublier…">' + esc(notesPerso[e.id] || '') + '</textarea>' +
+        '<p class="petit doux" style="margin:4px 0 0">Enregistré automatiquement sur ce téléphone.</p>';
+    }
     html += '<div class="boutons"><button class="bouton plein" data-carte="' + esc(e.id) + '">Voir sur la carte</button>' +
       '<a class="bouton" href="' + esc(lienMaps(e.lat, e.lng)) + '" target="_blank" rel="noopener noreferrer">Ouvrir dans Maps</a>' +
       '<a class="bouton" href="#planifier" data-fermer data-plan-ouvrir="' + esc(e.pays) + '">Ajuster la durée</a></div>';
@@ -620,7 +629,7 @@
   function rendrePlanificateur() {
     var cal = calendrier();
     var total = Math.round((cal.fin - cal.debut) / JOUR);
-    var html = '<div class="bloc resume-plan">' +
+    var html = blocConflits(cal) + '<div class="bloc resume-plan">' +
       '<label class="champ">Date de départ<input type="date" id="plan-debut" value="' + esc(versIso(cal.debut)) + '"></label>' +
       '<p style="margin:10px 0 0">Fin : <b>' + esc(dLong(cal.fin)) + '</b> · ' + jours(total) + '</p>' +
       bilanPays(cal).map(lignePays).join('') + '</div>';
@@ -989,6 +998,7 @@
       ecrire(CLES.taux, taux);
       if (force) toast('Taux mis à jour ✓');
       if (vueCourante() === 'devises') rendreDevises();
+      if (vueCourante() === 'horsligne') verifierHL();
     }).catch(function () { if (force) toast('Mise à jour des taux impossible'); }).then(function () { majTauxEnCours = false; });
   }
 
@@ -1032,6 +1042,7 @@
     var html = '<div class="bloc bloc-heros"><p class="surtitre">Dépensé jusqu\'ici</p>' +
       '<p class="grand-chiffre" style="font-size:2.2rem">' + eurosPrecis(total) + '</p>' +
       (nb > 1 ? '<p class="doux" style="margin:8px 0 0">Soit <b style="color:#fff">' + eurosPrecis(total / nb) + '</b> par personne</p>' : '') + '</div>';
+    html += blocBudgetRestant(cal, auj, total, nb);
 
     // Saisie
     var ici = situer(auj, cal);
@@ -1253,6 +1264,7 @@
       for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k.indexOf('voyage-') === 0) copie[k] = localStorage.getItem(k); }
     } catch (e) { toast('Sauvegarde impossible'); return; }
     telecharger('voyage-sauvegarde-' + versIso(Date.now()) + '.json', JSON.stringify({ appli: 'voyage-amerique-du-sud', date: new Date().toISOString(), donnees: copie }, null, 1), 'application/json');
+    ecrire(CLES3.sauvegarde, Date.now());
     toast('Sauvegarde créée');
   }
   function restaurer(fichier) {
@@ -1362,7 +1374,7 @@
     plan = p;
     try {
       var cal = calendrier(), b = calculBudget();
-      r = { fin: cal.fin, duree: Math.round((cal.fin - cal.debut) / JOUR), budget: b.total, sections: bilanPays(cal).map(function (x) { return x.total; }) };
+      r = { fin: cal.fin, duree: Math.round((cal.fin - cal.debut) / JOUR), budget: b.total, rates: conflits(cal).length, sections: bilanPays(cal).map(function (x) { return x.total; }) };
     } finally { plan = garde; }
     return r;
   }
@@ -1380,6 +1392,7 @@
         ligne('Durée', function (m, i) { return m.duree + ' j' + (i ? ecart(m.duree, ref.duree, ' j') : ''); }) +
         ligne('Budget mini', function (m, i) { return euros(m.budget[0]) + (i ? ecart(Math.round((m.budget[0] - ref.budget[0]) / 10) * 10, 0, ' €') : ''); }) +
         ligne('Budget maxi', function (m, i) { return euros(m.budget[1]) + (i ? ecart(Math.round((m.budget[1] - ref.budget[1]) / 10) * 10, 0, ' €') : ''); }) +
+        (cols.some(function (c) { return c.m.rates; }) ? ligne('Dates fixées ratées', function (m) { return m.rates ? '<b style="color:var(--alerte)">' + m.rates + '</b>' : '0'; }) : '') +
         donnees.pays.map(function (p, k) { return ligne(esc(p.nom), function (m, i) { return m.sections[k] + ' j' + (i ? ecart(m.sections[k], ref.sections[k], '') : ''); }); }).join('') +
         '</tbody></table></div><p class="petit doux" style="margin:8px 0 0">Budget par personne. Les écarts sont donnés par rapport au plan actuel.</p>' +
         scenarios.map(function (s) {
@@ -1467,7 +1480,7 @@
           var p = paysDe(c.x.etape.pays);
           html += '<button type="button" class="' + cl + (c.marge ? ' marge' : '') + (c.premier ? ' premier' : '') + '" style="--c:' + esc(p.couleur) + '" data-fiche="' + esc(c.x.etape.id) +
             '" aria-label="' + esc(dLong(t) + ' : ' + (c.marge ? 'marge après ' : '') + c.x.etape.nom) + '">' + contenu +
-            (c.premier ? '<small>' + c.x.num + '</small>' : '') + (resas[t] ? '<i class="point-resa"></i>' : '') + '</button>';
+            (fixes[c.x.etape.id] && versDate(fixes[c.x.etape.id].date) === t ? '<small>🔒</small>' : (c.premier ? '<small>' + c.x.num + '</small>' : '')) + (resas[t] ? '<i class="point-resa"></i>' : '') + '</button>';
         } else {
           html += '<span class="' + cl + ' vide">' + contenu + (t === volAller || t === volRetour ? '<small>✈️</small>' : '') + '</span>';
         }
@@ -1494,6 +1507,13 @@
       var d = DEVISES[f.monnaie];
       var lignes = [
         ['💱', 'Monnaie', (d ? esc(d.nom) + ' (' + f.monnaie + ') · 1 € = ' + fmtNombre.format(tauxDe(f.monnaie)) + ' ' + f.monnaie + '<br><span class="doux">' + esc(origineTaux(f.monnaie)) + '</span>' : '') + (f.argent ? '<br>' + esc(f.argent) : '')],
+        ['💶', 'Budget sur place', (function () {
+          var bp = budgetPays(f.id, cal), nbp = (donnees.budget && donnees.budget.personnes) || 1, tx = tauxDe(f.monnaie);
+          if (!bp[1]) return '';
+          function rond(v) { return fmtEntier.format(Math.round(v / (v > 20000 ? 1000 : 100)) * (v > 20000 ? 1000 : 100)); }
+          return euros(bp[0]) + ' à ' + euros(bp[1]) + (nbp > 1 ? ' pour vous ' + nbp : '') + ', soit environ ' + rond(bp[0] * tx) + ' à ' + rond(bp[1] * tx) + ' ' + f.monnaie +
+            '<br><span class="doux">' + esc(f.liquide ? 'À prévoir en grande partie en liquide : retirer dès l\'arrivée dans une grande ville.' : 'Estimation : vie sur place, activités cochées et trajets.') + '</span>';
+        })()],
         ['🕐', 'Heure', esc(f.heure || '')],
         ['🔌', 'Prises', esc(f.prises || '')],
         ['🆘', 'Urgences', (f.urgences || []).map(function (u) { return esc(u[0]) + ' <a href="tel:' + esc(u[1]) + '"><b>' + esc(u[1]) + '</b></a>'; }).join(' · ')],
@@ -1540,6 +1560,276 @@
       '<label class="champ">Intitulé<input type="text" name="libelle" autocomplete="off" maxlength="60" placeholder="Médecin traitant, banque…"></label>' +
       '<div class="boutons"><button type="submit" class="bouton plein">Ajouter</button></div></form>';
     $('#urgence').innerHTML = html;
+  }
+
+  /* ================================================================
+     Le plan face à la réalité : dates fixées, recalage en cours de route,
+     budget restant, préparation au hors-ligne, page de suivi pour les proches.
+     ================================================================ */
+  var CLES3 = { fixes: 'voyage-fixes-v1', cible: 'voyage-budget-cible-v1', sauvegarde: 'voyage-derniere-sauvegarde-v1', verif: 'voyage-derniere-verif-v1' };
+
+  /* ---------- Dates fixées : une réservation verrouille le jour d'arrivée à une étape ---------- */
+  var fixes = lire(CLES3.fixes, {});
+  function ecartTexte(n) { return jours(Math.abs(n)) + (n > 0 ? ' trop tard' : ' trop tôt'); }
+  /* Liste des dates fixées que le plan actuel ne respecte plus (dates verrouillées à la main et réservations du fichier). */
+  function conflits(cal) {
+    var l = [];
+    cal.etapes.forEach(function (x) {
+      var f = fixes[x.etape.id];
+      if (f && /^\d{4}-\d{2}-\d{2}$/.test(f.date)) {
+        var ecart = Math.round((x.arrivee - versDate(f.date)) / JOUR);
+        if (ecart) l.push({ x: x, ecart: ecart, texte: 'arrivée fixée au ' + dJour(versDate(f.date)) + (f.motif ? ' (' + f.motif + ')' : '') + ', le plan y arrive le ' + dJour(x.arrivee) });
+      }
+    });
+    (donnees.reservations || []).forEach(function (r) {
+      var x = r.etape && cal.etapes.filter(function (y) { return y.etape.id === r.etape; })[0];
+      if (!x || !/^\d{4}-\d{2}-\d{2}$/.test(r.date || '')) return;
+      var d = versDate(r.date), fin = x.finMarge || x.depart;
+      var ecart = d < x.arrivee - JOUR ? Math.round((x.arrivee - d) / JOUR) : (d > fin ? -Math.round((d - fin) / JOUR) : 0);
+      if (ecart) l.push({ x: x, ecart: ecart, texte: 'réservation « ' + r.titre + ' » le ' + dJour(d) + ', le plan vous place à cette étape du ' + dCourt(x.arrivee) + ' au ' + dCourt(fin) });
+    });
+    return l;
+  }
+  function blocConflits(cal) {
+    var l = conflits(cal);
+    if (!l.length) return '';
+    return '<div class="bloc alerte-bloc" role="alert"><p class="surtitre">⚠️ ' + pluriel(l.length, 'date') + ' fixée' + (l.length > 1 ? 's' : '') + ' en conflit</p>' + l.map(function (c) {
+      return '<p class="petit" style="margin:8px 0 0"><b>' + esc(c.x.etape.nom) + '</b> : ' + esc(c.texte) + ', soit <b>' + esc(ecartTexte(c.ecart)) + '</b>. ' +
+        '<button type="button" class="lien-bouton" data-fiche="' + esc(c.x.etape.id) + '">Voir l\'étape</button></p>';
+    }).join('') + '<p class="petit doux" style="margin:10px 0 0">Ajustez les durées ou les jours de marge avant ces étapes dans l\'onglet Dates, ou modifiez la date fixée.</p></div>';
+  }
+  function blocFixe(x) {
+    var e = x.etape, f = fixes[e.id];
+    if (!f) {
+      return '<h3>Date fixée</h3><p class="petit doux" style="margin:0">Une réservation impose le jour d\'arrivée ici ? Verrouillez-le : l\'appli vous préviendra si un changement le fait rater.</p>' +
+        '<div class="boutons"><button type="button" class="bouton" data-fixer="' + esc(e.id) + '" data-date="' + esc(versIso(x.arrivee)) + '">🔒 Verrouiller l\'arrivée au ' + esc(dJour(x.arrivee)) + '</button></div>';
+    }
+    var ecart = Math.round((x.arrivee - versDate(f.date)) / JOUR);
+    return '<h3>Date fixée</h3><div class="info' + (ecart ? ' info-alerte' : '') + '"><b>Arrivée verrouillée</b>🔒 ' + esc(dLong(versDate(f.date))) +
+      (ecart ? '<br><span class="petit">Le plan actuel vous y fait arriver le ' + esc(dJour(x.arrivee)) + ' : <b>' + esc(ecartTexte(ecart)) + '</b>.</span>' : '<br><span class="petit doux">Le plan actuel la respecte ✓</span>') + '</div>' +
+      '<label class="champ" style="margin-top:10px">Pourquoi (facultatif)<input type="text" data-fixe-motif="' + esc(e.id) + '" value="' + esc(f.motif || '') + '" maxlength="50" autocomplete="off" placeholder="Refuge réservé, billet du train…"></label>' +
+      '<div class="rangee" style="margin-top:10px;align-items:flex-end"><label class="champ" style="flex:1">Jour fixé<input type="date" data-fixe-date="' + esc(e.id) + '" value="' + esc(f.date) + '"></label>' +
+      '<button type="button" class="bouton" data-defixer="' + esc(e.id) + '">Déverrouiller</button></div>';
+  }
+  var nbConflitsVus = null;
+  function surveillerConflits() {
+    var n = conflits(calendrier()).length;
+    if (nbConflitsVus != null && n > nbConflitsVus) setTimeout(function () { toast('⚠️ Ce changement fait rater une date fixée'); }, 40);
+    nbConflitsVus = n;
+  }
+
+  /* ---------- Recalage en cours de route ---------- */
+  function etapeDuJour(cal, auj) { return cal.etapes.filter(function (x) { return auj >= x.arrivee && auj < x.depart; })[0]; }
+  function margeDuJour(cal, auj) { return cal.etapes.filter(function (x) { return x.marge && auj >= x.depart && auj < x.finMarge; })[0]; }
+  function blocRecalage(x, auj) {
+    var e = x.etape, m = margePays(e.pays), peutPartir = joursBase(e) > 0 && x.depart - auj > JOUR;
+    return '<details class="plus-info"><summary>Changer le programme</summary>' +
+      '<p class="petit doux" style="margin:4px 0 0">Marge restante pour ' + esc(paysDe(e.pays).nom) + ' : <b>' + jours(m) + '</b>. ' +
+      (m ? 'Un jour de plus ici est pris sur cette marge : les sections suivantes ne bougent pas.' : 'Il n\'y a plus de marge : un jour de plus ici décale toute la suite.') + '</p>' +
+      '<div class="boutons"><button type="button" class="bouton" data-recaler="plus">Rester un jour de plus</button>' +
+      (peutPartir ? '<button type="button" class="bouton" data-recaler="moins">Partir un jour plus tôt</button>' : '') + '</div></details>';
+  }
+  function recaler(sens) {
+    var cal = calendrier(), auj = aujourdhui(), x = etapeDuJour(cal, auj), msg;
+    if (x) {
+      var e = x.etape, m = margePays(e.pays), nomSection = paysDe(e.pays).nom;
+      if (sens === 'plus') {
+        plan.jours[e.id] = joursBase(e) + 1;
+        if (m > 0) { plan.marges[e.pays] = m - 1; msg = 'Un jour de plus à ' + e.nom + ', pris sur la marge (reste ' + jours(m - 1) + ')'; }
+        else msg = 'Un jour de plus à ' + e.nom + ' : toute la suite est décalée d\'un jour';
+      } else if (sens === 'moins' && joursBase(e) > 0 && x.depart - auj > JOUR) {
+        plan.jours[e.id] = joursBase(e) - 1;
+        plan.marges[e.pays] = m + 1;
+        msg = 'Départ de ' + e.nom + ' avancé d\'un jour ; le jour gagné rejoint la marge ' + nomSection;
+      }
+    } else {
+      var mg = margeDuJour(cal, auj);
+      if (!mg) return;
+      var pid = mg.etape.pays;
+      if (sens === 'plus') { plan.marges[pid] = margePays(pid) + 1; msg = 'Un jour de marge en plus : la suite est décalée d\'un jour'; }
+      else if (sens === 'repartir') {
+        var garde = Math.round((auj + JOUR - mg.depart) / JOUR), rendus = mg.marge - garde;
+        if (rendus <= 0) return;
+        if (!confirm('Repartir demain ? Les ' + jours(rendus) + ' de marge non utilisés sont abandonnés et toute la suite du voyage est avancée d\'autant.')) return;
+        plan.marges[pid] = garde;
+        msg = 'Départ demain : la suite est avancée de ' + jours(rendus);
+      }
+    }
+    if (!msg) return;
+    sauverPlan(); rafraichir(); toast(msg);
+  }
+
+  /* ---------- Budget restant ---------- */
+  function budgetCible() {
+    var v = lire(CLES3.cible, null);
+    if (typeof v === 'number' && v > 0) return v;
+    var b = calculBudget();
+    return Math.round((b.total[0] + b.total[1]) / 2 / 100) * 100;
+  }
+  function blocBudgetRestant(cal, auj, total, nb) {
+    var cible = budgetCible(), reste = cible * nb - total;
+    var restants = Math.round((cal.fin - Math.max(auj, cal.debut)) / JOUR);
+    var html = '<div class="bloc"><p class="surtitre">Pour tenir le budget</p>' +
+      '<label class="champ">Budget total visé, par personne (€)<input type="text" inputmode="decimal" id="budget-cible" value="' + cible + '" autocomplete="off"></label>' +
+      '<div class="jauge' + (reste < 0 ? ' depasse' : '') + '" style="margin-top:12px"><span style="width:' + Math.min(100, Math.round(total / Math.max(1, cible * nb) * 100)) + '%"></span></div>';
+    if (reste < 0) html += '<p style="margin:10px 0 0"><b>Budget dépassé de ' + eurosPrecis(-reste) + '</b>' + (nb > 1 ? ' pour vous ' + nb : '') + '.</p>';
+    else {
+      html += '<p style="margin:10px 0 0">Il reste <b>' + eurosPrecis(reste) + '</b>' + (nb > 1 ? ' pour vous ' + nb : '') + '.</p>';
+      if (restants > 0) html += '<p class="grand-chiffre" style="font-size:1.6rem;margin:8px 0 0">' + eurosPrecis(reste / restants) + ' <span class="petit doux" style="font-weight:600">par jour' + (nb > 1 ? ' à ' + nb : '') + '</span></p>' +
+        '<p class="petit doux" style="margin:4px 0 0">' + (nb > 1 ? 'Soit ' + eurosPrecis(reste / restants / nb) + ' par personne, sur ' : 'Sur ') + jours(restants) + ' restants. Ce montant comprend tout ce qui reste à payer : vols, excursions et locations non encore notés.</p>';
+    }
+    return html + '</div>';
+  }
+  /* Budget estimé dans un pays (vie sur place, activités cochées, trajets), pour tout le groupe, en euros */
+  function budgetPays(id, cal) {
+    var B = donnees.budget || {}, pj = B.parJour || {}, nb = B.personnes || 1, mini = 0, maxi = 0;
+    cal.etapes.forEach(function (x) {
+      if (x.etape.paysReel !== id) return;
+      var j = x.total + (x.marge || 0), p = pj[x.etape.pays] || [0, 0];
+      mini += j * p[0]; maxi += j * p[1];
+      x.activites.forEach(function (a) { if (a.cout) { mini += a.cout[0]; maxi += a.cout[1]; } });
+      var t = x.etape.trajet;
+      if (t && t.cout && (t.modes || [])[0] !== 'vol') { mini += t.cout[0]; maxi += t.cout[1]; }
+    });
+    return [mini * nb, maxi * nb];
+  }
+
+  /* ---------- Prêt pour le hors-ligne ? ---------- */
+  var etatHL = null, progresHL = '';
+  function ageTexte(ms) {
+    var h = Math.round((Date.now() - ms) / 3600000);
+    return h < 1 ? 'à l\'instant' : (h < 24 ? 'il y a ' + h + ' h' : 'il y a ' + pluriel(Math.round(h / 24), 'jour'));
+  }
+  function prochainesEtapes(n) {
+    var cal = calendrier(), auj = aujourdhui();
+    var i = cal.etapes.findIndex(function (x) { return auj < (x.finMarge || x.depart); });
+    return i < 0 ? [] : cal.etapes.slice(i, i + n);
+  }
+  function verifierHL() {
+    var cal = calendrier(), auj = aujourdhui(), r = [];
+    var sw = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
+    r.push({ ok: sw, titre: 'Appli enregistrée sur le téléphone', detail: sw ? 'Elle s\'ouvre sans réseau.' : 'Ouvrez l\'appli une fois avec du réseau, puis rouvrez-la.' });
+    var verif = lire(CLES3.verif, 0);
+    r.push({ ok: verif ? Date.now() - verif < 7 * 86400000 : false, titre: 'Itinéraire à jour', detail: verif ? 'Vérifié ' + ageTexte(verif) + '.' : 'Jamais vérifié avec du réseau.' });
+    r.push({ ok: taux.date ? Date.now() - versDate(taux.date) < 8 * 86400000 : false, titre: 'Taux de change', detail: taux.date ? 'Mis à jour le ' + dCourt(versDate(taux.date)) + '.' : 'Jamais mis à jour : taux approximatifs.', action: ['taux-maj', 'Mettre à jour'] });
+    var proches = prochainesEtapes(3), bientot = auj >= cal.debut - 3 * JOUR && auj < cal.fin;
+    if (bientot) {
+      var manquantes = proches.filter(function (x) { var m = meteo[x.etape.id]; return !m || Date.now() - m.t > 24 * 3600000; });
+      r.push({ ok: !manquantes.length, titre: 'Météo des prochaines étapes', detail: manquantes.length ? 'À charger : ' + manquantes.map(function (x) { return x.etape.nom; }).join(', ') + '.' : proches.map(function (x) { return x.etape.nom; }).join(', ') + '.', action: manquantes.length ? ['hl-meteo', 'Charger'] : null });
+    } else r.push({ ok: null, titre: 'Météo des prochaines étapes', detail: 'Utile à partir de quelques jours avant le départ.' });
+    var perso = depenses.length || Object.keys(journal).length || Object.keys(notesPerso).length || Object.keys(hebs).length;
+    var sauv = lire(CLES3.sauvegarde, 0);
+    r.push({ ok: !perso ? null : (sauv ? Date.now() - sauv < 14 * 86400000 : false), titre: 'Sauvegarde de vos données',
+      detail: !perso ? 'Rien à sauvegarder pour l\'instant.' : (sauv ? 'Dernière sauvegarde ' + ageTexte(sauv) + '.' : 'Jamais faite : dépenses, journal et notes n\'existent que sur ce téléphone.'), action: perso ? ['sauvegarder', 'Sauvegarder'] : null });
+    var billets = reservationsTriees().filter(function (x) { var d = versDate(x.date); return d >= auj && d <= auj + 7 * JOUR && lienDriveSur(x.lienDrive); });
+    if (billets.length) r.push({ ok: null, titre: 'Billets des 7 prochains jours', detail: billets.map(function (x) { return x.titre; }).join(', ') + '. Dans Drive, activez « Disponible hors connexion » pour ces PDF : l\'appli ne peut pas le vérifier.' });
+    etatHL = r;
+    var urls = listeTuiles();
+    var attente = [];
+    if ('caches' in window) {
+      attente.push(caches.open('tuiles-prechargees-v2').then(function (c) { return c.keys(); }).then(function (k) {
+        var n = Math.min(k.length, urls.length);
+        r.splice(1, 0, { ok: n >= urls.length * 0.9, titre: 'Carte hors ligne', detail: n + ' morceaux sur ' + urls.length + ' autour des étapes.' + (n < urls.length * 0.9 ? ' À télécharger en wifi (environ ' + Math.round(urls.length * 0.02) + ' Mo).' : ''), action: n < urls.length * 0.9 ? ['hl-carte', 'Télécharger'] : null });
+      }).catch(function () { /* ignoré */ }));
+    } else r.splice(1, 0, { ok: false, titre: 'Carte hors ligne', detail: 'Ce navigateur ne le permet pas.' });
+    if (navigator.storage && navigator.storage.persisted) {
+      attente.push(navigator.storage.persisted().then(function (p) {
+        r.push({ ok: p ? true : null, titre: 'Données protégées', detail: p ? 'Le téléphone ne les effacera pas pour faire de la place.' : 'Le téléphone peut effacer les données d\'un site peu utilisé : installez l\'appli sur l\'écran d\'accueil et faites des sauvegardes.' });
+      }).catch(function () { /* ignoré */ }));
+    }
+    Promise.all(attente).then(function () { if (vueCourante() === 'horsligne') dessinerHL(); });
+  }
+  function dessinerHL() {
+    var r = etatHL || [], manque = r.filter(function (x) { return x.ok === false; }).length;
+    var html = '<div class="bloc bloc-heros"><p class="surtitre">' + (navigator.onLine ? 'Vous avez du réseau' : 'Vous êtes hors ligne') + '</p>' +
+      '<h3 style="font-size:1.4rem;margin:0">' + (manque ? pluriel(manque, 'point') + ' à régler avant de perdre le réseau' : 'Tout est prêt ✓') + '</h3></div>' +
+      (progresHL ? '<div class="bloc" role="status"><p style="margin:0">' + esc(progresHL) + '</p></div>' : '') +
+      r.map(function (x) {
+        return '<div class="bloc ligne-hl"><span class="etat-hl ' + (x.ok === true ? 'oui' : (x.ok === false ? 'non' : 'neutre')) + '" aria-hidden="true">' + (x.ok === true ? '✓' : (x.ok === false ? '!' : 'i')) + '</span>' +
+          '<div style="flex:1;min-width:0"><b>' + esc(x.titre) + '</b><p class="petit doux" style="margin:2px 0 0">' + esc(x.detail) + '</p>' +
+          (x.action ? '<div class="boutons" style="margin-top:8px"><button type="button" class="bouton" id="' + x.action[0] + '">' + esc(x.action[1]) + '</button></div>' : '') + '</div></div>';
+      }).join('') +
+      '<p class="petit doux">À faire en wifi, la veille d\'une zone sans réseau : Carretera Austral, Sud Lípez, treks.</p>';
+    $('#horsligne').innerHTML = html;
+  }
+  function rendreHorsLigne() { if (!etatHL) etatHL = []; dessinerHL(); verifierHL(); }
+
+  /* ---------- Suivi pour les proches : lien en lecture seule contenant le plan du moment ---------- */
+  var modeProches = false, planEnvoyeLe = null;
+  function encoderPlan(p) {
+    return btoa(unescape(encodeURIComponent(JSON.stringify(copiePlan(p))))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function decoderPlan(texte) {
+    try {
+      var b = texte.replace(/-/g, '+').replace(/_/g, '/');
+      var p = JSON.parse(decodeURIComponent(escape(atob(b))));
+      var propre = { debut: null, jours: {}, activites: {}, marges: {} };
+      if (typeof p.debut === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(p.debut)) propre.debut = p.debut;
+      ['jours', 'marges'].forEach(function (k) {
+        Object.keys(p[k] || {}).slice(0, 200).forEach(function (id) { var v = p[k][id]; if (/^[a-z0-9-]{1,40}$/.test(id) && typeof v === 'number' && v >= 0 && v <= 60) propre[k][id] = Math.round(v); });
+      });
+      Object.keys(p.activites || {}).slice(0, 400).forEach(function (id) { if (/^[a-z0-9-]{1,40}$/.test(id)) propre.activites[id] = !!p.activites[id]; });
+      return propre;
+    } catch (e) { return null; }
+  }
+  (function () {
+    var m = /[?&]suivi=([A-Za-z0-9_-]{1,6000})/.exec(location.search);
+    var p = m && decoderPlan(m[1]);
+    if (!p) return;
+    plan = p; modeProches = true;
+    var le = /[?&]le=(\d{4}-\d{2}-\d{2})/.exec(location.search);
+    planEnvoyeLe = le ? le[1] : null;
+    document.body.classList.add('mode-proches');
+  })();
+  function lienProches() {
+    return location.origin + location.pathname + '?suivi=' + encoderPlan(plan) + '&le=' + versIso(Date.now()) + '#proches';
+  }
+  function fuseauDe(e) {
+    var f = (donnees.fichesPays || []).filter(function (y) { return y.id === e.paysReel; })[0];
+    return e.fuseau || (f && f.fuseau) || null;
+  }
+  function heureLocale(e) {
+    var tz = fuseauDe(e);
+    if (!tz) return null;
+    try {
+      var d = new Date();
+      var la = new Date(d.toLocaleString('en-US', { timeZone: tz })), ici = new Date(d.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+      var ecart = Math.round((la - ici) / 3600000);
+      return { heure: new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: tz }).format(d), ecart: ecart };
+    } catch (err) { return null; }
+  }
+  function rendreProches() {
+    var cal = calendrier(), auj = aujourdhui(), html = '';
+    var x = etapeDuJour(cal, auj), mg = !x && margeDuJour(cal, auj), ici = x || mg;
+    if (auj < cal.debut) {
+      var n = Math.round(((dateVol('aller', cal) || cal.debut) - auj) / JOUR);
+      html += '<div class="bloc bloc-heros"><p class="surtitre">Avant le départ</p><div class="ligne"><span class="grand-chiffre">' + n + '</span><span>' + (n > 1 ? 'jours avant le départ' : 'jour avant le départ') +
+        '<br><span class="doux petit">Arrivée à ' + esc(cal.etapes[0].etape.nom) + ' le ' + esc(dLong(cal.debut)) + '</span></span></div></div>';
+    } else if (ici) {
+      var e = ici.etape, h = heureLocale(e), jourN = Math.round((auj - cal.debut) / JOUR) + 1;
+      html += '<div class="bloc bloc-heros"><p class="surtitre">Aujourd\'hui · jour ' + jourN + ' du voyage</p>' +
+        '<h3 style="font-size:1.6rem;margin:0">' + esc(e.nom) + '</h3>' +
+        '<p class="doux" style="margin:6px 0 0">' + drapeau({ id: e.paysReel }) + ' ' + esc(NOMS_PAYS_REEL[e.paysReel] || '') + (mg ? ' · jours de marge dans les environs' : '') +
+        ' · jusqu\'au ' + esc(dJour(mg ? mg.finMarge : x.depart)) + '</p>' +
+        (h ? '<p style="margin:10px 0 0">🕐 Il est <b>' + esc(h.heure) + '</b> là-bas' + (h.ecart ? ' (' + Math.abs(h.ecart) + ' h de ' + (h.ecart < 0 ? 'moins' : 'plus') + ' qu\'en France)' : '') + '</p>' : '') +
+        '<div class="progression"><span style="width:' + Math.round((auj - cal.debut) / (cal.fin - cal.debut) * 100) + '%"></span></div></div>';
+      if (x && x.activites.length) html += '<div class="bloc"><p class="surtitre">Au programme ici</p><p style="margin:0">' + esc(x.activites.map(function (a) { return a.nom; }).join(' · ')) + '</p>' +
+        '<div class="boutons"><button class="bouton" data-fiche="' + esc(e.id) + '">En savoir plus</button><a class="bouton" href="' + esc(lienMaps(e.lat, e.lng)) + '" target="_blank" rel="noopener noreferrer">Voir sur Maps</a></div></div>';
+    } else {
+      html += '<div class="bloc bloc-heros"><p class="surtitre">Voyage terminé</p><h3 style="margin:0">Ils sont rentrés !</h3></div>';
+    }
+    var suite = cal.etapes.filter(function (y) { return y.arrivee > auj; }).slice(0, 5);
+    if (suite.length) html += '<div class="bloc"><p class="surtitre">Ensuite</p><ul class="fil-jour">' + suite.map(function (y) {
+      var t = y.etape.trajet;
+      return '<li><span class="fil-ico" aria-hidden="true">' + (t ? esc(((MODES[(t.modes || [])[0]] || {}).ico) || '📍') : '📍') + '</span><span class="petit"><b>' + esc(y.etape.nom) + '</b> · ' + esc(NOMS_PAYS_REEL[y.etape.paysReel] || '') +
+        '<br><span class="doux">' + esc(dJour(y.arrivee)) + ' → ' + esc(dJour(y.depart)) + '</span></span></li>';
+    }).join('') + '</ul></div>';
+    html += '<div class="bloc"><p class="surtitre">Le voyage</p><p style="margin:0">' + esc(dCourt(cal.debut)) + ' → ' + esc(dCourt(cal.fin)) + ' · ' + jours(Math.round((cal.fin - cal.debut) / JOUR)) + ' · ' + pluriel(cal.etapes.length, 'étape') + '</p>' +
+      frise(cal, auj) + '<p style="margin:10px 0 0">Retour en France prévu le <b>' + esc(dLong(cal.fin)) + '</b>.</p>' +
+      '<div class="boutons"><a class="bouton plein" href="#carte">Voir la carte</a><a class="bouton" href="#etapes">Toutes les étapes</a></div></div>';
+    html += '<p class="petit doux">Dates prévues, qui peuvent changer en cours de route' + (planEnvoyeLe ? ' · programme envoyé le ' + esc(dCourt(versDate(planEnvoyeLe))) : '') +
+      '. Demandez-leur un nouveau lien pour avoir la dernière version.</p>';
+    $('#proches').innerHTML = html;
   }
 
   /* ---------- Le voyage en chiffres ---------- */
@@ -1660,6 +1950,8 @@
     }).join('') +
       '<h3 class="categorie">Outils</h3>' +
       bouton('agenda', '📅', 'Ajouter à l\'agenda', 'Fichier avec les étapes, les vols et les réservations') +
+      '<a href="#horsligne"><span class="ico" aria-hidden="true">📶</span><span><b>Prêt pour le hors-ligne ?</b><span class="petit doux">À vérifier avant une zone sans réseau</span></span><span class="chevron" aria-hidden="true">›</span></a>' +
+      bouton('lien-proches', '👨‍👩‍👧', 'Lien de suivi pour les proches', 'Une page « où sont-ils ? » en lecture seule, avec le programme du moment') +
       bouton('partager', '📲', 'Partager l\'appli', 'Envoyer le lien pour l\'installer sur un autre téléphone') +
       bouton('sauvegarder', '💾', 'Sauvegarder mes données', 'Cases cochées, dépenses, journal, notes : une copie en fichier') +
       '<label class="bouton-menu"><span class="ico" aria-hidden="true">♻️</span><span><b>Restaurer une sauvegarde</b><span class="petit doux">Reprendre les données d\'un fichier de sauvegarde</span></span>' +
@@ -1912,8 +2204,9 @@
       return TUILES.replace('{z}', p[0]).replace('{x}', p[1]).replace('{y}', p[2]);
     });
   }
-  function prechargerCarte() {
-    var etat = $('#carte-etat');
+  function prechargerCarte(surProgres) {
+    // surProgres : fonction recevant le texte d'avancement (écran « hors-ligne ») ; sinon le bandeau de la carte
+    var etat = surProgres ? { set textContent(v) { surProgres(v); } } : $('#carte-etat');
     if (!navigator.onLine) { etat.textContent = 'Pas de réseau : réessayez en wifi.'; return; }
     if (!('caches' in window)) { etat.textContent = 'Ce navigateur ne permet pas la carte hors ligne.'; return; }
     var urls = listeTuiles();
@@ -1961,18 +2254,21 @@
   });
 
   /* ---------- Navigation ---------- */
-  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'plus', 'resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal', 'bilan', 'hebergements', 'calendrier', 'pays', 'urgence'];
-  var SOUS_PLUS = ['resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal', 'bilan', 'hebergements', 'pays', 'urgence'];
+  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'plus', 'resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal', 'bilan', 'hebergements', 'calendrier', 'pays', 'urgence', 'horsligne', 'proches'];
+  var VUES_PROCHES = ['proches', 'carte', 'etapes'];
+  var SOUS_PLUS = ['resas', 'conseils', 'propositions', 'afaire', 'budget', 'depenses', 'devises', 'bagages', 'journal', 'bilan', 'hebergements', 'pays', 'urgence', 'horsligne'];
   var ONGLET_DE = { calendrier: 'planifier' };
   var RENDUS = {
     accueil: rendreAccueil, etapes: rendreEtapes, planifier: rendrePlanificateur, plus: rendrePlus, resas: rendreReservations,
     conseils: rendreConseils, propositions: rendrePropositions, afaire: rendreAFaire, budget: rendreBudget,
     depenses: rendreDepenses, devises: rendreDevises, bagages: rendreBagages, journal: rendreJournal, bilan: rendreBilan,
-    hebergements: rendreHebergements, calendrier: rendreCalendrier, pays: rendrePays, urgence: rendreUrgence
+    hebergements: rendreHebergements, calendrier: rendreCalendrier, pays: rendrePays, urgence: rendreUrgence,
+    horsligne: rendreHorsLigne, proches: rendreProches
   };
   function vueCourante() {
     var v = location.hash.replace('#', '') || 'accueil';
-    return VUES.indexOf(v) < 0 ? 'accueil' : v;
+    if (modeProches) return VUES_PROCHES.indexOf(v) < 0 ? 'proches' : v;
+    return VUES.indexOf(v) < 0 || v === 'proches' ? 'accueil' : v;
   }
   /* Après un changement (case cochée, durée modifiée) : redessiner l'écran affiché et la fiche ouverte, sans bouger. */
   function rafraichir() {
@@ -1980,6 +2276,7 @@
     if (RENDUS[v]) RENDUS[v]();
     window.scrollTo(0, y);
     majSousTitre();
+    if (!modeProches) surveillerConflits();
     if (ficheOuverte && $('#fiche').open) ouvrirFiche(ficheOuverte, true);
   }
   function refocus(selecteur) {
@@ -2020,6 +2317,8 @@
     document.querySelectorAll('.onglets a').forEach(function (a) {
       if (a.getAttribute('data-vue') === onglet) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
+    if (nbConflitsVus == null && !modeProches) surveillerConflits();
+    if (v !== 'horsligne') progresHL = '';
     if (v !== 'journal') dateJournal = null;
     if (v !== 'pays') paysOuvert = null;
     if (RENDUS[v]) RENDUS[v]();
@@ -2036,8 +2335,25 @@
 
   function evenements() {
     document.addEventListener('click', function (ev) {
-      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],[data-aller-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne,#bouton-position,#afaire-masquer,#partager,#agenda,#sauvegarder,#taux-maj,#depenses-copier,#journal-copier,#bagages-vider,[data-devise],[data-suppr-depense],[data-suppr-bagage],[data-journal-modifier],[data-journal-supprimer],[data-qui],[data-filtre-qui],[data-decision],[data-scenario-charger],[data-scenario-supprimer],[data-suppr-urgence],[data-pays-ouvrir],[data-devise-ouvrir],#scenario-enregistrer,#decisions-copier');
+      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],[data-aller-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne,#bouton-position,#afaire-masquer,#partager,#agenda,#sauvegarder,#taux-maj,#depenses-copier,#journal-copier,#bagages-vider,[data-devise],[data-suppr-depense],[data-suppr-bagage],[data-journal-modifier],[data-journal-supprimer],[data-qui],[data-filtre-qui],[data-decision],[data-scenario-charger],[data-scenario-supprimer],[data-suppr-urgence],[data-pays-ouvrir],[data-devise-ouvrir],#scenario-enregistrer,#decisions-copier,[data-recaler],[data-fixer],[data-defixer],#hl-carte,#hl-meteo,#lien-proches');
       if (!c) return;
+      if (c.hasAttribute('data-recaler')) { recaler(c.getAttribute('data-recaler')); return; }
+      if (c.hasAttribute('data-fixer')) {
+        fixes[c.getAttribute('data-fixer')] = { date: c.getAttribute('data-date'), motif: '' };
+        ecrire(CLES3.fixes, fixes); rafraichir(); toast('Date verrouillée 🔒'); return;
+      }
+      if (c.hasAttribute('data-defixer')) { delete fixes[c.getAttribute('data-defixer')]; ecrire(CLES3.fixes, fixes); rafraichir(); toast('Date déverrouillée'); return; }
+      if (c.id === 'hl-carte') { prechargerCarte(function (t) { progresHL = t; if (vueCourante() === 'horsligne') { dessinerHL(); if (/prête|Pas de réseau|ne permet/.test(t)) verifierHL(); } }); return; }
+      if (c.id === 'hl-meteo') {
+        prochainesEtapes(3).forEach(function (x) { delete meteoEnCours[x.etape.id]; chargerMeteo(x.etape, function () { if (vueCourante() === 'horsligne') verifierHL(); }); });
+        toast(navigator.onLine ? 'Chargement de la météo…' : 'Pas de réseau'); return;
+      }
+      if (c.id === 'lien-proches') {
+        var lp = lienProches();
+        if (navigator.share) navigator.share({ title: donnees.voyage.titre + ' : où sont-ils ?', url: lp }).catch(function () { /* partage annulé */ });
+        else copier(lp, 'Lien de suivi copié');
+        return;
+      }
       if (c.hasAttribute('data-pays-ouvrir')) paysOuvert = c.getAttribute('data-pays-ouvrir');
       if (c.hasAttribute('data-devise-ouvrir') && DEVISES[c.getAttribute('data-devise-ouvrir')]) { taux.devise = c.getAttribute('data-devise-ouvrir'); ecrire(CLES.taux, taux); return; }
       if (c.hasAttribute('data-qui')) {
@@ -2142,7 +2458,7 @@
       else if (c.id === 'agenda') {
         if (!donnees.voyage.datesProvisoires || confirm('Les dates sont encore provisoires : l\'agenda ne se mettra pas à jour tout seul si elles changent. Créer le fichier quand même ?')) exporterAgenda();
       }
-      else if (c.id === 'sauvegarder') sauvegarder();
+      else if (c.id === 'sauvegarder') { sauvegarder(); if (vueCourante() === 'horsligne') verifierHL(); }
       else if (c.id === 'taux-maj') majTaux(true);
       else if (c.id === 'depenses-copier') copier(texteDepenses(), 'Dépenses copiées');
       else if (c.id === 'journal-copier') copier(texteJournal(), 'Journal copié');
@@ -2207,6 +2523,15 @@
         if (t.value && !lienSur(t.value.trim())) toast('Le lien doit commencer par https://');
         rafraichir();
       }
+      else if (t.hasAttribute && t.hasAttribute('data-fixe-date')) {
+        var fx = fixes[t.getAttribute('data-fixe-date')];
+        if (fx && t.value) { fx.date = t.value; ecrire(CLES3.fixes, fixes); rafraichir(); }
+      }
+      else if (t.id === 'budget-cible') {
+        var bc = nombre(t.value);
+        if (bc && bc > 0) ecrire(CLES3.cible, bc); else { try { localStorage.removeItem(CLES3.cible); } catch (err) { /* ignoré */ } }
+        rendreDepenses();
+      }
       else if (t.hasAttribute && t.hasAttribute('data-nom-qui')) { rendreAFaire(); }
       else if (t.hasAttribute && t.hasAttribute('data-urgence')) { rendreUrgence(); }
       else if (t.hasAttribute && t.hasAttribute('data-fait')) {
@@ -2226,6 +2551,10 @@
         autre.value = v == null ? '' : fmtNombre.format(t.id === 'conv-local' ? v / tx : v * tx);
       }
       else if (t.hasAttribute && t.hasAttribute('data-heb') && t.type !== 'radio') majHeb(t.getAttribute('data-heb'), t.getAttribute('data-heb-champ'), t.value.trim());
+      else if (t.hasAttribute && t.hasAttribute('data-fixe-motif')) {
+        var fm = fixes[t.getAttribute('data-fixe-motif')];
+        if (fm) { fm.motif = t.value.trim(); ecrire(CLES3.fixes, fixes); }
+      }
       else if (t.hasAttribute && t.hasAttribute('data-nom-qui')) { qui.noms[+t.getAttribute('data-nom-qui')] = t.value.trim(); ecrire(CLES2.qui, qui); }
       else if (t.hasAttribute && t.hasAttribute('data-urgence')) {
         var ul = urgence.filter(function (u) { return u.id === t.getAttribute('data-urgence'); })[0];
@@ -2312,6 +2641,7 @@
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(function (d) {
         donnees = d;
+        if (navigator.onLine && !modeProches) ecrire(CLES3.verif, Date.now());
         $('#titre-voyage').textContent = d.voyage.titre;
         afficherVue();
       })

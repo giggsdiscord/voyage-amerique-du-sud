@@ -100,6 +100,8 @@ Plus → « Sauvegarder mes données » en fait une copie en fichier, « Restaur
 - `delai` sur une ligne de `aFaire` : nombre de jours avant la date concernée pour l'échéance conseillée (sinon délai par défaut selon la catégorie, `DELAIS` dans `js/app.js`).
 - `paysReel` sur chaque étape (`argentine`, `chili`, `bolivie`, `perou`) : relie l'étape à sa fiche de `fichesPays`.
 - `activites` sur une proposition : identifiants des activités cochées ou décochées quand on la retient ou non dans l'appli.
+- `fuseau` (nom IANA) sur une fiche de `fichesPays`, ou sur une étape pour une exception régionale : sert à l'heure locale de la page de suivi.
+- Lien de suivi pour les proches : `?suivi=…` contient les réglages du calculateur du moment (durées, activités, marges) ; la page s'ouvre en lecture seule et n'enregistre rien.
 - `bagages` dans `voyage.json` : liste de base du sac, par catégorie (`{ "id", "icone", "titre", "items": [{ "id", "nom", "detail" }] }`).
 - Convertisseur : taux du jour pris sur `open.er-api.com` quand il y a du réseau, taux de secours dans `DEVISES` (`js/app.js`).
 

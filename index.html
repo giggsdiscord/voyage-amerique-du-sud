@@ -156,9 +156,21 @@
       <p class="intro">Consultable sans réseau.</p>
       <div id="urgence"></div>
     </section>
+
+    <section class="vue" id="vue-horsligne" aria-labelledby="t-horsligne" hidden>
+      <div class="tete-vue"><a class="retour" href="#plus" aria-label="Retour">‹</a><h2 class="titre-vue" id="t-horsligne">Prêt pour le hors-ligne ?</h2></div>
+      <div id="horsligne"></div>
+    </section>
+
+    <section class="vue" id="vue-proches" aria-labelledby="t-proches" hidden>
+      <h2 class="titre-vue" id="t-proches">Où sont-ils ?</h2>
+      <div id="proches"></div>
+    </section>
   </main>
 
   <nav class="onglets" aria-label="Navigation principale">
+    <a href="#proches" data-vue="proches" class="onglet-proches">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Suivi</a>
     <a href="#accueil" data-vue="accueil">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Accueil</a>
     <a href="#carte" data-vue="carte">
