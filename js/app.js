@@ -760,6 +760,9 @@
     var cal = calendrier();
     dessinerFrontieres();
 
+    // Pastilles d'icônes (bus, avion, voiture…) au milieu des trajets, au-dessus des lignes mais sous les étapes
+    carte.createPane('icones-trajets').style.zIndex = 550;
+
     // Un segment par trajet, dessiné selon le moyen de transport.
     cal.etapes.forEach(function (x, i) {
       if (i === 0) return;
@@ -770,10 +773,16 @@
         color: m.couleur, weight: sur ? 5 : 4, opacity: sur ? 1 : .8, dashArray: m.tirets, interactive: false
       }).addTo(carte);
       // Zone de clic plus large, invisible, pour le doigt.
-      L.polyline([[a.lat, a.lng], [b.lat, b.lng]], { color: '#000', weight: 22, opacity: 0 })
-        .bindPopup('<b>' + icones(t) + ' ' + esc(a.nom) + ' → ' + esc(b.nom) + '</b><br>' + esc(t.resume || 'Trajet à définir') +
-          '<br><span>' + esc(STATUTS_TRAJET[t.statut] || '') + '</span>')
-        .addTo(carte);
+      var popupTrajet = '<b>' + icones(t) + ' ' + esc(a.nom) + ' → ' + esc(b.nom) + '</b><br>' + esc(t.resume || 'Trajet à définir') +
+        '<br><span>' + esc(STATUTS_TRAJET[t.statut] || '') + '</span>';
+      L.polyline([[a.lat, a.lng], [b.lat, b.lng]], { color: '#000', weight: 22, opacity: 0 }).bindPopup(popupTrajet).addTo(carte);
+      // Pastille avec l'icône du moyen de transport, au milieu du trajet
+      if ((t.modes || []).length && (a.lat !== b.lat || a.lng !== b.lng)) {
+        L.marker([(a.lat + b.lat) / 2, (a.lng + b.lng) / 2], {
+          pane: 'icones-trajets', title: nomsModes(t) + ' : ' + a.nom + ' → ' + b.nom,
+          icon: L.divIcon({ className: '', html: '<span class="pastille-trajet" style="border-color:' + m.couleur + '">' + icones(t) + '</span>', iconSize: [0, 0] })
+        }).bindPopup(popupTrajet).addTo(carte);
+      }
     });
 
     coucheActivites = L.layerGroup();
@@ -799,7 +808,10 @@
     coucheActivites.addTo(carte);
 
     // Les noms des points d'intérêt s'affichent dès qu'on zoome un peu.
-    function etiquettes() { carte.getContainer().classList.toggle('sans-etiquettes', carte.getZoom() < 8); }
+    function etiquettes() {
+      carte.getContainer().classList.toggle('sans-etiquettes', carte.getZoom() < 8);
+      carte.getContainer().classList.toggle('icones-petites', carte.getZoom() <= 4);
+    }
     carte.on('zoomend', etiquettes);
 
     var legende = L.control({ position: 'bottomleft' });
@@ -886,6 +898,10 @@
         var seg = arc(vol.points[i], vol.points[i + 1]);
         L.polyline(seg, { color: '#2b6cb0', weight: 3, opacity: .9, dashArray: '2 8', lineCap: 'round', interactive: false }).addTo(coucheVols);
         L.polyline(seg, { color: '#000', weight: 22, opacity: 0 }).bindPopup(popup).addTo(coucheVols);
+        // Avion au milieu de chaque arc
+        L.marker(seg[20], { pane: 'icones-trajets', title: vol.titre,
+          icon: L.divIcon({ className: '', html: '<span class="pastille-trajet" style="border-color:#2b6cb0">✈️</span>', iconSize: [0, 0] })
+        }).bindPopup(popup).addTo(coucheVols);
       }
       vol.points.forEach(function (p) {
         // Escale (Buenos Aires) : petit avion pour montrer d'où part le vol intérieur

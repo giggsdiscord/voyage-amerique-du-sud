@@ -1,6 +1,6 @@
 /* Service worker : rend l'appli et ses données consultables en mode avion.
    Changer VERSION à chaque modification du code pour forcer la mise à jour. */
-var VERSION = 'v17';
+var VERSION = 'v18';
 var COQUILLE = 'coquille-' + VERSION;
 // v2 : les anciens caches de tuiles pouvaient contenir l'image « Access blocked » d'OpenStreetMap.
 var TUILES = 'tuiles-v2';

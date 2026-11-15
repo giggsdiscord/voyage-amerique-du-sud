@@ -318,6 +318,14 @@ body.sur-carte { overflow: hidden; }
 .carte-etat { position: absolute; bottom: 10px; left: 10px; right: 10px; z-index: 500; margin: 0; }
 .carte-etat:not(:empty) { background: var(--surface); padding: 8px 12px; border-radius: 10px; box-shadow: var(--ombre); font-size: .875rem; }
 .marqueur { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 800 13px/1 system-ui, sans-serif; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+.pastille-trajet {
+  position: absolute; transform: translate(-50%, -50%);
+  display: inline-flex; align-items: center; gap: 1px; padding: 2px 5px; white-space: nowrap;
+  border-radius: 99px; border: 2px solid #b9532f; background: #fff;
+  font: 13px/1.2 system-ui, sans-serif; box-shadow: 0 1px 4px rgba(0,0,0,.35); cursor: pointer;
+}
+/* Vue d'ensemble : pastilles plus petites pour ne pas surcharger */
+.icones-petites .pastille-trajet { padding: 0 3px; font-size: 9px; border-width: 1.5px; }
 .marqueur-vol { background: #2b6cb0; font-size: 15px; }
 .marqueur-vol.petit-vol { width: 24px; height: 24px; font-size: 12px; }
 .vol-carte {
