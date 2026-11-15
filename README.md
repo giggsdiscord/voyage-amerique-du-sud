@@ -53,6 +53,11 @@ Chaque étape peut avoir un champ `trajet` (comment on y arrive depuis l'étape 
 - `modes` : `vol`, `bus`, `train`, `voiture`, `colectivo`, `tour`, `taxi`, `bateau`, `marche`, `velo` (plusieurs possibles).
 - `statut` : `propose`, `choisi` ou `reserve`. Sur la carte, un trajet choisi ou réservé est tracé plus épais.
 
+## Sections du voyage et conseils
+
+- `pays` sert aussi de section : « Patagonie » regroupe les étapes chiliennes et argentines du sud (le vrai pays est indiqué par 🇨🇱 / 🇦🇷 dans les notes). `fenetre` = période prévue, comparée au calculateur.
+- `conseils` : liste de fiches `{ "id", "icone", "titre", "resume", "points": [...] }` affichées dans l'onglet Conseils.
+
 ## Ajouter une réservation
 
 Dans `reservations` :

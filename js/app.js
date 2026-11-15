@@ -402,6 +402,16 @@
     $('#reservations').innerHTML = html;
   }
 
+  /* ---------- Conseils ---------- */
+  function rendreConseils() {
+    var liste = donnees.conseils || [];
+    $('#conseils').innerHTML = liste.length ? liste.map(function (c) {
+      return '<div class="bloc conseil"><h3><span aria-hidden="true">' + esc(c.icone || '💡') + '</span> ' + esc(c.titre) + '</h3>' +
+        (c.resume ? '<p class="resume">' + esc(c.resume) + '</p>' : '') +
+        ((c.points || []).length ? '<ul>' + c.points.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' : '') + '</div>';
+    }).join('') : '<div class="bloc vide"><p class="doux">Aucun conseil pour l\'instant.</p></div>';
+  }
+
   /* ---------- Carte ---------- */
   function initCarte() {
     if (carte || typeof L === 'undefined') {
@@ -499,7 +509,7 @@
         if (pos) {
           L.marker(pos, {
             pane: 'nomsPays', interactive: false, keyboard: false,
-            icon: L.divIcon({ className: '', html: '<span class="nom-pays" style="color:' + esc(couleur) + '">' + esc(p.nom || d.nom || f.properties.nom) + '</span>', iconSize: [0, 0] })
+            icon: L.divIcon({ className: '', html: '<span class="nom-pays" style="color:' + esc(couleur) + '">' + esc(d.nom || p.nom || f.properties.nom) + '</span>', iconSize: [0, 0] })
           }).addTo(carte);
         }
       });
@@ -599,7 +609,7 @@
   });
 
   /* ---------- Navigation ---------- */
-  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'resas'];
+  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'resas', 'conseils'];
   function afficherVue() {
     var v = location.hash.replace('#', '') || 'accueil';
     if (VUES.indexOf(v) < 0) v = 'accueil';
@@ -612,6 +622,7 @@
     if (v === 'etapes') rendreEtapes();
     if (v === 'planifier') rendrePlanificateur();
     if (v === 'resas') rendreReservations();
+    if (v === 'conseils') rendreConseils();
     document.body.classList.toggle('sur-carte', v === 'carte');
     if (v === 'carte') { ajusterCarte(); initCarte(); if (carte) setTimeout(function () { carte.invalidateSize(); }, 50); }
     if (v !== 'carte') window.scrollTo(0, 0);
