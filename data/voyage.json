@@ -489,15 +489,31 @@
       "notes": "🇦🇷 Terre de Feu, la ville la plus au sud du monde. Faite au début de la Patagonie : pas besoin des couleurs d'automne ici.",
       "activites": [
         {"id":"beagle","nom":"Canal Beagle en bateau","jours":0,"statut":"prevu","lat":-54.87,"lng":-68.15,"description":"Phare des Éclaireurs, îles aux otaries et cormorans."},
+        {"id":"isla-martillo","nom":"Île Martillo (manchots)","jours":1,"statut":"prevu","lat":-54.908,"lng":-67.383,"description":"Colonie de manchots de Magellan et papous sur le canal Beagle, près de l'estancia Harberton. Une seule agence est autorisée à débarquer et marcher parmi les manchots : places très limitées, réserver tôt. Saison d'octobre à mars environ."},
         {"id":"pn-terre-de-feu","nom":"Parc national Terre de Feu","jours":1,"statut":"prevu","lat":-54.84,"lng":-68.55,"description":"Sentier côtier, Bahía Lapataia : fin de la route 3."},
         {"id":"laguna-esmeralda","nom":"Laguna Esmeralda","jours":1,"statut":"suggestion","lat":-54.67,"lng":-68.15,"description":"Randonnée en tourbière jusqu'à une lagune émeraude sous un glacier."},
         {"id":"glaciar-martial","nom":"Glacier Martial","jours":0,"statut":"suggestion","lat":-54.78,"lng":-68.4,"description":"Montée à pied au-dessus de la ville, vue sur le canal Beagle."}
       ]
     },
     {
+      "id": "punta-arenas",
+      "pays": "patagonie",
+      "trajet": {"modes":["bus","bateau"],"resume":"Bus Ushuaïa → Punta Arenas (environ 12 h, avec le bac du détroit de Magellan)","details":"Passage au Chili.","statut":"propose"},
+      "nom": "Punta Arenas",
+      "lat": -53.1638,
+      "lng": -70.9171,
+      "altitude": 30,
+      "jours": 1,
+      "hebergement": null,
+      "notes": "🇨🇱 Au bord du détroit de Magellan.",
+      "activites": [
+        {"id":"isla-magdalena","nom":"Île Magdalena (manchots de Magellan)","jours":1,"statut":"prevu","lat":-52.92,"lng":-70.578,"description":"Bateau depuis Punta Arenas vers une colonie de dizaines de milliers de manchots de Magellan (saison d'octobre à mars). Sorties annulées si le détroit est trop agité : garder une marge."}
+      ]
+    },
+    {
       "id": "torres-del-paine",
       "pays": "patagonie",
-      "trajet": {"modes":["bus","bateau"],"resume":"Bus Ushuaïa → Punta Arenas (environ 12 h, bac du détroit de Magellan), puis Punta Arenas → Puerto Natales (3 h)","details":"Passage au Chili. Souvent en deux jours avec une nuit à Punta Arenas.","statut":"propose"},
+      "trajet": {"modes":["bus"],"resume":"Bus Punta Arenas → Puerto Natales (environ 3 h)","details":"","statut":"propose"},
       "nom": "Puerto Natales et Torres del Paine",
       "lat": -50.9423,
       "lng": -73.4068,
@@ -548,54 +564,86 @@
     }
   ],
 
+  "propositions": [
+    {"id":"repartir-patagonie","titre":"Répartir les jours libres en Patagonie","statut":"a-decider","impact":"Environ +30 jours répartis","resume":"Pour arriver à El Chaltén fin mars, au début des couleurs d'automne.","details":["Aujourd'hui, El Chaltén tombe vers la mi-février : trop tôt pour les couleurs.","Treks en option : Cerro Castillo complet (+3 j), Refugio Frey (+1 j), Laguna Torre (+1 j), glacier Exploradores (+1 j), Laguna Esmeralda (+1 j).","Séjours plus longs : Bariloche (+3 j), Carretera Austral (+5 à 7 j, plus de temps entre les villages), El Chaltén (+3 j pour la météo).","Le reste en jours de marge, utiles en Patagonie où le vent bloque parfois bateaux et sentiers."]},
+    {"id":"prolonger-avril","titre":"Prolonger jusqu'à mi-avril","statut":"a-decider","impact":"Environ +15 jours","resume":"Le pic des couleurs d'automne en Patagonie est généralement à la mi-avril.","details":["Couleurs à leur maximum à El Chaltén et Torres del Paine, moins de monde, prix plus bas.","En contrepartie : journées plus courtes, plus froides, et quelques refuges ou excursions qui ferment à partir de fin avril.","Dépend de la souplesse de votre billet retour."]},
+    {"id":"colca-puno-cusco","titre":"Pérou : Colca → Puno → Cusco","statut":"a-decider","impact":"Même durée","resume":"Ordre plus fluide : pas de liaison directe pratique entre Colca et Cusco.","details":["Bus touristique direct Chivay → Puno, puis la « Ruta del Sol » Puno → Cusco avec des visites en route.","Depuis Cusco, passage en Bolivie en bus par Copacabana, ou vol vers La Paz.","Inconvénient : on ne finit plus le Pérou au bord du lac Titicaca, juste à côté de la frontière."]},
+    {"id":"sucre-potosi","titre":"Bolivie : Sucre et Potosí","statut":"a-decider","impact":"+4 à 5 jours","resume":"Deux villes coloniales sur la route La Paz → Uyuni.","details":["Sucre : la ville blanche, très agréable, marché, empreintes de dinosaures.","Potosí (4 070 m) : ville minière historique, visite des mines possible.","Remplace le bus de nuit La Paz → Uyuni par La Paz → Sucre → Potosí → Uyuni."]},
+    {"id":"isla-del-sol","titre":"Copacabana et Isla del Sol","statut":"a-decider","impact":"+1 à 2 jours","resume":"Sur la route Puno → La Paz, côté bolivien du Titicaca.","details":["Île sacrée inca, randonnée nord-sud, une nuit sur l'île conseillée.","Déjà dans le calculateur comme suggestion à La Paz."]},
+    {"id":"chiloe","titre":"Île de Chiloé","statut":"a-decider","impact":"+2 jours","resume":"Depuis Puerto Varas : églises en bois UNESCO, maisons sur pilotis, manchots de Puñihuil.","details":["Déjà dans le calculateur comme option à Puerto Varas."]},
+    {"id":"grands-treks","titre":"Grands treks : Ausangate et Cerro Castillo","statut":"a-decider","impact":"+5 j et +3 j","resume":"Pour les amoureux de montagne : deux des plus beaux treks de plusieurs jours.","details":["Ausangate : 5 à 6 jours en camping avec agence depuis Cusco, cols à plus de 5 000 m. Début de la saison des pluies en novembre.","Cerro Castillo : 4 jours en camping sur la Carretera Austral, en janvier : bonne saison."]},
+    {"id":"nord-decembre","titre":"Nord de l'Argentine en décembre","statut":"acceptee","impact":"","resume":"Atacama → Salta et Jujuy par le col de Jama → Iguazú, avant le Chili du centre.","details":[]},
+    {"id":"ushuaia-debut","titre":"Ushuaïa au début de la Patagonie, El Chaltén en dernier","statut":"acceptee","impact":"","resume":"Pas besoin des couleurs à Ushuaïa ; on finit en montagne et on repart d'El Calafate.","details":[]},
+    {"id":"sac-a-dos","titre":"Sac à dos et bus, locations courtes","statut":"acceptee","impact":"","resume":"Voiture seulement sur la Carretera Austral et autour de Salta (voir Conseils).","details":[]},
+    {"id":"marges","titre":"Jours de marge dans chaque section","statut":"acceptee","impact":"","resume":"Pour la météo, le repos et les imprévus.","details":[]},
+    {"id":"ba-mendoza","titre":"Buenos Aires et Mendoza","statut":"refusee","impact":"","resume":"Pas retenus : priorité à la montagne.","details":[]}
+  ],
+
   "conseils": [
-    {
-      "id": "van-ou-sac",
-      "icone": "🎒",
-      "titre": "Van ou sac à dos ?",
-      "resume": "Sac à dos et bus comme base, avec des locations courtes là où elles changent tout.",
-      "points": [
-        "Bus de nuit en couchette (« bus cama ») et vols intérieurs pour les longues distances : confortables, fiables, et font gagner des jours.",
-        "Entre El Chaltén, El Calafate, Puerto Natales et Ushuaïa, les bus marchent très bien. À Torres del Paine et au Fitz Roy on marche de toute façon : un véhicule resterait au parking.",
-        "Carretera Austral : louer une voiture ou un van à Coyhaique pour la partie sud (Cerro Castillo, cavernes de marbre, Tortel). Les bus y sont rares et les plus beaux arrêts sont entre deux villages.",
-        "Salta et Jujuy : louer une voiture 4 à 5 jours pour la boucle Humahuaca, Purmamarca, Cafayate."
-      ]
-    },
-    {
-      "id": "pieges-van",
-      "icone": "🚐",
-      "titre": "Les pièges d'un van sur tout le voyage",
-      "resume": "Cher, et compliqué entre le Chili et l'Argentine.",
-      "points": [
-        "La location est chère en haute saison en Patagonie, et rendre le véhicule ailleurs qu'au départ coûte très cher.",
-        "Passer la frontière Chili ↔ Argentine demande une autorisation payante de l'agence, à demander à la réservation. L'itinéraire la traverse au moins 4 fois.",
-        "Routes en gravier (« ripio ») : vérifier ce que couvre l'assurance (pare-brise, pneus, bas de caisse).",
-        "Acheter un van au Chili pour plusieurs mois est possible pour un étranger, mais demande des démarches et une revente risquée juste avant le retour.",
-        "Tarifs à comparer au moment de réserver : je n'ai pas de prix à jour."
-      ]
-    },
-    {
-      "id": "reserver-tot",
-      "icone": "📅",
-      "titre": "À réserver longtemps à l'avance",
-      "resume": "Les places partent vite en haute saison.",
-      "points": [
-        "Machu Picchu : billets d'entrée et train, nombre de places limité par jour.",
-        "Torres del Paine : refuges et campings du trek du W, plusieurs mois avant (janvier et février = haute saison).",
-        "Bac Puerto Ibáñez → Chile Chico sur le lac General Carrera en été."
-      ]
-    },
-    {
-      "id": "altitude",
-      "icone": "⛰️",
-      "titre": "Altitude",
-      "resume": "Monter progressivement : Pérou et Bolivie dépassent souvent 3 500 m.",
-      "points": [
-        "Prévoir 1 à 2 jours calmes en arrivant à Huaraz, Cusco et La Paz.",
-        "Boire beaucoup, éviter l'alcool les premiers jours, maté de coca sur place.",
-        "Maux de tête forts, essoufflement au repos ou confusion : redescendre et consulter."
-      ]
-    }
+    {"categorie":"Avant le départ","id":"documents","icone":"🛂","titre":"Papiers","resume":"Passeport valable au moins 6 mois après le retour.","points":["Vérifier la date d'expiration du passeport bien avant de réserver les vols.","Garder des copies numériques des papiers dans un espace sécurisé (jamais dans cette appli, qui est publique).","Permis de conduire international : souvent demandé pour louer une voiture au Chili et en Argentine."]},
+    {"categorie":"Avant le départ","id":"assurance","icone":"🛟","titre":"Assurance voyage","resume":"Indispensable pour 5 mois, avec rapatriement.","points":["Vérifier qu'elle couvre toute la durée et tous les pays.","Vérifier les activités : trek en haute altitude, marche sur glacier, rafting, VTT.","Les assurances de carte bancaire sont souvent limitées à 90 jours : insuffisant ici."]},
+    {"categorie":"Avant le départ","id":"sante-avant","icone":"💉","titre":"Vaccins et santé","resume":"Rendez-vous dans un centre de vaccinations internationales 2 à 3 mois avant.","points":["Le médecin adaptera les vaccins à l'itinéraire (zones d'altitude, Iguazú, durée du séjour).","Faire un contrôle dentaire avant de partir.","Demander conseil sur le mal des montagnes et une éventuelle ordonnance."]},
+    {"categorie":"Avant le départ","id":"argent","icone":"💳","titre":"Argent et cartes","resume":"Deux cartes de réseaux différents, sans frais à l'étranger.","points":["Garder les deux cartes dans des sacs différents.","Quelques dollars américains en billets neufs pour les urgences et les frontières.","Bolivie : prévoir du liquide, la carte passe peu en dehors des villes.","Chili : la carte passe presque partout.","Argentine : le taux de change et les moyens de paiement changent souvent ; se renseigner juste avant d'y entrer."]},
+    {"categorie":"Avant le départ","id":"telephone","icone":"📱","titre":"Téléphone et cartes hors ligne","resume":"eSIM régionale ou carte SIM locale dans chaque pays.","points":["Installer cette appli sur l'écran d'accueil et télécharger la « Carte hors ligne » en wifi.","Télécharger aussi les cartes d'une appli de navigation hors ligne et le pack espagnol d'un traducteur.","Pas de réseau sur une bonne partie de la Carretera Austral, du Sud Lípez et des treks."]},
+    {"categorie":"Transports","id":"van-ou-sac","icone":"🎒","titre":"Van ou sac à dos ?","resume":"Sac à dos et bus comme base, avec des locations courtes là où elles changent tout.","points":["Bus de nuit en couchette (« bus cama ») et vols intérieurs pour les longues distances : confortables, fiables, et font gagner des jours.","Entre El Chaltén, El Calafate, Puerto Natales et Ushuaïa, les bus marchent très bien. À Torres del Paine et au Fitz Roy on marche de toute façon : un véhicule resterait au parking.","Carretera Austral : louer une voiture ou un van à Coyhaique pour la partie sud (Cerro Castillo, cavernes de marbre, Tortel). Les bus y sont rares et les plus beaux arrêts sont entre deux villages.","Salta et Jujuy : louer une voiture 4 à 5 jours pour la boucle Humahuaca, Purmamarca, Cafayate."]},
+    {"categorie":"Transports","id":"pieges-van","icone":"🚐","titre":"Les pièges d'un van sur tout le voyage","resume":"Cher, et compliqué entre le Chili et l'Argentine.","points":["La location est chère en haute saison en Patagonie, et rendre le véhicule ailleurs qu'au départ coûte très cher.","Passer la frontière Chili ↔ Argentine demande une autorisation payante de l'agence, à demander à la réservation. L'itinéraire la traverse au moins 4 fois.","Routes en gravier (« ripio ») : vérifier ce que couvre l'assurance (pare-brise, pneus, bas de caisse).","Acheter un van au Chili pour plusieurs mois est possible pour un étranger, mais demande des démarches et une revente risquée juste avant le retour.","Tarifs à comparer au moment de réserver : je n'ai pas de prix à jour."]},
+    {"categorie":"Transports","id":"bus-nuit","icone":"🚌","titre":"Bus de nuit","resume":"Confortables et pratiques, avec quelques précautions.","points":["Choisir les compagnies réputées, même un peu plus chères.","Sièges « cama » (presque couchés) ou « semi-cama ».","Grand sac en soute avec ticket ; papiers, argent et appareils toujours sur soi.","Prévoir une couche chaude : la climatisation est souvent forte."]},
+    {"categorie":"Transports","id":"frontieres","icone":"🛃","titre":"Passages de frontière","resume":"Le Chili contrôle strictement la nourriture.","points":["Au Chili : pas de fruits, légumes, viande, fromage ni graines ; déclarer tout aliment en cas de doute.","Pas de feuilles de coca en dehors du Pérou et de la Bolivie.","Garder un stylo pour les formulaires, et le ticket d'entrée remis au Chili."]},
+    {"categorie":"Réservations","id":"reserver-tot","icone":"📅","titre":"À réserver longtemps à l'avance","resume":"Les places partent vite en haute saison.","points":["Machu Picchu : billets d'entrée et train, nombre de places limité par jour.","Torres del Paine : refuges et campings du trek du W, plusieurs mois avant (janvier et février = haute saison).","Bac Puerto Ibáñez → Chile Chico sur le lac General Carrera en été.","Île Martillo (Ushuaïa) : une seule agence autorisée à débarquer, très peu de places.","Janvier et février sont les vacances d'été au Chili et en Argentine : réserver les hébergements de Patagonie et les bus longue distance à l'avance."]},
+    {"categorie":"Santé","id":"altitude","icone":"⛰️","titre":"Altitude","resume":"Monter progressivement : Pérou et Bolivie dépassent souvent 3 500 m.","points":["Prévoir 1 à 2 jours calmes en arrivant à Huaraz, Cusco et La Paz.","Boire beaucoup, éviter l'alcool les premiers jours, maté de coca sur place.","Maux de tête forts, essoufflement au repos ou confusion : redescendre et consulter."]},
+    {"categorie":"Santé","id":"prises-de-sang","icone":"🧪","titre":"Prises de sang pendant le voyage","resume":"Deux bilans, à Santiago (fin décembre) et à Punta Arenas (début février).","points":["Espacement régulier : environ 2 mois après le départ, puis environ 6 semaines plus tard, puis le retour fin mars (environ 8 semaines).","Santiago et Punta Arenas ont de bonnes cliniques privées et des laboratoires fiables, résultats souvent en 24 à 48 h, parfois en ligne.","Au Chili, les laboratoires demandent souvent une ordonnance (« orden médica ») : partir avec celle du médecin, idéalement traduite en espagnol, ou consulter sur place.","Faire les analyses dans le même type de laboratoire les deux fois, et comparer avec les mêmes unités que vos résultats habituels.","Envoyer les résultats à votre médecin, et emporter le traitement habituel pour 5 mois plus une marge."]},
+    {"categorie":"Santé","id":"eau","icone":"💧","titre":"Eau et alimentation","resume":"Ne pas boire l'eau du robinet au Pérou et en Bolivie.","points":["Une gourde filtrante évite d'acheter des bouteilles en plastique.","Attention aux crudités et aux glaçons les premières semaines.","Eau du robinet en général buvable au Chili et en Argentine dans les villes."]},
+    {"categorie":"Santé","id":"soleil","icone":"🕶️","titre":"Soleil et UV","resume":"Rayonnement très fort en altitude et en Patagonie.","points":["Crème indice 50, chapeau, baume pour les lèvres.","Lunettes de catégorie 4 pour les glaciers et le salar d'Uyuni."]},
+    {"categorie":"Santé","id":"pharmacie","icone":"🩹","titre":"Pharmacie de voyage","resume":"Le minimum à emporter.","points":["Antidiarrhéique, sels de réhydratation, antidouleur, désinfectant.","Pansements pour ampoules, bande élastique.","Traitements personnels en quantité suffisante pour 5 mois, avec l'ordonnance."]},
+    {"categorie":"Équipement","id":"patagonie-meteo","icone":"🌬️","titre":"Météo de Patagonie","resume":"Quatre saisons dans la même journée, et beaucoup de vent.","points":["Système de couches : sous-couche, polaire ou doudoune légère, veste imperméable coupe-vent.","Bonnet et gants même en été.","Rafales parfois violentes : garder de la marge dans le planning pour les bateaux et les sommets."]},
+    {"categorie":"Équipement","id":"froid-altitude","icone":"🥶","titre":"Nuits froides en altitude","resume":"Jusqu'à −10 °C dans le Sud Lípez.","points":["Duvet confort autour de 0 °C ou drap de sac en polaire (on peut en louer à Uyuni).","Bonnet, gants, chaussettes chaudes pour les geysers au lever du soleil."]},
+    {"categorie":"Équipement","id":"sac","icone":"🎒","titre":"Sac et chaussures","resume":"Voyager léger, marcher bien chaussé.","points":["Sac à dos de 40 à 50 L, plus un petit sac de jour.","Chaussures de randonnée déjà rodées avant le départ.","Bâtons de marche, lampe frontale, cadenas, sac étanche."]},
+    {"categorie":"Sécurité","id":"securite","icone":"🔒","titre":"Vigilance en ville","resume":"Surtout à Lima, La Paz, Santiago et Valparaíso.","points":["Sac porté devant dans la foule et les transports.","Ne pas laisser le téléphone sur une table en terrasse.","Taxis par appli ou appelés par l'hébergement, surtout la nuit."]},
+    {"categorie":"Budget","id":"budget","icone":"💶","titre":"Budget estimé (à affiner)","resume":"Environ 13 000 à 20 000 € par personne pour 5 mois, vols compris.","points":["Estimation à ma connaissance, sans prix à jour : à vérifier au moment de réserver. Les prix en Argentine varient beaucoup.","Vie sur place par jour et par personne (hébergement en chambre double partagée, repas simples, transports locaux) : Pérou et Bolivie 30 à 45 €, Chili 55 à 75 €, nord de l'Argentine 50 à 70 €, Patagonie 60 à 90 €.","Soit environ 8 000 à 12 000 € par personne pour les 5 mois, la Patagonie pesant le plus.","Grosses dépenses : Machu Picchu 150 à 250 €, circuit 4x4 d'Uyuni 150 à 250 €, Torres del Paine (entrée et refuges ou campings) 400 à 900 €, glaciers d'El Calafate 200 à 300 €, île Martillo 150 à 250 €, île Magdalena 80 à 120 €, autres excursions 300 à 500 €.","Locations de voiture (part par personne, à deux) : Carretera Austral 500 à 750 € avec l'essence, Salta 150 à 200 €.","Vols intérieurs et bus longue distance : 1 100 à 1 800 €.","Vols internationaux aller-retour : 900 à 1 500 €. Assurance 5 mois : 300 à 700 €. Équipement et vaccins : 200 à 500 €."]}
+  ],
+
+  "aFaire": [
+    {"id":"passeport","categorie":"avant","titre":"Vérifier le passeport","detail":"Valable au moins 6 mois après le retour.","tot":true},
+    {"id":"assurance","categorie":"avant","titre":"Souscrire l'assurance voyage","detail":"Couvrant 5 mois, altitude, glacier, rafting.","tot":true},
+    {"id":"vaccins","categorie":"avant","titre":"Rendez-vous vaccinations internationales","detail":"2 à 3 mois avant le départ.","tot":true},
+    {"id":"permis","categorie":"avant","titre":"Permis de conduire international","detail":"Pour les locations au Chili et en Argentine."},
+    {"id":"cartes","categorie":"avant","titre":"Cartes bancaires sans frais","detail":"Deux cartes de réseaux différents."},
+    {"id":"esim","categorie":"avant","titre":"eSIM ou cartes SIM","detail":"Forfait données pour l'Amérique du Sud."},
+    {"id":"carte-hors-ligne","categorie":"avant","titre":"Télécharger la carte hors ligne","detail":"Bouton « Carte hors ligne » de cette appli, en wifi."},
+    {"id":"vol-aller","categorie":"vol","titre":"Vol aller → Lima","detail":"International.","etape":"lima","tot":true},
+    {"id":"vol-retour","categorie":"vol","titre":"Vol retour El Calafate → Buenos Aires → France","detail":"International, open-jaw avec l'aller.","etape":"el-chalten","fin":true,"tot":true},
+    {"id":"vol-calama-santiago","categorie":"vol","titre":"Vol Calama → Santiago","detail":"","etape":"santiago"},
+    {"id":"vol-salta-iguazu","categorie":"vol","titre":"Vol Salta → Iguazú","detail":"Direct certains jours seulement.","etape":"iguazu"},
+    {"id":"vol-iguazu-santiago","categorie":"vol","titre":"Vol Iguazú → Santiago","detail":"Avec escale.","etape":"santiago"},
+    {"id":"vol-calafate-ushuaia","categorie":"vol","titre":"Vol El Calafate → Ushuaïa","detail":"","etape":"ushuaia"},
+    {"id":"bus-lima-huaraz","categorie":"bus","titre":"Bus Lima → Huaraz","detail":"Cruz del Sur, Movil Tours ou Oltursa.","etape":"huaraz"},
+    {"id":"bus-nazca-arequipa","categorie":"bus","titre":"Bus de nuit Nazca → Arequipa","detail":"","etape":"arequipa"},
+    {"id":"bus-cusco-puno","categorie":"bus","titre":"Bus Cusco → Puno","detail":"Ou bus touristique « Ruta del Sol ».","etape":"puno"},
+    {"id":"bus-puno-lapaz","categorie":"bus","titre":"Bus Puno → La Paz par Copacabana","detail":"","etape":"la-paz"},
+    {"id":"bus-lapaz-uyuni","categorie":"bus","titre":"Bus de nuit La Paz → Uyuni","detail":"Ou vol.","etape":"uyuni"},
+    {"id":"bus-uyuni-sanpedro","categorie":"bus","titre":"Bus Uyuni → San Pedro de Atacama","detail":"Par Calama, ou transfert 4x4.","etape":"san-pedro"},
+    {"id":"bus-jama","categorie":"bus","titre":"Bus San Pedro → Salta par le col de Jama","detail":"","etape":"salta"},
+    {"id":"bus-pv-bariloche","categorie":"bus","titre":"Bus Puerto Varas → Bariloche","detail":"Ou traversée des lacs (Cruce Andino).","etape":"bariloche"},
+    {"id":"bac-chile-chico","categorie":"bus","titre":"Bac Puerto Ibáñez → Chile Chico","detail":"À réserver en été.","etape":"calafate-passage","tot":true},
+    {"id":"bus-ushuaia-punta","categorie":"bus","titre":"Bus Ushuaïa → Punta Arenas","detail":"","etape":"punta-arenas"},
+    {"id":"bus-natales-calafate","categorie":"bus","titre":"Bus Puerto Natales → El Calafate","detail":"","etape":"el-calafate"},
+    {"id":"bus-calafate-chalten","categorie":"bus","titre":"Bus El Calafate → El Chaltén","detail":"","etape":"el-chalten"},
+    {"id":"train-machu-picchu","categorie":"train","titre":"Train Ollantaytambo ↔ Aguas Calientes","detail":"PeruRail ou Inca Rail.","etape":"cusco","tot":true},
+    {"id":"billets-machu-picchu","categorie":"activite","titre":"Billets Machu Picchu","detail":"Nombre de places limité par jour et par circuit.","etape":"cusco","tot":true},
+    {"id":"excursion-amantani","categorie":"activite","titre":"Excursion Uros, Amantaní et Taquile","detail":"2 jours avec nuit chez l'habitant.","etape":"puno"},
+    {"id":"circuit-uyuni","categorie":"activite","titre":"Circuit 4x4 Uyuni et Sud Lípez (3 jours)","detail":"Choisir une agence sérieuse à Uyuni.","etape":"uyuni"},
+    {"id":"villarrica","categorie":"activite","titre":"Ascension du volcan Villarrica","detail":"Agence à Pucón, selon la météo.","etape":"pucon"},
+    {"id":"martillo","categorie":"activite","titre":"Île Martillo (manchots)","detail":"Une seule agence, très peu de places.","etape":"ushuaia","tot":true},
+    {"id":"magdalena","categorie":"activite","titre":"Île Magdalena (manchots)","detail":"Bateau depuis Punta Arenas.","etape":"punta-arenas"},
+    {"id":"torres-refuges","categorie":"activite","titre":"Torres del Paine : refuges ou campings du W","detail":"Plusieurs mois à l'avance.","etape":"torres-del-paine","tot":true},
+    {"id":"torres-entree","categorie":"activite","titre":"Torres del Paine : billet d'entrée du parc","detail":"En ligne.","etape":"torres-del-paine"},
+    {"id":"upsala","categorie":"activite","titre":"Croisière glaciers Upsala et Spegazzini","detail":"","etape":"el-calafate"},
+    {"id":"perito-moreno","categorie":"activite","titre":"Perito Moreno (et mini-trekking en option)","detail":"","etape":"el-calafate"},
+    {"id":"voiture-coyhaique","categorie":"voiture","titre":"Voiture à Coyhaique (Carretera Austral)","detail":"Vérifier l'assurance pour les pistes.","etape":"coyhaique","tot":true},
+    {"id":"voiture-salta","categorie":"voiture","titre":"Voiture à Salta (4 à 5 jours)","detail":"Boucle Humahuaca, Purmamarca, Cafayate.","etape":"salta"},
+    {"id":"ordonnance-analyses","categorie":"avant","titre":"Ordonnance pour les prises de sang","detail":"Demander au médecin une ordonnance pour les 2 bilans, si possible avec une version en espagnol.","tot":true},
+    {"id":"prise-sang-1","categorie":"sante","titre":"Prise de sang n° 1 (bilan prévu) à Santiago","detail":"Laboratoire d'une grande clinique privée. Éviter le 24 et le 25 décembre.","etape":"santiago"},
+    {"id":"prise-sang-2","categorie":"sante","titre":"Prise de sang n° 2 (bilan prévu) à Punta Arenas","detail":"Laboratoire d'une clinique privée ou de l'hôpital régional.","etape":"punta-arenas"}
   ],
 
   "reservations": []

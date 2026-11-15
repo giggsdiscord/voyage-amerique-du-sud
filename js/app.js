@@ -146,6 +146,12 @@
     return '<span aria-hidden="true">' + esc(p.drapeau || '') + '</span>';
   }
 
+  // Texte des notes avec les emojis de drapeaux remplacés par les drapeaux dessinés
+  function notes(s) {
+    return esc(s).replace(/🇨🇱/g, drapeau({ id: 'chili' })).replace(/🇦🇷/g, drapeau({ id: 'argentine' }))
+      .replace(/🇵🇪/g, drapeau({ id: 'perou' })).replace(/🇧🇴/g, drapeau({ id: 'bolivie' }));
+  }
+
   function paysDe(id) {
     for (var i = 0; i < donnees.pays.length; i++) if (donnees.pays[i].id === id) return donnees.pays[i];
     return { id: id, nom: id, drapeau: '', couleur: '#1f5f66' };
@@ -193,11 +199,17 @@
     var prochain = evenements.filter(function (ev) { return ev.quand > auj; })[0];
     var duJour = evenements.filter(function (ev) { return ev.quand === auj; });
 
+    var dureeTotale = Math.round((cal.fin - cal.debut) / JOUR);
     if (auj < cal.debut) {
       var n = Math.round((cal.debut - auj) / JOUR);
-      html += '<div class="bloc"><p class="surtitre">Avant le départ</p>' +
-        '<div class="ligne"><span class="grand-chiffre">' + n + '</span><span>' + (n > 1 ? 'jours avant le départ' : 'jour avant le départ') + '<br><span class="doux petit">' + esc(dLong(cal.debut)) + '</span></span></div></div>';
+      html += '<div class="bloc bloc-heros"><p class="surtitre">Avant le départ</p>' +
+        '<div class="ligne"><span class="grand-chiffre">' + n + '</span><span>' + (n > 1 ? 'jours avant le départ' : 'jour avant le départ') + '<br><span class="doux petit">' + esc(dLong(cal.debut)) + '</span></span></div>' +
+        '<p class="doux petit" style="margin:10px 0 0">' + jours(dureeTotale) + ' de voyage · ' + pluriel(cal.etapes.length, 'étape') + ' · ' + donnees.pays.map(drapeau).join(' ') + '</p></div>';
     } else if (auj < cal.fin) {
+      var jourVoyage = Math.round((auj - cal.debut) / JOUR) + 1;
+      html += '<div class="bloc bloc-heros"><p class="surtitre">En voyage</p><div class="ligne"><span class="grand-chiffre">J' + jourVoyage + '</span>' +
+        '<span>sur ' + jours(dureeTotale) + '<br><span class="doux petit">Retour le ' + esc(dLong(cal.fin)) + '</span></span></div>' +
+        '<div class="progression"><span style="width:' + Math.round(jourVoyage / dureeTotale * 100) + '%"></span></div></div>';
       var enCours = cal.etapes.filter(function (x) { return auj >= x.arrivee && auj < x.depart; })[0];
       if (enCours) {
         var jourN = Math.round((auj - enCours.arrivee) / JOUR) + 1;
@@ -230,7 +242,21 @@
       html += '</div>';
     }
 
-    var total = Math.round((cal.fin - cal.debut) / JOUR);
+    // Raccourcis
+    var aDecider = nbPropositionsADecider();
+    html += '<div class="raccourcis">' +
+      '<a class="raccourci" href="#propositions"><span class="ico" aria-hidden="true">💡</span><b>Propositions</b><span class="doux">' +
+        (aDecider ? pluriel(aDecider, 'idée') + ' à décider' : 'Tout est décidé') + '</span></a>' +
+      '<a class="raccourci" href="#conseils"><span class="ico" aria-hidden="true">🧭</span><b>Conseils</b><span class="doux">' + pluriel((donnees.conseils || []).length, 'fiche') + '</span></a>' +
+      (function () {
+        var l = listeAFaire(), n = l.filter(function (a) { return a.coche; }).length;
+        return '<a class="raccourci" href="#afaire"><span class="ico" aria-hidden="true">✅</span><b>À faire</b><span class="doux">' + n + ' sur ' + l.length + ' faits</span></a>';
+      })() +
+      '<a class="raccourci" href="#resas"><span class="ico" aria-hidden="true">🎫</span><b>Réservations</b><span class="doux">' +
+        ((donnees.reservations || []).length ? pluriel(donnees.reservations.length, 'réservation') : 'Aucune pour l\'instant') + '</span></a>' +
+      '</div>';
+
+    var total = dureeTotale;
     html += '<div class="bloc"><p class="surtitre">Le voyage en bref</p>' +
       '<p>' + esc(dCourt(cal.debut)) + ' → ' + esc(dCourt(cal.fin)) + ' · <b>' + jours(total) + '</b> · ' + pluriel(cal.etapes.length, 'étape') + '</p>' +
       bilanPays(cal).map(lignePays).join('') +
@@ -256,12 +282,16 @@
   /* ---------- Étapes ---------- */
   function rendreEtapes() {
     var cal = calendrier();
-    var html = '';
+    // Puces pour sauter directement à une section
+    var html = '<div class="barre-sections"><div class="defile" role="group" aria-label="Aller à une section">' +
+      donnees.pays.map(function (p) {
+        return '<button type="button" class="puce" data-section="' + esc(p.id) + '">' + drapeau(p) + ' ' + esc(p.nom) + '</button>';
+      }).join('') + '</div></div>';
     donnees.pays.forEach(function (p) {
       var et = cal.etapes.filter(function (x) { return x.etape.pays === p.id; });
       if (!et.length) return;
       var b = bilanPays(cal).filter(function (y) { return y.pays.id === p.id; })[0];
-      html += '<div class="pays-titre"><h3>' + drapeau(p) + ' ' + esc(p.nom) + '</h3><span class="doux petit">' +
+      html += '<div class="pays-titre" id="section-' + esc(p.id) + '"><h3>' + drapeau(p) + ' ' + esc(p.nom) + '</h3><span class="doux petit">' +
         esc(dCourt(b.debut)) + ' → ' + esc(dCourt(b.fin)) + ' · ' + jours(b.total) + '</span></div>';
       et.forEach(function (x) {
         var h = x.etape.hebergement, t = x.etape.trajet;
@@ -276,7 +306,7 @@
           '<p class="petit">' + esc(dJour(x.arrivee)) + ' → ' + esc(dJour(x.depart)) + ' · <b>' + jours(x.total) + '</b></p>' +
           '<p class="petit doux">🛏️ ' + (h && h.nom ? esc(h.nom) : 'Hébergement à trouver') + '</p>' +
           (x.activites.length ? '<p class="petit doux">' + esc(x.activites.map(function (a) { return a.nom; }).join(' · ')) + '</p>' : '') +
-          (x.etape.notes ? '<p class="petit doux">📝 ' + esc(x.etape.notes) + '</p>' : '') +
+          (x.etape.notes ? '<p class="petit doux">📝 ' + notes(x.etape.notes) + '</p>' : '') +
           '</span><span class="chevron" aria-hidden="true">›</span></button>';
         if (x.marge) {
           html += '<div class="marge-ligne">⏳ <b>' + jours(x.marge) + ' de marge</b> · ' + esc(dJour(x.depart)) + ' → ' + esc(dJour(x.finMarge)) +
@@ -307,7 +337,7 @@
       '<div class="info"><b>Hébergement</b>' + (h && h.nom ? esc(h.nom) : 'À trouver') + '</div>' +
       '</div>';
     if (h && (h.adresse || h.notes)) html += '<p class="petit">' + esc(h.adresse || '') + (h.notes ? '<br><span class="doux">' + esc(h.notes) + '</span>' : '') + '</p>';
-    if (e.notes) html += '<p>📝 ' + esc(e.notes) + '</p>';
+    if (e.notes) html += '<p>📝 ' + notes(e.notes) + '</p>';
 
     if (e.trajet) {
       var t = e.trajet, prec = x.num > 1 ? cal.etapes[x.num - 2].etape.nom : null;
@@ -341,6 +371,7 @@
   }
 
   /* ---------- Calculateur de dates ---------- */
+  var sectionsOuvertes = {};
   function rendrePlanificateur() {
     var cal = calendrier();
     var total = Math.round((cal.fin - cal.debut) / JOUR);
@@ -349,11 +380,23 @@
       '<p style="margin:10px 0 0">Fin : <b>' + esc(dLong(cal.fin)) + '</b> · ' + jours(total) + '</p>' +
       bilanPays(cal).map(lignePays).join('') + '</div>';
 
-    html += '<p class="doux petit">Les « jours de base » couvrent l\'arrivée, la visite de la ville et le repos. Chaque activité cochée ajoute sa durée. Vos réglages restent sur ce téléphone.</p>';
+    html += '<p class="doux petit">Touchez une section pour la déplier. Les « jours de base » couvrent l\'arrivée, la visite et le repos ; chaque activité cochée ajoute sa durée. Vos réglages restent sur ce téléphone.</p>';
 
-    cal.etapes.forEach(function (x) {
+    var bilans = bilanPays(cal);
+    cal.etapes.forEach(function (x, i) {
       var e = x.etape, p = paysDe(e.pays);
-      html += '<div class="bloc"><div class="plan-etape-tete"><span class="num" style="background:' + esc(p.couleur) + '">' + x.num + '</span>' +
+      // Ouverture d'une section repliable au début de chaque pays
+      if (i === 0 || cal.etapes[i - 1].etape.pays !== e.pays) {
+        var b = bilans.filter(function (y) { return y.pays.id === p.id; })[0];
+        var depasse = b.prevus != null && b.total > b.prevus;
+        html += '<details class="deroulant" data-plan-section="' + esc(p.id) + '"' + (sectionsOuvertes[p.id] ? ' open' : '') + '>' +
+          '<summary><span class="ico-rond" aria-hidden="true">' + drapeau(p) + '</span><span><span class="titre-d">' + esc(p.nom) + '</span>' +
+          '<span class="sous-d">' + esc(dCourt(b.debut)) + ' → ' + esc(dCourt(b.fin)) + ' · ' + jours(b.total) +
+          (b.prevus != null ? ' / ' + b.prevus + ' prévus' : '') + '</span></span>' +
+          (b.prevus != null ? '<span class="badge ' + (depasse ? 'alerte' : 'ok') + '">' + (depasse ? '+' + (b.total - b.prevus) + ' j' : (b.prevus - b.total ? '−' + (b.prevus - b.total) + ' j' : 'pile')) + '</span>' : '') +
+          '</summary><div class="corps">';
+      }
+      html += '<div class="plan-etape"><div class="plan-etape-tete"><span class="num" style="background:' + esc(p.couleur) + '">' + x.num + '</span>' +
         '<div><h4>' + esc(e.nom) + '</h4><p class="petit doux" style="margin:0">' + esc(dJour(x.arrivee)) + ' → ' + esc(dJour(x.depart)) + ' · <b>' + jours(x.total) + '</b></p></div></div>' +
         '<div class="base"><span class="petit">Jours de base</span><span class="compteur">' +
         '<button type="button" data-moins="' + esc(e.id) + '" aria-label="Un jour de moins à ' + esc(e.nom) + '">−</button>' +
@@ -367,11 +410,12 @@
       html += '</div>';
       if (x.marge !== undefined) {
         var pm = paysDe(e.pays);
-        html += '<div class="bloc bloc-marge"><div class="base" style="margin:0"><span><b>⏳ Marge ' + esc(pm.nom) + '</b><br>' +
+        html += '<div class="plan-marge"><div class="base" style="margin:0"><span><b>⏳ Marge ' + esc(pm.nom) + '</b><br>' +
           '<span class="petit doux">' + esc(dJour(x.depart)) + ' → ' + esc(dJour(x.finMarge)) + ' · météo, repos, imprévus</span></span>' +
           '<span class="compteur"><button type="button" data-marge-moins="' + esc(pm.id) + '" aria-label="Un jour de marge en moins (' + esc(pm.nom) + ')">−</button>' +
           '<output aria-live="polite">' + x.marge + '</output>' +
-          '<button type="button" data-marge-plus="' + esc(pm.id) + '" aria-label="Un jour de marge en plus (' + esc(pm.nom) + ')">+</button></span></div></div>';
+          '<button type="button" data-marge-plus="' + esc(pm.id) + '" aria-label="Un jour de marge en plus (' + esc(pm.nom) + ')">+</button></span></div></div>' +
+          '</div></details>';
       }
     });
 
@@ -452,14 +496,123 @@
     $('#reservations').innerHTML = html;
   }
 
-  /* ---------- Conseils ---------- */
+  /* ---------- Déroulants réutilisables ---------- */
+  function deroulant(ico, titre, sous, corps, droite, attrs) {
+    return '<details class="deroulant"' + (attrs || '') + '><summary><span class="ico-rond" aria-hidden="true">' + ico + '</span>' +
+      '<span><span class="titre-d">' + titre + '</span>' + (sous ? '<span class="sous-d">' + sous + '</span>' : '') + '</span>' +
+      (droite || '') + '</summary><div class="corps">' + corps + '</div></details>';
+  }
+  function puces(points) {
+    return (points || []).length ? '<ul>' + points.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' : '';
+  }
+
+  /* ---------- Conseils (groupés par catégorie, déroulants) ---------- */
   function rendreConseils() {
     var liste = donnees.conseils || [];
-    $('#conseils').innerHTML = liste.length ? liste.map(function (c) {
-      return '<div class="bloc conseil"><h3><span aria-hidden="true">' + esc(c.icone || '💡') + '</span> ' + esc(c.titre) + '</h3>' +
-        (c.resume ? '<p class="resume">' + esc(c.resume) + '</p>' : '') +
-        ((c.points || []).length ? '<ul>' + c.points.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' : '') + '</div>';
-    }).join('') : '<div class="bloc vide"><p class="doux">Aucun conseil pour l\'instant.</p></div>';
+    if (!liste.length) { $('#conseils').innerHTML = '<div class="bloc vide"><p class="doux">Aucun conseil pour l\'instant.</p></div>'; return; }
+    var cats = [];
+    liste.forEach(function (c) { var k = c.categorie || 'Divers'; if (cats.indexOf(k) < 0) cats.push(k); });
+    $('#conseils').innerHTML = cats.map(function (k) {
+      return '<h3 class="categorie">' + esc(k) + '</h3>' + liste.filter(function (c) { return (c.categorie || 'Divers') === k; }).map(function (c) {
+        return deroulant(esc(c.icone || '💡'), esc(c.titre), esc(c.resume || ''), puces(c.points));
+      }).join('');
+    }).join('');
+  }
+
+  /* ---------- Propositions ---------- */
+  var STATUTS_PROP = { 'a-decider': 'À décider', acceptee: 'Retenue', refusee: 'Pas retenue' };
+  function nbPropositionsADecider() {
+    return (donnees.propositions || []).filter(function (p) { return p.statut === 'a-decider'; }).length;
+  }
+  function rendrePropositions() {
+    var liste = donnees.propositions || [];
+    var groupes = [['a-decider', 'À décider'], ['acceptee', 'Retenues'], ['refusee', 'Pas retenues']];
+    $('#propositions').innerHTML = groupes.map(function (g) {
+      var l = liste.filter(function (p) { return p.statut === g[0]; });
+      if (!l.length) return '';
+      return '<h3 class="categorie">' + esc(g[1]) + ' (' + l.length + ')</h3>' + l.map(function (p) {
+        var corps = (p.impact ? '<p class="petit"><b>Impact :</b> ' + esc(p.impact) + '</p>' : '') + puces(p.details) +
+          (p.statut === 'a-decider' ? '<p class="petit doux">Dites-moi « on retient » ou « on ne retient pas » et je mets l\'itinéraire à jour.</p>' : '');
+        var ico = p.statut === 'a-decider' ? '💡' : (p.statut === 'acceptee' ? '✅' : '✖️');
+        return deroulant(ico, esc(p.titre), esc(p.resume || ''), corps || '<p class="doux petit">Déjà intégré à l\'itinéraire.</p>',
+          '<span class="badge ' + esc(p.statut) + '">' + esc(STATUTS_PROP[p.statut] || p.statut) + '</span>');
+      }).join('');
+    }).join('');
+  }
+
+  /* ---------- À faire : liste à cocher, cochée sur ce téléphone ---------- */
+  var CLE_FAIT = 'voyage-afaire-v1';
+  var CATS_AFAIRE = [
+    ['avant', '📋', 'Avant le départ'], ['vol', '✈️', 'Vols'], ['bus', '🚌', 'Bus et bateaux'], ['train', '🚆', 'Trains'],
+    ['activite', '🎟️', 'Billets et excursions'], ['voiture', '🚗', 'Locations de voiture'], ['hebergement', '🛏️', 'Hébergements'], ['sante', '🧪', 'Santé']
+  ];
+  var faits = (function () { try { return JSON.parse(localStorage.getItem(CLE_FAIT)) || {}; } catch (e) { return {}; } })();
+  function sauverFaits() { try { localStorage.setItem(CLE_FAIT, JSON.stringify(faits)); } catch (e) { /* ignoré */ } }
+
+  function listeAFaire() {
+    var cal = calendrier();
+    var quand = {};
+    cal.etapes.forEach(function (x) { quand[x.etape.id] = x; });
+    var l = (donnees.aFaire || []).map(function (a) {
+      var x = a.etape && quand[a.etape];
+      return Object.assign({}, a, { date: x ? (a.fin ? (x.finMarge || x.depart) : x.arrivee) : null });
+    });
+    // Un hébergement par étape (sauf les nuits comprises dans le circuit du Sud Lípez)
+    cal.etapes.forEach(function (x) {
+      var e = x.etape;
+      if (e.id === 'sud-lipez') return;
+      var h = e.hebergement;
+      l.push({ id: 'heb-' + e.id, categorie: 'hebergement', titre: e.nom, detail: (h && h.nom) ? h.nom : jours(x.total) + ' sur place',
+        date: x.arrivee, fait: !!(h && h.reserve) });
+    });
+    l.forEach(function (a) { a.coche = Object.prototype.hasOwnProperty.call(faits, a.id) ? !!faits[a.id] : !!a.fait; });
+    return l;
+  }
+  function rendreAFaire() {
+    var l = listeAFaire();
+    var nbFaits = l.filter(function (a) { return a.coche; }).length;
+    var html = '<div class="bloc"><div class="ligne entre"><b>' + nbFaits + ' sur ' + l.length + ' faits</b><span class="doux petit">Cochez au fur et à mesure</span></div>' +
+      '<div class="jauge"><span style="width:' + Math.round(nbFaits / Math.max(1, l.length) * 100) + '%"></span></div>' +
+      '<p class="doux petit" style="margin:8px 0 0">Les cases cochées restent sur ce téléphone. Pour les partager avec l\'autre téléphone, dites-moi ce qui est fait et je le note dans le fichier du voyage.</p></div>';
+    CATS_AFAIRE.forEach(function (c) {
+      var items = l.filter(function (a) { return a.categorie === c[0]; }).sort(function (a, b) { return (a.date || 0) - (b.date || 0); });
+      if (!items.length) return;
+      var n = items.filter(function (a) { return a.coche; }).length;
+      var corps = items.map(function (a) {
+        return '<label class="case"><input type="checkbox" data-fait="' + esc(a.id) + '"' + (a.coche ? ' checked' : '') + '>' +
+          '<span><b' + (a.coche ? ' style="text-decoration:line-through;opacity:.6"' : '') + '>' + esc(a.titre) + '</b>' + (a.tot ? ' <span class="badge alerte">Très tôt</span>' : '') +
+          (a.detail ? '<br><span class="petit doux">' + esc(a.detail) + '</span>' : '') + '</span>' +
+          (a.date ? '<span class="duree">' + esc(dCourt(a.date)) + '</span>' : '') + '</label>';
+      }).join('');
+      html += deroulant(c[1], esc(c[2]), n + ' sur ' + items.length + ' faits', corps,
+        '<span class="badge ' + (n === items.length ? 'ok' : 'a-decider') + '">' + n + '/' + items.length + '</span>',
+        ' data-afaire-cat="' + c[0] + '"' + (afaireOuvertes[c[0]] ? ' open' : ''));
+    });
+    var y = window.scrollY;
+    $('#afaire').innerHTML = html;
+    window.scrollTo(0, y);
+  }
+  var afaireOuvertes = {};
+
+  /* ---------- Menu « Plus » ---------- */
+  function rendrePlus() {
+    var l = listeAFaire();
+    var nbFaits = l.filter(function (a) { return a.coche; }).length;
+    var aD = nbPropositionsADecider();
+    var items = [
+      ['#afaire', '✅', 'À faire', nbFaits + ' sur ' + l.length + ' faits : réservations, billets, locations…'],
+      ['#resas', '🎫', 'Réservations', (donnees.reservations || []).length ? pluriel(donnees.reservations.length, 'réservation') : 'Aucune pour l\'instant'],
+      ['#propositions', '💡', 'Propositions', aD ? pluriel(aD, 'idée') + ' à décider' : 'Tout est décidé'],
+      ['#conseils', '🧭', 'Conseils', pluriel((donnees.conseils || []).length, 'fiche') + ' : santé, argent, équipement…']
+    ];
+    $('#menu-plus').innerHTML = items.map(function (i) {
+      return '<a href="' + i[0] + '"><span class="ico" aria-hidden="true">' + i[1] + '</span><span><b>' + esc(i[2]) + '</b><span class="petit doux">' + esc(i[3]) + '</span></span><span class="chevron" aria-hidden="true">›</span></a>';
+    }).join('');
+  }
+  function majPastille() {
+    var n = nbPropositionsADecider(), p = $('#nb-propositions');
+    p.textContent = n; p.hidden = !n;
+    p.setAttribute('aria-label', pluriel(n, 'proposition') + ' à décider');
   }
 
   /* ---------- Carte ---------- */
@@ -659,20 +812,26 @@
   });
 
   /* ---------- Navigation ---------- */
-  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'resas', 'conseils'];
+  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'plus', 'resas', 'conseils', 'propositions', 'afaire'];
+  var SOUS_PLUS = ['resas', 'conseils', 'propositions', 'afaire'];
   function afficherVue() {
     var v = location.hash.replace('#', '') || 'accueil';
     if (VUES.indexOf(v) < 0) v = 'accueil';
     majSousTitre();
+    majPastille();
     VUES.forEach(function (n) { $('#vue-' + n).hidden = n !== v; });
+    var onglet = SOUS_PLUS.indexOf(v) >= 0 ? 'plus' : v;
     document.querySelectorAll('.onglets a').forEach(function (a) {
-      if (a.getAttribute('data-vue') === v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+      if (a.getAttribute('data-vue') === onglet) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
     if (v === 'accueil') rendreAccueil();
     if (v === 'etapes') rendreEtapes();
     if (v === 'planifier') rendrePlanificateur();
+    if (v === 'plus') rendrePlus();
     if (v === 'resas') rendreReservations();
     if (v === 'conseils') rendreConseils();
+    if (v === 'propositions') rendrePropositions();
+    if (v === 'afaire') rendreAFaire();
     document.body.classList.toggle('sur-carte', v === 'carte');
     if (v === 'carte') { ajusterCarte(); initCarte(); if (carte) setTimeout(function () { carte.invalidateSize(); }, 50); }
     if (v !== 'carte') window.scrollTo(0, 0);
@@ -680,9 +839,13 @@
 
   function evenements() {
     document.addEventListener('click', function (ev) {
-      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne');
+      var c = ev.target.closest('[data-fiche],[data-fermer],[data-carte],[data-moins],[data-plus],[data-marge-moins],[data-marge-plus],[data-copier],[data-filtre],[data-section],#plan-copier,#plan-reset,#bouton-activites,#bouton-ensemble,#bouton-hors-ligne');
       if (!c) return;
-      if (c.hasAttribute('data-fiche')) { carte && carte.closePopup(); ouvrirFiche(c.getAttribute('data-fiche')); }
+      if (c.hasAttribute('data-section')) {
+        var cible = document.getElementById('section-' + c.getAttribute('data-section'));
+        if (cible) cible.scrollIntoView({ block: 'start' });
+      }
+      else if (c.hasAttribute('data-fiche')) { carte && carte.closePopup(); ouvrirFiche(c.getAttribute('data-fiche')); }
       else if (c.hasAttribute('data-fermer')) fermerFiche();
       else if (c.hasAttribute('data-carte')) {
         var id = c.getAttribute('data-carte');
@@ -736,7 +899,24 @@
         var cb = document.querySelector('[data-act="' + t.getAttribute('data-act') + '"]');
         if (cb) cb.focus();
       }
+      else if (t.hasAttribute && t.hasAttribute('data-fait')) {
+        var fid = t.getAttribute('data-fait');
+        faits[fid] = t.checked;
+        sauverFaits(); rendreAFaire();
+        var cf = document.querySelector('[data-fait="' + fid + '"]');
+        if (cf) cf.focus();
+        if (t.checked) toast('C\'est fait ✓');
+      }
     });
+
+    // Mémoriser les sections dépliées pour les garder ouvertes après un recalcul
+    document.addEventListener('toggle', function (ev) {
+      var el = ev.target;
+      if (!el.getAttribute) return;
+      var s = el.getAttribute('data-plan-section'), a = el.getAttribute('data-afaire-cat');
+      if (s) sectionsOuvertes[s] = el.open;
+      if (a) afaireOuvertes[a] = el.open;
+    }, true);
 
     var d = $('#fiche');
     d.addEventListener('click', function (ev) { if (ev.target === d) fermerFiche(); });
