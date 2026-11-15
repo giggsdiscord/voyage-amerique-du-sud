@@ -260,7 +260,8 @@
     html += '<div class="bloc"><p class="surtitre">Le voyage en bref</p>' +
       '<p>' + esc(dCourt(cal.debut)) + ' → ' + esc(dCourt(cal.fin)) + ' · <b>' + jours(total) + '</b> · ' + pluriel(cal.etapes.length, 'étape') + '</p>' +
       bilanPays(cal).map(lignePays).join('') +
-      '<div class="boutons"><a class="bouton plein" href="#planifier">Ajuster les dates</a><a class="bouton" href="#carte">Voir la carte</a></div></div>';
+      (function () { var b = calculBudget(); return '<p style="margin:14px 0 0">💶 Budget estimé : <b>' + euros(b.total[0]) + ' à ' + euros(b.total[1]) + '</b> par personne</p>'; })() +
+      '<div class="boutons"><a class="bouton plein" href="#planifier">Ajuster les dates</a><a class="bouton" href="#budget">Voir le budget</a></div></div>';
 
     if (donnees.voyage.datesProvisoires) {
       html += '<p class="doux petit">Les dates sont provisoires : elles sont calculées à partir de la durée de chaque étape. Réglez-les dans l\'onglet « Dates ».</p>';
@@ -594,6 +595,68 @@
   }
   var afaireOuvertes = {};
 
+  /* ---------- Budget : recalculé à partir de l'itinéraire et des réglages du calculateur ---------- */
+  var fmtEuro = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  function euros(n) { return fmtEuro.format(Math.round(n / 10) * 10); }
+  function fourchette(c) { return c[0] === c[1] ? euros(c[0]) : euros(c[0]) + ' à ' + euros(c[1]); }
+
+  function calculBudget() {
+    var B = donnees.budget || { parJour: {}, fixes: [], personnes: 1 };
+    var cal = calendrier();
+    var postes = [
+      { id: 'vie', ico: '🏠', titre: 'Vie sur place', lignes: [] },
+      { id: 'excursions', ico: '🎟️', titre: 'Excursions et entrées', lignes: [] },
+      { id: 'transports', ico: '🚌', titre: 'Transports entre étapes', lignes: [] },
+      { id: 'fixes', ico: '✈️', titre: 'Vols, assurance, locations', lignes: [] }
+    ];
+    bilanPays(cal).forEach(function (b) {
+      var pj = B.parJour[b.pays.id];
+      if (!pj || !b.total) return;
+      postes[0].lignes.push({ titre: b.pays.nom + ' : ' + jours(b.total) + ' × ' + pj[0] + ' à ' + pj[1] + ' €', cout: [b.total * pj[0], b.total * pj[1]] });
+    });
+    cal.etapes.forEach(function (x) {
+      x.activites.forEach(function (a) { if (a.cout) postes[1].lignes.push({ titre: a.nom + ' (' + x.etape.nom + ')', cout: a.cout }); });
+      var t = x.etape.trajet;
+      if (t && t.cout) postes[2].lignes.push({ titre: 'Vers ' + x.etape.nom + ' : ' + nomsModes(t), cout: t.cout });
+    });
+    (B.fixes || []).forEach(function (fx) { postes[3].lignes.push({ titre: fx.titre, cout: fx.cout }); });
+    var total = [0, 0];
+    postes.forEach(function (p) {
+      p.total = p.lignes.reduce(function (s, l) { return [s[0] + l.cout[0], s[1] + l.cout[1]]; }, [0, 0]);
+      total[0] += p.total[0]; total[1] += p.total[1];
+    });
+    var finVoyage = donnees.voyage.fin ? versDate(donnees.voyage.fin) + JOUR : cal.fin;
+    return { postes: postes, total: total, personnes: B.personnes || 1, note: B.note, detailJour: B.parJourDetail,
+      joursPlanifies: Math.round((cal.fin - cal.debut) / JOUR), joursLibres: Math.max(0, Math.round((finVoyage - cal.fin) / JOUR)) };
+  }
+
+  function rendreBudget() {
+    var b = calculBudget(), n = b.personnes;
+    var html = '<div class="bloc bloc-heros"><p class="surtitre">Budget estimé par personne</p>' +
+      '<p class="grand-chiffre" style="font-size:2rem">' + euros(b.total[0]) + ' à ' + euros(b.total[1]) + '</p>' +
+      (n > 1 ? '<p class="doux" style="margin:8px 0 0">Pour ' + n + ' : <b style="color:#fff">' + euros(b.total[0] * n) + ' à ' + euros(b.total[1] * n) + '</b></p>' : '') +
+      '<p class="doux petit" style="margin:6px 0 0">Calculé sur ' + jours(b.joursPlanifies) + ' planifiés' +
+      (b.joursLibres ? ' · ' + jours(b.joursLibres) + ' pas encore attribués, non comptés' : '') + '</p></div>';
+
+    // Répartition par poste
+    html += '<div class="bloc"><p class="surtitre">Répartition</p>' + b.postes.map(function (p) {
+      var pct = b.total[1] ? Math.round((p.total[0] + p.total[1]) / (b.total[0] + b.total[1]) * 100) : 0;
+      return '<div style="margin-top:10px"><div class="ligne entre"><span>' + p.ico + ' <b>' + esc(p.titre) + '</b></span><span class="petit">' + fourchette(p.total) + '</span></div>' +
+        '<div class="jauge"><span style="width:' + pct + '%;background:var(--accent)"></span></div></div>';
+    }).join('') + '</div>';
+
+    html += '<p class="intro" style="margin:0 0 10px">Touchez un poste pour voir le détail.</p>';
+    html += b.postes.map(function (p) {
+      var corps = (p.id === 'vie' && b.detailJour ? '<p class="petit doux">' + esc(b.detailJour) + '</p>' : '') +
+        '<ul class="activites">' + p.lignes.map(function (l) {
+          return '<li><div class="ligne entre" style="align-items:flex-start"><span class="petit">' + esc(l.titre) + '</span><b class="petit" style="white-space:nowrap">' + fourchette(l.cout) + '</b></div></li>';
+        }).join('') + '</ul>';
+      return deroulant(p.ico, esc(p.titre), pluriel(p.lignes.length, 'ligne') + ' · ' + fourchette(p.total), corps);
+    }).join('');
+    html += '<div class="bloc"><p class="petit doux" style="margin:0">' + esc(b.note || '') + ' Le budget se met à jour tout seul quand vous changez les durées ou les activités dans l\'onglet Dates, et quand je modifie l\'itinéraire. Prévoir environ 10 % de réserve.</p></div>';
+    $('#budget').innerHTML = html;
+  }
+
   /* ---------- Menu « Plus » ---------- */
   function rendrePlus() {
     var l = listeAFaire();
@@ -601,6 +664,7 @@
     var aD = nbPropositionsADecider();
     var items = [
       ['#afaire', '✅', 'À faire', nbFaits + ' sur ' + l.length + ' faits : réservations, billets, locations…'],
+      ['#budget', '💶', 'Budget', (function () { var b = calculBudget(); return euros(b.total[0]) + ' à ' + euros(b.total[1]) + ' par personne'; })()],
       ['#resas', '🎫', 'Réservations', (donnees.reservations || []).length ? pluriel(donnees.reservations.length, 'réservation') : 'Aucune pour l\'instant'],
       ['#propositions', '💡', 'Propositions', aD ? pluriel(aD, 'idée') + ' à décider' : 'Tout est décidé'],
       ['#conseils', '🧭', 'Conseils', pluriel((donnees.conseils || []).length, 'fiche') + ' : santé, argent, équipement…']
@@ -812,8 +876,8 @@
   });
 
   /* ---------- Navigation ---------- */
-  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'plus', 'resas', 'conseils', 'propositions', 'afaire'];
-  var SOUS_PLUS = ['resas', 'conseils', 'propositions', 'afaire'];
+  var VUES = ['accueil', 'carte', 'etapes', 'planifier', 'plus', 'resas', 'conseils', 'propositions', 'afaire', 'budget'];
+  var SOUS_PLUS = ['resas', 'conseils', 'propositions', 'afaire', 'budget'];
   function afficherVue() {
     var v = location.hash.replace('#', '') || 'accueil';
     if (VUES.indexOf(v) < 0) v = 'accueil';
@@ -832,6 +896,7 @@
     if (v === 'conseils') rendreConseils();
     if (v === 'propositions') rendrePropositions();
     if (v === 'afaire') rendreAFaire();
+    if (v === 'budget') rendreBudget();
     document.body.classList.toggle('sur-carte', v === 'carte');
     if (v === 'carte') { ajusterCarte(); initCarte(); if (carte) setTimeout(function () { carte.invalidateSize(); }, 50); }
     if (v !== 'carte') window.scrollTo(0, 0);

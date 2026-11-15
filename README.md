@@ -58,6 +58,13 @@ Chaque étape peut avoir un champ `trajet` (comment on y arrive depuis l'étape 
 - `pays` sert aussi de section : « Patagonie » regroupe les étapes chiliennes et argentines du sud (le vrai pays est indiqué par 🇨🇱 / 🇦🇷 dans les notes). `fenetre` = période prévue, comparée au calculateur.
 - `conseils` : liste de fiches `{ "id", "icone", "titre", "resume", "points": [...] }` affichées dans l'onglet Conseils.
 
+## Budget (calculé automatiquement)
+
+- `budget.parJour` : fourchette de dépenses quotidiennes par section, en € par personne.
+- `cout: [min, max]` sur une activité (comptée seulement si elle est cochée) ou sur un `trajet`.
+- `budget.fixes` : vols internationaux, assurance, locations…
+- L'onglet Plus → Budget additionne tout selon les durées et activités du calculateur.
+
 ## Ajouter une réservation
 
 Dans `reservations` :
