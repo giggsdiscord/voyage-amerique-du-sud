@@ -1,6 +1,6 @@
 /* Service worker : rend l'appli et ses données consultables en mode avion.
    Changer VERSION à chaque modification du code pour forcer la mise à jour. */
-var VERSION = 'v1';
+var VERSION = 'v2';
 var COQUILLE = 'coquille-' + VERSION;
 var TUILES = 'tuiles';
 var TUILES_PRECHARGEES = 'tuiles-prechargees';
