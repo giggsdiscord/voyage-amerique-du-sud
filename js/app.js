@@ -390,16 +390,30 @@
 
       (e.activites || []).forEach(function (a) {
         if (typeof a.lat !== 'number') return;
-        var coul = activiteChoisie(a) ? '#2f7a45' : (a.statut === 'suggestion' ? '#6d4ea0' : '#8a6a14');
+        var coul = activiteChoisie(a) ? '#2f7a45' : (a.statut === 'suggestion' ? '#6d4ea0' : '#c08a12');
         L.marker([a.lat, a.lng], {
           title: a.nom,
-          icon: L.divIcon({ className: '', html: '<span class="point-activite" style="background:' + coul + '"></span>', iconSize: [12, 12], iconAnchor: [6, 6] })
-        }).bindPopup('<b>' + esc(a.nom) + '</b><br><span>' + esc(STATUTS[a.statut] || '') + ' · ' + esc(e.nom) + '</span><br>' +
+          icon: L.divIcon({ className: '', html: '<span class="point-activite" style="background:' + coul + '">★</span>', iconSize: [24, 24], iconAnchor: [12, 12] })
+        }).bindTooltip(esc(a.nom), { permanent: true, direction: 'right', offset: [12, 0], className: 'etiquette' }).bindPopup('<b>' + esc(a.nom) + '</b><br><span>' + esc(STATUTS[a.statut] || '') + ' · ' + esc(e.nom) + '</span><br>' +
           '<button class="bouton" data-fiche="' + esc(e.id) + '">Voir l\'étape</button>').addTo(coucheActivites);
       });
     });
     coucheActivites.addTo(carte);
+
+    // Les noms des points d'intérêt s'affichent dès qu'on zoome un peu.
+    function etiquettes() { carte.getContainer().classList.toggle('sans-etiquettes', carte.getZoom() < 8); }
+    carte.on('zoomend', etiquettes);
+
+    var legende = L.control({ position: 'bottomleft' });
+    legende.onAdd = function () {
+      var d = L.DomUtil.create('div', 'legende');
+      d.innerHTML = '<span><i style="background:#2f7a45"></i>Prévu</span><span><i style="background:#c08a12"></i>Option</span><span><i style="background:#6d4ea0"></i>Suggestion</span>';
+      return d;
+    };
+    legende.addTo(carte);
+
     vueEnsemble();
+    etiquettes();
   }
   function vueEnsemble() {
     if (!carte) return;
@@ -498,7 +512,10 @@
         fermerFiche(); location.hash = '#carte';
         setTimeout(function () {
           var e = donnees.etapes.filter(function (x) { return x.id === id; })[0];
-          if (carte && e) carte.setView([e.lat, e.lng], 11);
+          if (!carte || !e) return;
+          // Cadrer l'étape et ses points d'intérêt.
+          var pts = [[e.lat, e.lng]].concat((e.activites || []).filter(function (a) { return typeof a.lat === 'number'; }).map(function (a) { return [a.lat, a.lng]; }));
+          if (pts.length > 1) carte.fitBounds(pts, { padding: [50, 50], maxZoom: 12 }); else carte.setView([e.lat, e.lng], 11);
         }, 120);
       }
       else if (c.hasAttribute('data-moins') || c.hasAttribute('data-plus')) {
